@@ -1,0 +1,2 @@
+woad is a C library of minimal ANSI terminal colour codes.
+Copyright (c) 2026, Matthew Wilson and Synesis Information Systems
