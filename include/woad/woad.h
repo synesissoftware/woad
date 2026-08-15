@@ -1,11 +1,11 @@
 /* /////////////////////////////////////////////////////////////////////////
  * File:    woad/woad.h
  *
- * Purpose: Root header for woad (C-API). This skeleton provides library
- *          version macros only.
+ * Purpose: Root header for woad (C-API). Provides library version macros
+ *          and fixed ANSI SGR colour sequences.
  *
  * Created: 15th August 2026
- * Updated: 15th August 2026
+ * Updated: 16th August 2026
  *
  * Home:    https://github.com/synesissoftware/woad/
  *
@@ -51,8 +51,8 @@
 #ifndef WOAD_DOCUMENTATION_SKIP_SECTION
 # define WOAD_VER_WOAD_H_WOAD_MAJOR                     0
 # define WOAD_VER_WOAD_H_WOAD_MINOR                     0
-# define WOAD_VER_WOAD_H_WOAD_PATCH                     1
-# define WOAD_VER_WOAD_H_WOAD_EDIT                      1
+# define WOAD_VER_WOAD_H_WOAD_PATCH                     2
+# define WOAD_VER_WOAD_H_WOAD_EDIT                      2
 #endif /* !WOAD_DOCUMENTATION_SKIP_SECTION */
 
 
@@ -83,8 +83,8 @@
 
 #define WOAD_VER_MAJOR      0
 #define WOAD_VER_MINOR      0
-#define WOAD_VER_PATCH      0
-#define WOAD_VER_ALPHABETA  0xFF
+#define WOAD_VER_PATCH      1
+#define WOAD_VER_ALPHABETA  0x41
 
 #define WOAD_VER \
     (0\
@@ -101,6 +101,165 @@
 #define WOAD_VER_STRING                                     WOAD_VER_STRINGIZE(WOAD_VER_MAJOR, WOAD_VER_MINOR, WOAD_VER_PATCH)
 
 
+/* /////////////////////////////////////////////////////////////////////////
+ * SGR colour codes
+ *
+ * Fixed ANSI SGR sequences. These are always the colour codes; they do
+ * not inspect TTY state or Windows console mode.
+ */
+
+/**
+ * \def WOAD_RESET
+ * Reset all attributes.
+ */
+
+#define WOAD_RESET                                          "\033[0m"
+
+/**
+ * \def WOAD_FG_BLACK
+ * Foreground black.
+ *
+ * \def WOAD_FG_RED
+ * Foreground red.
+ *
+ * \def WOAD_FG_GREEN
+ * Foreground green.
+ *
+ * \def WOAD_FG_YELLOW
+ * Foreground yellow.
+ *
+ * \def WOAD_FG_BLUE
+ * Foreground blue.
+ *
+ * \def WOAD_FG_MAGENTA
+ * Foreground magenta.
+ *
+ * \def WOAD_FG_CYAN
+ * Foreground cyan.
+ *
+ * \def WOAD_FG_WHITE
+ * Foreground white.
+ */
+
+#define WOAD_FG_BLACK                                       "\033[30m"
+#define WOAD_FG_RED                                         "\033[31m"
+#define WOAD_FG_GREEN                                       "\033[32m"
+#define WOAD_FG_YELLOW                                      "\033[33m"
+#define WOAD_FG_BLUE                                        "\033[34m"
+#define WOAD_FG_MAGENTA                                     "\033[35m"
+#define WOAD_FG_CYAN                                        "\033[36m"
+#define WOAD_FG_WHITE                                       "\033[37m"
+
+/**
+ * \def WOAD_FG_BRIGHT_BLACK
+ * Foreground bright black.
+ *
+ * \def WOAD_FG_BRIGHT_RED
+ * Foreground bright red.
+ *
+ * \def WOAD_FG_BRIGHT_GREEN
+ * Foreground bright green.
+ *
+ * \def WOAD_FG_BRIGHT_YELLOW
+ * Foreground bright yellow.
+ *
+ * \def WOAD_FG_BRIGHT_BLUE
+ * Foreground bright blue.
+ *
+ * \def WOAD_FG_BRIGHT_MAGENTA
+ * Foreground bright magenta.
+ *
+ * \def WOAD_FG_BRIGHT_CYAN
+ * Foreground bright cyan.
+ *
+ * \def WOAD_FG_BRIGHT_WHITE
+ * Foreground bright white.
+ */
+
+#define WOAD_FG_BRIGHT_BLACK                                "\033[90m"
+#define WOAD_FG_BRIGHT_RED                                  "\033[91m"
+#define WOAD_FG_BRIGHT_GREEN                                "\033[92m"
+#define WOAD_FG_BRIGHT_YELLOW                               "\033[93m"
+#define WOAD_FG_BRIGHT_BLUE                                 "\033[94m"
+#define WOAD_FG_BRIGHT_MAGENTA                              "\033[95m"
+#define WOAD_FG_BRIGHT_CYAN                                 "\033[96m"
+#define WOAD_FG_BRIGHT_WHITE                                "\033[97m"
+
+/**
+ * \def WOAD_BG_BLACK
+ * Background black.
+ *
+ * \def WOAD_BG_RED
+ * Background red.
+ *
+ * \def WOAD_BG_GREEN
+ * Background green.
+ *
+ * \def WOAD_BG_YELLOW
+ * Background yellow.
+ *
+ * \def WOAD_BG_BLUE
+ * Background blue.
+ *
+ * \def WOAD_BG_MAGENTA
+ * Background magenta.
+ *
+ * \def WOAD_BG_CYAN
+ * Background cyan.
+ *
+ * \def WOAD_BG_WHITE
+ * Background white.
+ */
+
+#define WOAD_BG_BLACK                                       "\033[40m"
+#define WOAD_BG_RED                                         "\033[41m"
+#define WOAD_BG_GREEN                                       "\033[42m"
+#define WOAD_BG_YELLOW                                      "\033[43m"
+#define WOAD_BG_BLUE                                        "\033[44m"
+#define WOAD_BG_MAGENTA                                     "\033[45m"
+#define WOAD_BG_CYAN                                        "\033[46m"
+#define WOAD_BG_WHITE                                       "\033[47m"
+
+/**
+ * \def WOAD_BG_BRIGHT_BLACK
+ * Background bright black.
+ *
+ * \def WOAD_BG_BRIGHT_RED
+ * Background bright red.
+ *
+ * \def WOAD_BG_BRIGHT_GREEN
+ * Background bright green.
+ *
+ * \def WOAD_BG_BRIGHT_YELLOW
+ * Background bright yellow.
+ *
+ * \def WOAD_BG_BRIGHT_BLUE
+ * Background bright blue.
+ *
+ * \def WOAD_BG_BRIGHT_MAGENTA
+ * Background bright magenta.
+ *
+ * \def WOAD_BG_BRIGHT_CYAN
+ * Background bright cyan.
+ *
+ * \def WOAD_BG_BRIGHT_WHITE
+ * Background bright white.
+ */
+
+#define WOAD_BG_BRIGHT_BLACK                                "\033[100m"
+#define WOAD_BG_BRIGHT_RED                                  "\033[101m"
+#define WOAD_BG_BRIGHT_GREEN                                "\033[102m"
+#define WOAD_BG_BRIGHT_YELLOW                               "\033[103m"
+#define WOAD_BG_BRIGHT_BLUE                                 "\033[104m"
+#define WOAD_BG_BRIGHT_MAGENTA                              "\033[105m"
+#define WOAD_BG_BRIGHT_CYAN                                 "\033[106m"
+#define WOAD_BG_BRIGHT_WHITE                                "\033[107m"
+
+
+/* /////////////////////////////////////////////////////////////////////////
+ * API
+ */
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -110,6 +269,14 @@ extern "C"
 } /* extern "C" */
 #endif
 
+
+/* /////////////////////////////////////////////////////////////////////////
+ * inclusion
+ */
+
+#ifdef STLSOFT_PPF_pragma_once_SUPPORT
+# pragma once
+#endif /* STLSOFT_PPF_pragma_once_SUPPORT */
 
 #endif /* !WOAD_INCL_WOAD_H_WOAD */
 

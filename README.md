@@ -30,7 +30,7 @@ Minimal ANSI terminal colour codes, for C
 
 **woad** provides the smallest useful set of fixed ANSI SGR colour sequences for library authors. It is not a console or TUI framework.
 
-**woad** is the **C** implementation. This **0.0.0** skeleton ships version macros only.
+**woad** is the **C** implementation.
 
 
 ## Installation
@@ -48,7 +48,7 @@ Use via **include**:
 ```C
 #include <woad/woad.h>
 
-puts(WOAD_VER_STRING);
+puts(WOAD_FG_GREEN "ok" WOAD_RESET);
 ```
 
 
@@ -73,7 +73,7 @@ ctest --test-dir _build --output-on-failure
 
 ## Components
 
-**woad** currently exports version macros (`WOAD_VER_MAJOR`, `WOAD_VER_MINOR`, `WOAD_VER_PATCH`, `WOAD_VER_REVISION`, `WOAD_VER_ALPHABETA`, `WOAD_VER`, `WOAD_VER_STRING`). SGR colour codes, TTY/stream gating, and Windows virtual-terminal opt-in are not implemented yet.
+**woad** ships SGR string macros (`WOAD_RESET`, `WOAD_FG_*`, `WOAD_BG_*`, including bright variants) and version macros (`WOAD_VER_MAJOR`, `WOAD_VER_MINOR`, `WOAD_VER_PATCH`, `WOAD_VER_REVISION`, `WOAD_VER_ALPHABETA`, `WOAD_VER`, `WOAD_VER_STRING`). TTY/stream gating and Windows virtual-terminal opt-in are not implemented yet.
 
 
 ## Project Information

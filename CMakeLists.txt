@@ -5,7 +5,7 @@
 # Purpose:  Top-level CMake lists file for woad
 #
 # Created:  15th August 2026
-# Updated:  15th August 2026
+# Updated:  16th August 2026
 #
 # ######################################################################## #
 
@@ -157,6 +157,15 @@ if(BUILD_EXAMPLES)
 
 	message(STATUS "enabled building of examples ...")
 
+	add_executable(colour examples/colour.c)
+	target_link_libraries(colour PRIVATE woad::woad)
+	target_compile_options(colour PRIVATE ${WOAD_COMPILE_OPTIONS})
+	set_target_properties(colour PROPERTIES
+		C_STANDARD 11
+		C_STANDARD_REQUIRED ON
+		C_EXTENSIONS OFF
+	)
+
 	add_executable(version examples/version.c)
 	target_link_libraries(version PRIVATE woad::woad)
 	target_compile_options(version PRIVATE ${WOAD_COMPILE_OPTIONS})
@@ -177,6 +186,17 @@ endif()
 if(BUILD_TESTING)
 
 	message(STATUS "enabled building of tests ...")
+
+	add_executable(test.unit.codes test/unit/test.unit.codes.c)
+	target_link_libraries(test.unit.codes PRIVATE woad::woad)
+	target_compile_options(test.unit.codes PRIVATE ${WOAD_COMPILE_OPTIONS})
+	set_target_properties(test.unit.codes PROPERTIES
+		C_STANDARD 11
+		C_STANDARD_REQUIRED ON
+		C_EXTENSIONS OFF
+	)
+	add_test(NAME unit.codes COMMAND test.unit.codes)
+	set_tests_properties(unit.codes PROPERTIES TIMEOUT 30)
 
 	add_executable(test.unit.version test/unit/test.unit.version.c)
 	target_link_libraries(test.unit.version PRIVATE woad::woad)
