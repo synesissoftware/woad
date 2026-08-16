@@ -1,0 +1,11 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}
+libdir=@CMAKE_INSTALL_FULL_LIBDIR@
+includedir=@CMAKE_INSTALL_FULL_INCLUDEDIR@
+
+Name: woad
+Description: Minimal ANSI terminal colour codes
+Version: @PROJECT_VERSION@
+URL: https://github.com/synesissoftware/woad
+Libs:
+Cflags: -I${includedir}

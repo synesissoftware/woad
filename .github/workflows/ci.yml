@@ -1,0 +1,159 @@
+#
+# Created: 15th August 2026
+# Updated: 15th August 2026
+#
+
+name: CI
+
+on:
+  push:
+    branches:
+      - boilerplate
+      - dev
+      - idiomatic
+      - master
+      - rc1
+      - rc2
+      - rc3
+  pull_request:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            c_compiler: gcc
+            build_type: Debug
+          - os: ubuntu-latest
+            c_compiler: gcc
+            build_type: Release
+          - os: ubuntu-latest
+            c_compiler: clang
+            build_type: Debug
+          - os: ubuntu-latest
+            c_compiler: clang
+            build_type: Release
+          - os: macos-latest
+            c_compiler: clang
+            build_type: Debug
+          - os: macos-latest
+            c_compiler: clang
+            build_type: Release
+          - os: windows-latest
+            toolchain: mingw
+            build_type: Debug
+          - os: windows-latest
+            toolchain: mingw
+            build_type: Release
+          - os: windows-latest
+            toolchain: msvc
+            build_type: Debug
+          - os: windows-latest
+            toolchain: msvc
+            build_type: Release
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Clang (Ubuntu)
+        if: runner.os == 'Linux' && matrix.c_compiler == 'clang'
+        run: sudo apt-get update && sudo apt-get install -y clang
+
+      - name: Configure
+        run: |
+          if [ "${{ runner.os }}" = "Windows" ] && \
+             [ "${{ matrix.toolchain }}" = "msvc" ]; then
+            cmake -B build -A x64 \
+              -DCMAKE_INSTALL_PREFIX="${{ runner.temp }}/install"
+          elif [ "${{ runner.os }}" = "Windows" ] && \
+               [ "${{ matrix.toolchain }}" = "mingw" ]; then
+            cmake -B build -G "MinGW Makefiles" \
+              -DCMAKE_BUILD_TYPE="${{ matrix.build_type }}" \
+              -DCMAKE_INSTALL_PREFIX="${{ runner.temp }}/install"
+          else
+            cmake -B build \
+              -DCMAKE_BUILD_TYPE="${{ matrix.build_type }}" \
+              -DCMAKE_C_COMPILER="${{ matrix.c_compiler }}" \
+              -DCMAKE_INSTALL_PREFIX="${{ runner.temp }}/install"
+          fi
+
+      - name: Build
+        run: |
+          if [ "${{ runner.os }}" = "Windows" ] && \
+             [ "${{ matrix.toolchain }}" = "msvc" ]; then
+            cmake --build build --config ${{ matrix.build_type }} --parallel
+          else
+            cmake --build build --config ${{ matrix.build_type }} --parallel
+          fi
+
+      - name: Test
+        run: |
+          if [ "${{ runner.os }}" = "Windows" ] && \
+             [ "${{ matrix.toolchain }}" = "msvc" ]; then
+            ctest --test-dir build --output-on-failure \
+              --build-config ${{ matrix.build_type }} --timeout 30
+          else
+            ctest --test-dir build --output-on-failure \
+              --build-config ${{ matrix.build_type }} --timeout 30
+          fi
+
+      - name: Smoke-run example
+        run: |
+          if [ "${{ runner.os }}" = "Windows" ] && \
+             [ "${{ matrix.toolchain }}" = "msvc" ]; then
+            EXE_SUFFIX=.exe
+            EXE_DIR=build/${{ matrix.build_type }}
+          else
+            EXE_SUFFIX=
+            EXE_DIR=build
+          fi
+          example=""
+          for candidate in \
+            "${EXE_DIR}/version${EXE_SUFFIX}" \
+            "build/version${EXE_SUFFIX}" \
+            "build/${{ matrix.build_type }}/version${EXE_SUFFIX}"
+          do
+            if [ -f "$candidate" ]; then
+              example="$candidate"
+              break
+            fi
+          done
+          if [ -z "$example" ]; then
+            echo "version executable not found under build/" >&2
+            ls -la build/ >&2 || true
+            ls -la "build/${{ matrix.build_type }}" >&2 || true
+            exit 1
+          fi
+          "$example"
+
+      - name: Install
+        run: |
+          if [ "${{ runner.os }}" = "Windows" ] && \
+             [ "${{ matrix.toolchain }}" = "msvc" ]; then
+            cmake --install build --config ${{ matrix.build_type }} \
+              --prefix "${{ runner.temp }}/install"
+          else
+            cmake --install build --prefix "${{ runner.temp }}/install"
+          fi
+
+      - name: Verify installed files
+        run: |
+          prefix="${{ runner.temp }}/install"
+          test -f "${prefix}/include/woad/woad.h"
+          test -f "${prefix}/lib/cmake/woad/woad-config.cmake" || \
+            test -f "${prefix}/lib64/cmake/woad/woad-config.cmake"
+          if [ "${{ runner.os }}" != "Windows" ]; then
+            test -f "${prefix}/lib/pkgconfig/woad.pc" || \
+              test -f "${prefix}/lib64/pkgconfig/woad.pc"
+          fi
