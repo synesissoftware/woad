@@ -5,7 +5,7 @@
 # Purpose:  Top-level CMake lists file for woad
 #
 # Created:  15th August 2026
-# Updated:  16th August 2026
+# Updated:  27th August 2026
 #
 # ######################################################################## #
 
@@ -120,6 +120,7 @@ endif()
 # ##########################################################
 # includes
 
+include(BuildType)
 include(CMakePackageConfigHelpers)
 if(BUILD_TESTING)
 
