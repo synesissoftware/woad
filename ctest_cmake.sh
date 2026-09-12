@@ -25,7 +25,7 @@ while [[ $# -gt 0 ]]; do
       ;;
     --verbose|-V)
 
-      CMakeVerbose=--output-on-failure
+      CMakeVerbose=--verbose
       ;;
     --help)
 
@@ -45,7 +45,7 @@ Flags/options:
 
     -V
     --verbose
-        verbose test output (CTest --output-on-failure)
+        verbose test output
 
 
     standard flags:
@@ -76,7 +76,7 @@ status=0
 
 if [ $RunMake -ne 0 ]; then
 
-  echo "Executing build of ${ProjectName} (via command \`$MakeCmd\`) and then running unit tests"
+  echo "Executing build of ${ProjectName} (via command \`$MakeCmd\`) and then running automated tests"
 
   mkdir -p $CMakeDir || exit 1
 

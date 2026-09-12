@@ -1,6 +1,6 @@
 #
 # Created: 15th August 2026
-# Updated: 15th August 2026
+# Updated: 27th August 2026
 #
 
 name: CI
@@ -8,10 +8,11 @@ name: CI
 on:
   push:
     branches:
-      - boilerplate
-      - dev
-      - idiomatic
       - master
+      - dev
+      - api
+      - boilerplate
+      - idiomatic
       - rc1
       - rc2
       - rc3
@@ -108,7 +109,7 @@ jobs:
               --build-config ${{ matrix.build_type }} --timeout 30
           fi
 
-      - name: Smoke-run example
+      - name: Smoke-run examples
         run: |
           if [ "${{ runner.os }}" = "Windows" ] && \
              [ "${{ matrix.toolchain }}" = "msvc" ]; then
@@ -118,24 +119,104 @@ jobs:
             EXE_SUFFIX=
             EXE_DIR=build
           fi
-          example=""
-          for candidate in \
-            "${EXE_DIR}/version${EXE_SUFFIX}" \
-            "build/version${EXE_SUFFIX}" \
-            "build/${{ matrix.build_type }}/version${EXE_SUFFIX}"
+          for name in colour colour_for version
           do
-            if [ -f "$candidate" ]; then
-              example="$candidate"
-              break
+            example=""
+            for candidate in \
+              "${EXE_DIR}/${name}${EXE_SUFFIX}" \
+              "build/${name}${EXE_SUFFIX}" \
+              "build/${{ matrix.build_type }}/${name}${EXE_SUFFIX}"
+            do
+              if [ -f "$candidate" ]; then
+                example="$candidate"
+                break
+              fi
+            done
+            if [ -z "$example" ]; then
+              echo "${name} executable not found under build/" >&2
+              ls -la build/ >&2 || true
+              ls -la "build/${{ matrix.build_type }}" >&2 || true
+              exit 1
             fi
+            "$example"
           done
-          if [ -z "$example" ]; then
-            echo "version executable not found under build/" >&2
-            ls -la build/ >&2 || true
-            ls -la "build/${{ matrix.build_type }}" >&2 || true
+
+      # The build machine's stdout is never a terminal, so the colour-policy
+      # overrides are the only way to exercise the emitting path in CI - and,
+      # conversely, the plain path is verified for free.
+      - name: Smoke-test colour policy
+        run: |
+          if [ "${{ runner.os }}" = "Windows" ] && \
+             [ "${{ matrix.toolchain }}" = "msvc" ]; then
+            EXE_SUFFIX=.exe
+            EXE_DIR=build/${{ matrix.build_type }}
+          else
+            EXE_SUFFIX=
+            EXE_DIR=build
+          fi
+
+          locate_example()
+          {
+            for candidate in \
+              "${EXE_DIR}/${1}${EXE_SUFFIX}" \
+              "build/${1}${EXE_SUFFIX}" \
+              "build/${{ matrix.build_type }}/${1}${EXE_SUFFIX}"
+            do
+              if [ -f "$candidate" ]; then
+                echo "$candidate"
+                return 0
+              fi
+            done
+            echo "${1} executable not found under build/" >&2
+            return 1
+          }
+
+          colour=$(locate_example colour)
+          colour_for=$(locate_example colour_for)
+
+          esc=$(printf '\033')
+          failures=0
+
+          # asserts that the program's output does ("colour") or does not
+          # ("plain") contain an ANSI escape, when run with its output
+          # captured - and hence not attached to a terminal
+          assert_colour()
+          {
+            desc="$1"; shift
+            expect="$1"; shift
+
+            out="$("$@" 2>&1)"
+
+            case "$out" in
+              *"$esc"*) actual=colour ;;
+              *)        actual=plain ;;
+            esac
+
+            if [ "$actual" != "$expect" ]; then
+              echo "FAIL: ${desc}: expected ${expect}, got ${actual}" >&2
+              failures=$((failures + 1))
+            else
+              echo "ok: ${desc} (${actual})"
+            fi
+          }
+
+          # so that the runner's own environment cannot influence the result
+          unset CLICOLOR CLICOLOR_FORCE NO_COLOR TERM WOAD_COLOR WOAD_COLOUR
+
+          assert_colour "auto, not a tty"                        plain  "$colour_for"
+          assert_colour "WOAD_COLOUR=always"                     colour env WOAD_COLOUR=always "$colour_for"
+          assert_colour "WOAD_COLOUR=ALWAYS (case-insensitive)"  colour env WOAD_COLOUR=ALWAYS "$colour_for"
+          assert_colour "WOAD_COLOR=1 (alternative spelling)"    colour env WOAD_COLOR=1 "$colour_for"
+          assert_colour "CLICOLOR_FORCE=1"                       colour env CLICOLOR_FORCE=1 "$colour_for"
+          assert_colour "WOAD_COLOUR=never beats CLICOLOR_FORCE" plain  env WOAD_COLOUR=never CLICOLOR_FORCE=1 "$colour_for"
+          assert_colour "NO_COLOR beats CLICOLOR_FORCE"          plain  env NO_COLOR=1 CLICOLOR_FORCE=1 "$colour_for"
+          assert_colour "WOAD_COLOUR=always beats NO_COLOR"      colour env WOAD_COLOUR=always NO_COLOR=1 "$colour_for"
+          assert_colour "unbound macros ignore policy"           colour env NO_COLOR=1 "$colour"
+
+          if [ "$failures" != "0" ]; then
+            echo "${failures} colour-policy assertion(s) failed" >&2
             exit 1
           fi
-          "$example"
 
       - name: Install
         run: |
@@ -151,9 +232,29 @@ jobs:
         run: |
           prefix="${{ runner.temp }}/install"
           test -f "${prefix}/include/woad/woad.h"
+          test -f "${prefix}/share/man/man3/woad.3"
+          # the generated page must carry the real version, not the @...@ token
+          grep -q '^\.TH WOAD 3 .* "woad [0-9]' "${prefix}/share/man/man3/woad.3"
           test -f "${prefix}/lib/cmake/woad/woad-config.cmake" || \
             test -f "${prefix}/lib64/cmake/woad/woad-config.cmake"
           if [ "${{ runner.os }}" != "Windows" ]; then
             test -f "${prefix}/lib/pkgconfig/woad.pc" || \
               test -f "${prefix}/lib64/pkgconfig/woad.pc"
+          fi
+          # the compiled component, whose name varies by toolchain
+          found=0
+          for candidate in \
+            "${prefix}/lib/libwoad.a" \
+            "${prefix}/lib64/libwoad.a" \
+            "${prefix}/lib/woad.lib"
+          do
+            if [ -f "$candidate" ]; then
+              found=1
+              break
+            fi
+          done
+          if [ "$found" != "1" ]; then
+            echo "no woad library artefact found under ${prefix}" >&2
+            ls -la "${prefix}/lib" >&2 || true
+            exit 1
           fi

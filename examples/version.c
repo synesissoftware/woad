@@ -1,10 +1,11 @@
 /* /////////////////////////////////////////////////////////////////////////
  * File:    examples/version.c
  *
- * Purpose: Example program that prints the woad version string.
+ * Purpose: Example program that prints the woad version string, via both
+ *          the version macros and the version functions.
  *
  * Created: 15th August 2026
- * Updated: 15th August 2026
+ * Updated: 27th August 2026
  *
  * Home:    https://github.com/synesissoftware/woad/
  *
@@ -48,6 +49,14 @@
 int main(void)
 {
     puts("v" WOAD_FG_GREEN WOAD_VER_STRING WOAD_RESET);
+
+    printf(
+        "v%s%s%s (0x%08lx)\n"
+    ,   WOAD_FG_GREEN
+    ,   woad_version_string()
+    ,   WOAD_RESET
+    ,   woad_version()
+    );
 
     return EXIT_SUCCESS;
 }
