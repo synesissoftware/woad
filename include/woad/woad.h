@@ -7,7 +7,7 @@
  *          colour-policy API.
  *
  * Created: 15th August 2026
- * Updated: 27th August 2026
+ * Updated: 12th September 2026
  *
  * Home:    https://github.com/synesissoftware/woad/
  *
@@ -51,10 +51,10 @@
 #define WOAD_INCL_WOAD_H_WOAD
 
 #ifndef WOAD_DOCUMENTATION_SKIP_SECTION
-# define WOAD_VER_WOAD_H_WOAD_MAJOR                     0
-# define WOAD_VER_WOAD_H_WOAD_MINOR                     0
-# define WOAD_VER_WOAD_H_WOAD_PATCH                     4
-# define WOAD_VER_WOAD_H_WOAD_EDIT                      6
+# define WOAD_VER_WOAD_H_WOAD_MAJOR     0
+# define WOAD_VER_WOAD_H_WOAD_MINOR     0
+# define WOAD_VER_WOAD_H_WOAD_PATCH     4
+# define WOAD_VER_WOAD_H_WOAD_EDIT      6
 #endif /* !WOAD_DOCUMENTATION_SKIP_SECTION */
 
 
@@ -98,8 +98,8 @@
 
 #define WOAD_VER_REVISION                                   WOAD_VER_PATCH
 
-#define WOAD_VER_STRINGIZE_(M, m, p)                        #M "." #m "." #p
-#define WOAD_VER_STRINGIZE(M, m, p)                         WOAD_VER_STRINGIZE_(M, m, p)
+#define WOAD_VER_STRINGIZE_(j, n, p)                        #j "." #n "." #p
+#define WOAD_VER_STRINGIZE(j, n, p)                         WOAD_VER_STRINGIZE_(j, n, p)
 #define WOAD_VER_STRING                                     WOAD_VER_STRINGIZE(WOAD_VER_MAJOR, WOAD_VER_MINOR, WOAD_VER_PATCH)
 
 
@@ -291,10 +291,10 @@
 #  endif
 # endif /* !WOAD_CALL */
 
-/* Type-dispatched wrappers are available in C++ (by overloading) and in
- * C11 and later (by `_Generic`). In earlier C dialects the wrappers accept
- * `FILE*` only, and the other stream currencies must be addressed by
- * naming the specific function.
+/* Type-dispatched wrappers are available in C++ (by overloading) and in C11
+ * and later (by `_Generic`). In earlier C dialects the wrappers accept
+ * `FILE*` only, and the other stream currencies must be addressed by naming
+ * the specific function.
  */
 # if 1 && \
      !defined(__cplusplus) && \
@@ -339,6 +339,10 @@ extern "C"
 
 
 /* /////////////////////////////////////////////////////////////////////////
+ * API functions
+ */
+
+/* /////////////////////////////////////////////////////////////////
  * API functions - version
  */
 
@@ -367,7 +371,7 @@ WOAD_CALL(char const*)
 woad_version_string(void);
 
 
-/* /////////////////////////////////////////////////////////////////////////
+/* /////////////////////////////////////////////////////////////////
  * API functions - policy
  */
 
@@ -433,7 +437,7 @@ WOAD_CALL(int)
 woad_console_supports_ansi(void);
 
 
-/* /////////////////////////////////////////////////////////////////////////
+/* /////////////////////////////////////////////////////////////////
  * API functions - stream inspection
  */
 
@@ -504,7 +508,7 @@ woad_fd_supports_colour(
  * \return Non-zero if the handle refers to a console; 0 otherwise.
  */
 WOAD_CALL(int)
-woad_handle_is_tty(
+woad_console_handle_is_tty(
     void*           h
 );
 
@@ -526,7 +530,7 @@ woad_std_handle_is_tty(
  * woad_stream_supports_colour().
  */
 WOAD_CALL(int)
-woad_handle_supports_colour(
+woad_console_handle_supports_colour(
     void*           h
 );
 
@@ -540,7 +544,7 @@ woad_std_handle_supports_colour(
 #endif /* _WIN32 */
 
 
-/* /////////////////////////////////////////////////////////////////////////
+/* /////////////////////////////////////////////////////////////////
  * API functions - conditional sequences
  */
 
@@ -679,7 +683,7 @@ woad_supports_colour(
     void*           h
 )
 {
-    return woad_handle_supports_colour(h);
+    return woad_console_handle_supports_colour(h);
 }
 
 inline
@@ -704,13 +708,13 @@ woad_supports_colour(
     ,   unsigned long   :   woad_seq_for_std_handle         \
     )((seq), (stm)))
 
-#  define woad_supports_colour(stm)                         \
-                                                            \
-    (_Generic((stm)                                         \
-    ,   FILE*           :   woad_stream_supports_colour     \
-    ,   int             :   woad_fd_supports_colour         \
-    ,   void*           :   woad_handle_supports_colour     \
-    ,   unsigned long   :   woad_std_handle_supports_colour \
+#  define woad_supports_colour(stm)                             \
+                                                                \
+    (_Generic((stm)                                             \
+    ,   FILE*           :   woad_stream_supports_colour         \
+    ,   int             :   woad_fd_supports_colour             \
+    ,   void*           :   woad_console_handle_supports_colour \
+    ,   unsigned long   :   woad_std_handle_supports_colour     \
     )(stm))
 # else
 

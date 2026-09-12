@@ -1,7 +1,7 @@
 # woad - Changes <!-- omit in toc -->
 
 
-## 0.0.1-beta1 - 28th August 2026
+## 0.0.1-beta1 - 12th September 2026
 
 * runtime version API: `woad_version()` and `woad_version_string()`, for parity with **woad.Go**, and, being bound to the library, usable as an ABI probe;
 * stream-conditional colour API, in **src/api.c**: `woad_seq_for_stream()`, `woad_seq_for_fd()`, and, on Windows, `woad_seq_for_handle()` and `woad_seq_for_std_handle()`;

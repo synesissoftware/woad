@@ -83,6 +83,15 @@ static char const   woad_empty_[] = "";
 
 
 /* /////////////////////////////////////////////////////////////////////////
+ * macros
+ */
+
+#ifndef NUM_ELEMENTS
+# define NUM_ELEMENTS(x)                                    (sizeof(x) / sizeof(0[x]))
+#endif /* !NUM_ELEMENTS */
+
+
+/* /////////////////////////////////////////////////////////////////////////
  * helper functions - strings
  */
 
@@ -139,7 +148,8 @@ woad_stricmp_(
  *   `"never"` and `"none"` (falsey), which express colour policy rather
  *   than a general boolean;
  * - it compares case-insensitively, in one pass, where 2be maintains
- *   separate precise-capitalisation and lowercase token sets;
+ *   separate precise-capitalisation and lowercase token sets for maximum
+ *   performance consideration;
  * - it does not trim the string before classifying it, since an
  *   environment variable's value is taken as given;
  */
@@ -160,15 +170,13 @@ woad_is_truey_(
         "yes",
     };
 
-    size_t i;
-
-    for (i = 0; i != sizeof(s_truey) / sizeof(s_truey[0]); ++i)
+    { size_t i; for (i = 0; NUM_ELEMENTS(s_truey) != i; ++i)
     {
         if (0 == woad_stricmp_(value, s_truey[i]))
         {
             return 1;
         }
-    }
+    }}
 
     return 0;
 }
@@ -189,15 +197,13 @@ woad_is_falsey_(
         "off",
     };
 
-    size_t i;
-
-    for (i = 0; i != sizeof(s_falsey) / sizeof(s_falsey[0]); ++i)
+    { size_t i; for (i = 0; NUM_ELEMENTS(s_falsey) != i; ++i)
     {
         if (0 == woad_stricmp_(value, s_falsey[i]))
         {
             return 1;
         }
-    }
+    }}
 
     return 0;
 }
@@ -230,7 +236,7 @@ woad_policy_from_environment_(void)
 {
     char const* value;
 
-    /* 1. woad's own variable, which overrides all others. */
+    /* 1. woad's own variable(s), which overrides all others. */
 
     if (NULL == (value = woad_getenv_nonempty_("WOAD_COLOUR")))
     {
@@ -313,20 +319,20 @@ woad_term_is_dumb_from_environment_(void)
  * read within the elected determination.)
  */
 
-static int          s_environment_determined;
-static int          s_policy;
-static int          s_term_is_dumb;
+static int  s_environment_is_determined;
+static int  s_policy;
+static int  s_term_is_dumb;
 
 static
 void
 woad_ensure_environment_(void)
 {
-    if (!s_environment_determined)
+    if (!s_environment_is_determined)
     {
         s_policy = woad_policy_from_environment_();
         s_term_is_dumb = woad_term_is_dumb_from_environment_();
 
-        s_environment_determined = 1;
+        s_environment_is_determined = 1;
     }
 }
 
@@ -377,8 +383,8 @@ woad_windows_build_number_(void)
  * Absence of the variable means permission: the modification is woad's
  * default behaviour, and the variable exists only so that it may be
  * withheld. A falsey value withholds it; any other value - including one
- * that is neither truey nor falsey - leaves the default in force, exactly as
- * an unrecognised WOAD_COLOUR leaves automatic detection in force.
+ * that is neither truey nor falsey - leaves the default in force, exactly
+ * as an unrecognised WOAD_COLOUR leaves automatic detection in force.
  */
 static
 int
@@ -399,9 +405,9 @@ woad_may_set_console_mode_from_environment_(void)
  * permitted.
  *
  * \param may_set Whether SetConsoleMode() may be called. When 0, this
- *   degenerates to a pure query: a console upon which the caller has already
- *   enabled virtual-terminal processing is still reported as capable, but no
- *   console state is altered.
+ *   degenerates to a pure query: a console upon which the caller has
+ *   already enabled virtual-terminal processing is still reported as
+ *   capable, but no console state is altered.
  */
 static
 int
@@ -455,9 +461,9 @@ woad_detect_console_supports_ansi_(void)
              0u == build)
     {
         /* Windows 10 builds that support VT processing, or unknown build
-         * (best-effort): expand compatibility via SetConsoleMode, unless the
-         * user has withheld permission to modify the console, in which case
-         * the handles are only queried.
+         * (best-effort): expand compatibility via SetConsoleMode, unless
+         * the user has withheld permission to modify the console, in which
+         * case the handles are only queried.
          */
         int const may_set = woad_may_set_console_mode_from_environment_();
 
@@ -519,11 +525,19 @@ woad_isatty_fd_(
 {
 #ifdef _WIN32
 
-    return _isatty(fd) ? 1 : 0;
+    if (_isatty(fd))
+    {
+        return 1;
+    }
 #else
 
-    return isatty(fd) ? 1 : 0;
+    if (isatty(fd))
+    {
+        return 1;
+    }
 #endif
+
+    return 0;
 }
 
 static
@@ -656,7 +670,7 @@ woad_colour_policy(void)
 void
 woad_refresh(void)
 {
-    s_environment_determined = 0;
+    s_environment_is_determined = 0;
 
 #ifdef _WIN32
 
@@ -716,19 +730,21 @@ woad_fd_supports_colour(
 #ifdef _WIN32
 
 int
-woad_handle_is_tty(
+woad_console_handle_is_tty(
     void*           h
 )
 {
-    DWORD mode;
-
     if (NULL == h ||
         INVALID_HANDLE_VALUE == (HANDLE)h)
     {
         return 0;
     }
+    else
+    {
+        DWORD mode;
 
-    return GetConsoleMode((HANDLE)h, &mode) ? 1 : 0;
+        return GetConsoleMode((HANDLE)h, &mode) ? 1 : 0;
+    }
 }
 
 int
@@ -736,15 +752,15 @@ woad_std_handle_is_tty(
     unsigned long   id
 )
 {
-    return woad_handle_is_tty((void*)GetStdHandle((DWORD)id));
+    return woad_console_handle_is_tty((void*)GetStdHandle((DWORD)id));
 }
 
 int
-woad_handle_supports_colour(
+woad_console_handle_supports_colour(
     void*           h
 )
 {
-    return woad_supports_colour_(woad_handle_is_tty(h));
+    return woad_supports_colour_(woad_console_handle_is_tty(h));
 }
 
 int
@@ -803,7 +819,7 @@ woad_seq_for_handle(
 ,   void*           h
 )
 {
-    return woad_seq_or_empty_(seq, woad_handle_supports_colour(h));
+    return woad_seq_or_empty_(seq, woad_console_handle_supports_colour(h));
 }
 
 char const*
