@@ -1,10 +1,10 @@
 /* /////////////////////////////////////////////////////////////////////////
  * File:    examples/colour.c
  *
- * Purpose: Example program that emits a coloured status string.
+ * Purpose: Example program that emits coloured / attributed status strings.
  *
  * Created: 16th August 2026
- * Updated: 16th August 2026
+ * Updated: 15th September 2026
  *
  * Home:    https://github.com/synesissoftware/woad/
  *
@@ -55,6 +55,8 @@ int main(void)
     puts("the colour is " WOAD_FG_CYAN "cyan" WOAD_RESET ".");
     puts("the colour is " WOAD_FG_WHITE "white" WOAD_RESET ".");
     puts("the colour is " WOAD_FG_BRIGHT_BLACK "bright black" WOAD_RESET ".");
+    puts("the style is " WOAD_BOLD WOAD_FG_RED "bold red" WOAD_RESET ".");
+    puts("the style is " WOAD_BLINKING WOAD_FG_YELLOW "blinking yellow" WOAD_RESET ".");
 
     return EXIT_SUCCESS;
 }

@@ -73,7 +73,7 @@ ctest --test-dir _build --output-on-failure
 
 ## Components
 
-**woad** ships SGR string macros (`WOAD_RESET`, `WOAD_FG_*`, `WOAD_BG_*`, including bright variants) and version macros (`WOAD_VER_MAJOR`, `WOAD_VER_MINOR`, `WOAD_VER_PATCH`, `WOAD_VER_REVISION`, `WOAD_VER_ALPHABETA`, `WOAD_VER`, `WOAD_VER_STRING`). TTY/stream gating and Windows virtual-terminal opt-in are not implemented yet.
+**woad** ships SGR string macros (`WOAD_RESET`, `WOAD_BOLD`, `WOAD_BLINKING`, `WOAD_FG_*`, `WOAD_BG_*`, including bright variants) and version macros (`WOAD_VER_MAJOR`, `WOAD_VER_MINOR`, `WOAD_VER_PATCH`, `WOAD_VER_REVISION`, `WOAD_VER_ALPHABETA`, `WOAD_VER`, `WOAD_VER_STRING`). Attribute and colour macros always emit; TTY/stream gating and Windows virtual-terminal opt-in are not implemented yet.
 
 
 ## Project Information

@@ -1,10 +1,10 @@
 /* /////////////////////////////////////////////////////////////////////////
  * File:    test/unit/test.unit.codes.c
  *
- * Purpose: Unit tests for woad SGR colour codes.
+ * Purpose: Unit tests for woad SGR attribute and colour codes.
  *
  * Created: 16th August 2026
- * Updated: 16th August 2026
+ * Updated: 15th September 2026
  *
  * Home:    https://github.com/synesissoftware/woad/
  *
@@ -106,6 +106,8 @@ int main(void)
     struct code_entry_t const codes[] =
     {
         { "WOAD_RESET",             WOAD_RESET             },
+        { "WOAD_BOLD",              WOAD_BOLD              },
+        { "WOAD_BLINKING",          WOAD_BLINKING          },
         { "WOAD_FG_BLACK",          WOAD_FG_BLACK          },
         { "WOAD_FG_RED",            WOAD_FG_RED            },
         { "WOAD_FG_GREEN",          WOAD_FG_GREEN          },
@@ -143,6 +145,8 @@ int main(void)
     char const* const concatenated = WOAD_FG_GREEN "ok" WOAD_RESET;
 
     ASSERT_TRUE_(0 == strcmp(WOAD_RESET, "\033[0m"));
+    ASSERT_TRUE_(0 == strcmp(WOAD_BOLD, "\033[1m"));
+    ASSERT_TRUE_(0 == strcmp(WOAD_BLINKING, "\033[5m"));
     ASSERT_TRUE_(0 == strcmp(WOAD_FG_RED, "\033[31m"));
     ASSERT_TRUE_(0 == strcmp(WOAD_BG_BLUE, "\033[44m"));
 

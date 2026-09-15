@@ -2,10 +2,10 @@
  * File:    woad/woad.h
  *
  * Purpose: Root header for woad (C-API). Provides library version macros
- *          and fixed ANSI SGR colour sequences.
+ *          and fixed ANSI SGR attribute and colour sequences.
  *
  * Created: 15th August 2026
- * Updated: 27th August 2026
+ * Updated: 15th September 2026
  *
  * Home:    https://github.com/synesissoftware/woad/
  *
@@ -51,8 +51,8 @@
 #ifndef WOAD_DOCUMENTATION_SKIP_SECTION
 # define WOAD_VER_WOAD_H_WOAD_MAJOR                     0
 # define WOAD_VER_WOAD_H_WOAD_MINOR                     0
-# define WOAD_VER_WOAD_H_WOAD_PATCH                     2
-# define WOAD_VER_WOAD_H_WOAD_EDIT                      3
+# define WOAD_VER_WOAD_H_WOAD_PATCH                     3
+# define WOAD_VER_WOAD_H_WOAD_EDIT                      4
 #endif /* !WOAD_DOCUMENTATION_SKIP_SECTION */
 
 
@@ -84,7 +84,7 @@
 #define WOAD_VER_MAJOR      0
 #define WOAD_VER_MINOR      0
 #define WOAD_VER_PATCH      1
-#define WOAD_VER_ALPHABETA  0x42
+#define WOAD_VER_ALPHABETA  0x43
 
 #define WOAD_VER \
     (0\
@@ -104,8 +104,8 @@
 /* /////////////////////////////////////////////////////////////////////////
  * SGR colour codes
  *
- * Fixed ANSI SGR sequences. These are always the colour codes; they do
- * not inspect TTY state or Windows console mode.
+ * Fixed ANSI SGR sequences (attributes and colours). These always emit;
+ * they do not inspect TTY state or Windows console mode.
  */
 
 /**
@@ -114,6 +114,19 @@
  */
 
 #define WOAD_RESET                                          "\033[0m"
+
+/* SGR attributes (always emit; compile-time string literals) */
+
+/**
+ * \def WOAD_BOLD
+ * Bold / increased intensity.
+ *
+ * \def WOAD_BLINKING
+ * Slow blink.
+ */
+
+#define WOAD_BOLD                                           "\033[1m"
+#define WOAD_BLINKING                                       "\033[5m"
 
 /**
  * \def WOAD_FG_BLACK

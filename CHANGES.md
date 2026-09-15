@@ -1,6 +1,11 @@
 # woad - Changes <!-- omit in toc -->
 
 
+## 0.0.1-alpha3 - 15th September 2026
+
+* Fixed SGR attribute macros `WOAD_BOLD` (SGR 1) and `WOAD_BLINKING` (SGR 5);
+
+
 ## 0.0.1-alpha2 - 27th August 2026
 
 T.B.C.

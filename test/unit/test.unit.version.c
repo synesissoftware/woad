@@ -4,7 +4,7 @@
  * Purpose: Unit tests for woad version macros.
  *
  * Created: 15th August 2026
- * Updated: 16th August 2026
+ * Updated: 15th September 2026
  *
  * Home:    https://github.com/synesissoftware/woad/
  *
@@ -75,13 +75,13 @@ int main(void)
         | (0ul << 24)
         | (0ul << 16)
         | (1ul <<  8)
-        | (0x42ul << 0)
+        | (0x43ul << 0)
     );
 
     ASSERT_TRUE_(0 == WOAD_VER_MAJOR);
     ASSERT_TRUE_(0 == WOAD_VER_MINOR);
     ASSERT_TRUE_(1 == WOAD_VER_PATCH);
-    ASSERT_TRUE_(0x42 == WOAD_VER_ALPHABETA);
+    ASSERT_TRUE_(0x43 == WOAD_VER_ALPHABETA);
     ASSERT_TRUE_(WOAD_VER_REVISION == WOAD_VER_PATCH);
     ASSERT_TRUE_((unsigned long)WOAD_VER == expected_ver);
     ASSERT_TRUE_(0 == strcmp(WOAD_VER_STRING, "0.0.1"));
