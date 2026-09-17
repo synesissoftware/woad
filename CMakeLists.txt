@@ -5,7 +5,7 @@
 # Purpose:  Top-level CMake lists file for woad
 #
 # Created:  15th August 2026
-# Updated:  27th August 2026
+# Updated:  17th September 2026
 #
 # ######################################################################## #
 
@@ -209,6 +209,8 @@ if(BUILD_TESTING)
 	)
 	add_test(NAME unit.version COMMAND test.unit.version)
 	set_tests_properties(unit.version PROPERTIES TIMEOUT 30)
+
+	add_subdirectory(test/scratch/versions)
 else()
 
 	message(STATUS "disabled building of tests - define BUILD_TESTING to enable")
