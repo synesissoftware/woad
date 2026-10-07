@@ -5,7 +5,7 @@
 # Purpose:  Top-level CMake lists file for woad
 #
 # Created:  15th August 2026
-# Updated:  27th August 2026
+# Updated:  7th October 2026
 #
 # ######################################################################## #
 
@@ -120,6 +120,7 @@ endif()
 
 include(BuildType)
 include(CMakePackageConfigHelpers)
+include(TargetMacros)
 if(BUILD_TESTING)
 
 	include(CTest)
@@ -177,32 +178,7 @@ if(BUILD_EXAMPLES)
 
 	message(STATUS "enabled building of examples ...")
 
-	add_executable(colour examples/colour.c)
-	target_link_libraries(colour PRIVATE woad::woad)
-	target_compile_options(colour PRIVATE ${WOAD_COMPILE_OPTIONS})
-	set_target_properties(colour PROPERTIES
-		C_STANDARD 11
-		C_STANDARD_REQUIRED ON
-		C_EXTENSIONS OFF
-	)
-
-	add_executable(colour_for examples/colour_for.c)
-	target_link_libraries(colour_for PRIVATE woad::woad)
-	target_compile_options(colour_for PRIVATE ${WOAD_COMPILE_OPTIONS})
-	set_target_properties(colour_for PROPERTIES
-		C_STANDARD 11
-		C_STANDARD_REQUIRED ON
-		C_EXTENSIONS OFF
-	)
-
-	add_executable(version examples/version.c)
-	target_link_libraries(version PRIVATE woad::woad)
-	target_compile_options(version PRIVATE ${WOAD_COMPILE_OPTIONS})
-	set_target_properties(version PROPERTIES
-		C_STANDARD 11
-		C_STANDARD_REQUIRED ON
-		C_EXTENSIONS OFF
-	)
+	add_subdirectory(examples)
 else()
 
 	message(STATUS "disabled building of examples - define BUILD_EXAMPLES to enable")
@@ -216,38 +192,7 @@ if(BUILD_TESTING)
 
 	message(STATUS "enabled building of tests ...")
 
-	add_executable(test.unit.codes test/unit/test.unit.codes.c)
-	target_link_libraries(test.unit.codes PRIVATE woad::woad)
-	target_compile_options(test.unit.codes PRIVATE ${WOAD_COMPILE_OPTIONS})
-	set_target_properties(test.unit.codes PROPERTIES
-		C_STANDARD 11
-		C_STANDARD_REQUIRED ON
-		C_EXTENSIONS OFF
-	)
-	add_test(NAME unit.codes COMMAND test.unit.codes)
-	set_tests_properties(unit.codes PROPERTIES TIMEOUT 30)
-
-	add_executable(test.unit.gating test/unit/test.unit.gating.c)
-	target_link_libraries(test.unit.gating PRIVATE woad::woad)
-	target_compile_options(test.unit.gating PRIVATE ${WOAD_COMPILE_OPTIONS})
-	set_target_properties(test.unit.gating PROPERTIES
-		C_STANDARD 11
-		C_STANDARD_REQUIRED ON
-		C_EXTENSIONS OFF
-	)
-	add_test(NAME unit.gating COMMAND test.unit.gating)
-	set_tests_properties(unit.gating PROPERTIES TIMEOUT 30)
-
-	add_executable(test.unit.version test/unit/test.unit.version.c)
-	target_link_libraries(test.unit.version PRIVATE woad::woad)
-	target_compile_options(test.unit.version PRIVATE ${WOAD_COMPILE_OPTIONS})
-	set_target_properties(test.unit.version PROPERTIES
-		C_STANDARD 11
-		C_STANDARD_REQUIRED ON
-		C_EXTENSIONS OFF
-	)
-	add_test(NAME unit.version COMMAND test.unit.version)
-	set_tests_properties(unit.version PROPERTIES TIMEOUT 30)
+	add_subdirectory(test)
 else()
 
 	message(STATUS "disabled building of tests - define BUILD_TESTING to enable")

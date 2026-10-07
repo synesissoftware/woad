@@ -2,7 +2,8 @@
 
 Minimal ANSI terminal colour codes, for C
 
-![Language](https://img.shields.io/badge/C-00599C?style=flat&logo=c&logoColor=white)
+
+![C](https://img.shields.io/badge/C-00599C?style=flat&logo=c&logoColor=white)
 [![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 [![GitHub release](https://img.shields.io/github/v/release/synesissoftware/woad.svg)](https://github.com/synesissoftware/woad/releases/latest)
 [![Last Commit](https://img.shields.io/github/last-commit/synesissoftware/woad)](https://github.com/synesissoftware/woad/commits/master)
@@ -25,6 +26,7 @@ Minimal ANSI terminal colour codes, for C
   - [Why a compiled component?](#why-a-compiled-component)
   - [Why the macros remain macros](#why-the-macros-remain-macros)
   - [Once, and what "once" means](#once-and-what-once-means)
+- [Examples](#examples)
 - [Project Information](#project-information)
   - [Where to get help](#where-to-get-help)
   - [Contribution guidelines](#contribution-guidelines)
@@ -52,7 +54,7 @@ Minimal ANSI terminal colour codes, for C
 
 Install via **CMake**:
 
-```
+```bash
 cmake -S . -B _build
 cmake --build _build
 cmake --install _build
@@ -81,7 +83,7 @@ See [INSTALL.md](./INSTALL.md) for the full installation, consumption, and bundl
 
 From a clone, the Synesis helper scripts are:
 
-```
+```bash
 ./prepare_cmake.sh
 ./build_cmake.sh
 ./ctest_cmake.sh --verbose
@@ -89,7 +91,7 @@ From a clone, the Synesis helper scripts are:
 
 Equivalent raw **CMake**:
 
-```
+```bash
 cmake -S . -B _build -DCMAKE_BUILD_TYPE=Release
 cmake --build _build
 ctest --test-dir _build --output-on-failure
@@ -275,12 +277,26 @@ It is worth being precise about the scope of "once", because no option makes it 
 A static library therefore gives once-per-module rather than once-per-process - which is the honest limit of the guarantee, and is still a decisive improvement on once-per-translation-unit. Where a single process-wide determination matters, build **woad** as a shared library (`-DBUILD_SHARED_LIBS=ON`).
 
 
+## Examples
+
+Examples live under **examples/c/**. The directory is the subject; the built program is `example.c.<subject>`. Build them with `BUILD_EXAMPLES` (on by default); run via **run_all_examples.sh**.
+
+| Example | Language | Notes |
+| ------- | -------- | ----- |
+| [**example.c.colour**](./examples/c/colour/) | C | Emits a coloured status line for each foreground |
+| [**example.c.colour_for**](./examples/c/colour_for/) | C | Emits colour only when the destination warrants it |
+| [**example.c.version**](./examples/c/version/) | C | Prints the macro and `woad_version_string()` |
+
+
 ## Project Information
 
 
 ### Where to get help
 
-[GitHub Page](https://github.com/synesissoftware/woad "GitHub Page")
+* [GitHub Page](https://github.com/synesissoftware/woad)
+* [GitHub Issues](https://github.com/synesissoftware/woad/issues)
+* [FAQ.md](./FAQ.md)
+* [HOW_YOU_CAN_HELP.md](./HOW_YOU_CAN_HELP.md)
 
 Once **woad** is installed, the whole interface - macros, functions, environment variables, and the static-versus-shared distinction - is also documented in the manual page:
 
@@ -293,9 +309,10 @@ man 3 woad
 
 Defect reports, feature requests, and pull requests are welcome on https://github.com/synesissoftware/woad.
 
+See also [HOW_YOU_CAN_HELP.md](./HOW_YOU_CAN_HELP.md).
+
 
 ### Dependencies
-
 
 #### Efferent (fan-out)
 
@@ -315,12 +332,16 @@ None (currently).
 
 ### Related projects
 
-Other implementations of **woad**:
+The other **woad** implementations:
 
-* [**woad.Go**](https://github.com/synesissoftware/woad.Go/)
-* [**woad.Python**](https://github.com/synesissoftware/woad.Python/)
-* [**woad.Ruby**](https://github.com/synesissoftware/woad.Ruby/)
-* [**woad.Rust**](https://github.com/synesissoftware/woad.Rust/)
+| Project | Language |
+| ------- | -------- |
+| [**woad.Go**](https://github.com/synesissoftware/woad.Go/) | Go |
+| [**woad.NET**](https://github.com/synesissoftware/woad.NET/) | .NET |
+| [**woad.Python**](https://github.com/synesissoftware/woad.Python/) | Python |
+| [**woad.Ruby**](https://github.com/synesissoftware/woad.Ruby/) | Ruby |
+| [**woad.Rust**](https://github.com/synesissoftware/woad.Rust/) | Rust |
+| [**woad.Zig**](https://github.com/synesissoftware/woad.Zig/) | Zig |
 
 Projects and standards to which **woad** owes a debt:
 

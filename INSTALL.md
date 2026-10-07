@@ -90,6 +90,11 @@ Prepare the CMake configuration, via the **prepare_cmake.sh** script, as in:
 ./prepare_cmake.sh
 ```
 
+Useful optional flags:
+
+* `--disable-examples` / `-E` — omit examples (`BUILD_EXAMPLES=OFF`);
+* `--disable-testing` / `-T` — omit tests (`BUILD_TESTING=OFF`);
+
 By default, this will create a **_build** directory under the project directory. If you want to use a specific directory you can do so via the environment variable `SIS_CMAKE_BUILD_DIR`:
 
 ```bash
@@ -147,30 +152,32 @@ On Windows, `WINDOWS_EXPORT_ALL_SYMBOLS` is set on the target, so no export deco
 
 ### Test
 
-Unit-tests and smoke-tests are provided.
+Unit tests and example programs are provided. Component and performance runners are present and exit successfully when they find no programs. Scratch coverage is `test.scratch.versions`. Windows hosts have native **`.cmd`** counterparts of each runner.
 
 > **NOTE**: If you do not provide the flag `--no-make` (=== `-M`) then the scripts will also run a build.
 
 
-Unit-test:
+CTest:
 
 ```bash
 ./ctest_cmake.sh --verbose --no-make
 ```
 
-Smoke-test:
+The same unit tests, via the taxonomy runner:
 
 ```bash
-./run_all_examples.sh --no-make
+./run_all_unit_tests.sh --no-make
 ```
 
+**run_all_automated_tests.sh** aggregates the automated categories. **run_all_component_tests.sh**, **run_all_scratch_tests.sh**, and **run_all_performance_tests.sh** cover the other kinds. Examples, when enabled, run via **run_all_examples.sh**.
 
-The **colour_for** example is worth running twice, since it demonstrates the whole point of the compiled component:
+
+The **example.c.colour_for** program is worth running twice, since it demonstrates the whole point of the compiled component. With the default single-config build directory:
 
 ```bash
-./_build/colour_for            # colour, if your terminal warrants it
-./_build/colour_for | cat      # no colour, because the destination is a pipe
-WOAD_COLOUR=always ./_build/colour_for | cat   # colour anyway
+./_build/examples/c/colour_for/example.c.colour_for
+./_build/examples/c/colour_for/example.c.colour_for | cat
+WOAD_COLOUR=always ./_build/examples/c/colour_for/example.c.colour_for | cat
 ```
 
 

@@ -29,15 +29,10 @@ ProjectName=$(tr -d '[:space:]' < "$ProjectNameFile")
 ScriptPath=$0
 
 AlwaysUseColours=${SIS_CMAKE_ALWAYS_USE_COLOURS:-${SIS_ALWAYS_USE_COLOURS:-0}}
-BuildSharedLibs=0
-Configuration=Release
-ExamplesDisabled=0
-MinGW=$(sis_cmake_is_truey "${SIS_CMAKE_MINGW:-}" && echo 1 || echo 0)
-MSVC_MT=0
-RunMake=0
+GapGroups=0
+ListOnly=0
+RunMake=1
 SisUseColours=0
-TestingDisabled=0
-VerboseMakefile=0
 
 
 # ##########################################################
@@ -132,43 +127,23 @@ while [[ $# -gt 0 ]]; do
 
       # AlwaysUseColours=1 - this is handled by the for loop above
       ;;
-    --build-shared-libs)
+    --gap-groups)
 
-      BuildSharedLibs=1
+      GapGroups=1
       ;;
-    --cmake-verbose-makefile|-v)
+    --list-only|-l)
 
-      VerboseMakefile=1
+      ListOnly=1
       ;;
-    --debug-configuration|-d)
+    --no-make|-M)
 
-      Configuration=Debug
-      ;;
-    --disable-examples|-E)
-
-      ExamplesDisabled=1
-      ;;
-    --disable-testing|-T)
-
-      TestingDisabled=1
-      ;;
-    --mingw)
-
-      MinGW=1
-      ;;
-    --msvc-mt)
-
-      MSVC_MT=1
-      ;;
-    --run-make|-m)
-
-      RunMake=1
+      RunMake=0
       ;;
     --help)
 
       [ -f "$Dir/.sis/script_info_lines.txt" ] && cat "$Dir/.sis/script_info_lines.txt"
       cat << EOF
-Creates/reinitialises the CMake build script(s)
+Runs all (matching) performance-test programs
 
 ${ScriptPath} [ ... flags/options ... ]
 
@@ -181,38 +156,17 @@ Flags/options:
     --always-use-colours
         forces use of colours even when stdout is not a TTY
 
-    --build-shared-libs
-        builds ${ProjectName} as a shared library (by setting
-        BUILD_SHARED_LIBS=ON); the default is a static library. NOTE: only in
-        shared form are ${ProjectName}'s once-per-process determinations -
-        such as the Windows console capability detection - once per *process*;
-        in static form they are once per binary module
+    --gap-groups
+        sets SIS_PERFTESTS_GROUPGAPS=1 so performance programs emit a blank
+        line between scenario groups
 
-    -v
-    --cmake-verbose-makefile
-        configures CMake to run verbosely (CMAKE_VERBOSE_MAKEFILE=ON)
+    -l
+    --list-only
+        lists the target programs but does not execute them
 
-    -d
-    --debug-configuration
-        use Debug configuration (CMAKE_BUILD_TYPE=Debug). Default is Release
-
-    -E
-    --disable-examples
-        disables building of examples (BUILD_EXAMPLES=OFF)
-
-    -T
-    --disable-testing
-        disables building of tests (BUILD_TESTING=OFF)
-
-    --mingw
-        uses explicitly the "MinGW Makefiles" generator
-
-    --msvc-mt
-        when using Visual C++ (MSVC), select the static runtime library
-
-    -m
-    --run-make
-        executes a build via cmake --build after a successful configure
+    -M
+    --no-make
+        does not execute a build before running programs
 
 
     standard flags:
@@ -239,61 +193,95 @@ done
 # ##########################################################
 # main()
 
-mkdir -p "$CMakeDir" || exit 1
+if [ $GapGroups -ne 0 ]; then
 
-echo
-echo "Executing CMake for ${ProjectNameClr} (in ${CMakeDirClr})"
-
-if [ $BuildSharedLibs -eq 0 ]; then CMakeBuildSharedLibsFlag="OFF" ; else CMakeBuildSharedLibsFlag="ON" ; fi
-if [ $ExamplesDisabled -eq 0 ]; then CMakeBuildExamplesFlag="ON" ; else CMakeBuildExamplesFlag="OFF" ; fi
-if [ $MSVC_MT -eq 0 ]; then CMakeMsvcMtFlag="OFF" ; else CMakeMsvcMtFlag="ON" ; fi
-if [ $TestingDisabled -eq 0 ]; then CMakeBuildTestingFlag="ON" ; else CMakeBuildTestingFlag="OFF" ; fi
-if [ $VerboseMakefile -eq 0 ]; then CMakeVerboseMakefileFlag="OFF" ; else CMakeVerboseMakefileFlag="ON" ; fi
-
-# NOTE: the generator is the *only* thing that may differ between the MinGW
-# and the default paths; every -D option is passed in both cases, so that no
-# flag can be silently ignored according to the generator selected.
-
-CMakeGeneratorArgs=()
-
-if [ -n "${SIS_CMAKE_GENERATOR:-}" ] && [ $MinGW -eq 0 ]; then
-
-  CMakeGeneratorArgs=(-G "$SIS_CMAKE_GENERATOR")
+  export SIS_PERFTESTS_GROUPGAPS=1
 fi
-
-if [ $MinGW -ne 0 ]; then
-
-  CMakeGeneratorArgs=(-G "MinGW Makefiles")
-fi
-
-cmake \
-  -DBUILD_EXAMPLES:BOOL=$CMakeBuildExamplesFlag \
-  -DBUILD_SHARED_LIBS:BOOL=$CMakeBuildSharedLibsFlag \
-  -DBUILD_TESTING:BOOL=$CMakeBuildTestingFlag \
-  -DCMAKE_BUILD_TYPE=$Configuration \
-  -DCMAKE_VERBOSE_MAKEFILE:BOOL=$CMakeVerboseMakefileFlag \
-  -DMSVC_USE_MT:BOOL=$CMakeMsvcMtFlag \
-  "${CMakeGeneratorArgs[@]}" \
-  -S "$Dir" \
-  -B "$CMakeDir" \
-  || (cd ->/dev/null ; exit 1)
 
 status=0
 
 if [ $RunMake -ne 0 ]; then
 
-  echo
-  echo "Executing build of ${ProjectNameClr} (via cmake --build)"
+  if [ $ListOnly -eq 0 ]; then
 
-  sis_cmake_build
-  status=$?
+    echo
+    echo "Executing build of ${ProjectNameClr} (via cmake --build) and then running all performance-test programs"
+
+    mkdir -p "$CMakeDir" || exit 1
+
+    if [ ! -f "$CMakeDir/CMakeCache.txt" ]; then
+
+      >&2 echo "${ScriptPathClr}: '${CMakeDirClr}' is not configured; use prepare_cmake.sh first"
+
+      exit 1
+    fi
+
+    sis_cmake_build
+    status=$?
+  fi
+else
+
+  if [ ! -d "$CMakeDir" ] || [ ! -f "$CMakeDir/CMakeCache.txt" ]; then
+
+    >&2 echo "${ScriptPathClr}: cannot run in '--no-make' mode without a previous successful configure/build"
+
+    exit 1
+  fi
 fi
 
-if [ $VerboseMakefile -ne 0 ]; then
+if [ $status -eq 0 ]; then
 
-  echo
-  echo -e "contents of ${CMakeDirClr}:"
-  ls -al "$CMakeDir"
+  if [ $ListOnly -ne 0 ]; then
+
+    echo
+    echo "Listing all ${ProjectNameClr} performance-test programs"
+  else
+
+    echo
+    echo "Running all ${ProjectNameClr} performance-test programs"
+  fi
+
+  NumPrograms=0
+
+  while IFS= read -r -d '' f; do
+
+    case "$f" in
+      *.pdb|*.ilk|*.log|*.obj|*.o)
+        continue
+        ;;
+    esac
+
+    NumPrograms=$((NumPrograms + 1))
+
+    fClr="${SisClr_Blue}${SisClr_Bold}${f}${SisClr_None}"
+
+    if [ $ListOnly -ne 0 ]; then
+
+      echo "would execute ${fClr}:"
+
+      continue
+    fi
+
+    echo
+    echo "executing ${fClr}:"
+
+    if "$f"; then
+
+      :
+    else
+
+      status=$?
+
+      break 1
+    fi
+  done < <(find "$CMakeDir" -type f \( -name 'test_performance*' -o -name 'test.performance.*' \) \( -perm -100 -o -name '*.exe' \) -print0 2>/dev/null | sort -z)
+
+  if [ $NumPrograms -eq 0 ]; then
+
+    echo "${ScriptPathClr}: found no performance-test programs under '${CMakeDirClr}' (none found)"
+
+    exit 0
+  fi
 fi
 
 exit $status

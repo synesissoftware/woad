@@ -1,5 +1,5 @@
 /* /////////////////////////////////////////////////////////////////////////
- * File:    examples/colour_for.c
+ * File:    examples/c/colour_for/main.c
  *
  * Purpose: Example program that emits colour conditionally, according to
  *          whether the destination stream is attached to a terminal, and to
@@ -7,16 +7,16 @@
  *
  *          Run it twice to see the difference:
  *
- *            ./colour_for
- *            ./colour_for | cat
+ *            ./example.c.colour_for
+ *            ./example.c.colour_for | cat
  *
  *          and then again with the policy overridden:
  *
- *            WOAD_COLOUR=always ./colour_for | cat
- *            WOAD_COLOUR=never ./colour_for
+ *            WOAD_COLOUR=always ./example.c.colour_for | cat
+ *            WOAD_COLOUR=never ./example.c.colour_for
  *
  * Created: 27th August 2026
- * Updated: 27th August 2026
+ * Updated: 7th October 2026
  *
  * Home:    https://github.com/synesissoftware/woad/
  *

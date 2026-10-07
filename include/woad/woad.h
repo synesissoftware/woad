@@ -7,7 +7,7 @@
  *          colour-policy API.
  *
  * Created: 15th August 2026
- * Updated: 12th September 2026
+ * Updated: 7th October 2026
  *
  * Home:    https://github.com/synesissoftware/woad/
  *
@@ -96,7 +96,9 @@
         |   (   WOAD_VER_ALPHABETA   <<  0   ) \
     )
 
-#define WOAD_VER_REVISION                                   WOAD_VER_PATCH
+#ifndef WOAD_DOCUMENTATION_SKIP_SECTION
+# define WOAD_VER_REVISION                                  WOAD_VER_PATCH
+#endif /* !WOAD_DOCUMENTATION_SKIP_SECTION */
 
 #define WOAD_VER_STRINGIZE_(j, n, p)                        #j "." #n "." #p
 #define WOAD_VER_STRINGIZE(j, n, p)                         WOAD_VER_STRINGIZE_(j, n, p)

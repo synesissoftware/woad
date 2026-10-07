@@ -1,5 +1,5 @@
 /* /////////////////////////////////////////////////////////////////////////
- * File:    test/unit/test.unit.gating.c
+ * File:    test/unit/gating/entry.c
  *
  * Purpose: Unit tests for woad stream inspection, colour policy, and
  *          conditional sequence selection.
@@ -9,7 +9,7 @@
  *          driving the policy from the environment.
  *
  * Created: 27th August 2026
- * Updated: 27th August 2026
+ * Updated: 7th October 2026
  *
  * Home:    https://github.com/synesissoftware/woad/
  *

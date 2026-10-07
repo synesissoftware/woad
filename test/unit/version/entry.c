@@ -1,11 +1,10 @@
 /* /////////////////////////////////////////////////////////////////////////
- * File:    examples/version.c
+ * File:    test/unit/version/entry.c
  *
- * Purpose: Example program that prints the woad version string, via both
- *          the version macros and the version functions.
+ * Purpose: Unit tests for woad version macros and functions.
  *
  * Created: 15th August 2026
- * Updated: 27th August 2026
+ * Updated: 7th October 2026
  *
  * Home:    https://github.com/synesissoftware/woad/
  *
@@ -44,19 +43,53 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
+
+static int
+fail_(
+    char const*  expr
+,   char const*  file
+,   int          line
+)
+{
+    fprintf(stderr, "%s:%d: assertion failed: %s\n", file, line, expr);
+
+    return EXIT_FAILURE;
+}
+
+#define ASSERT_TRUE_(expr)                                  \
+                                                            \
+    do                                                      \
+    {                                                       \
+        if (!(expr))                                        \
+        {                                                   \
+            return fail_(#expr, __FILE__, __LINE__);        \
+        }                                                   \
+    } while (0)
 
 
 int main(void)
 {
-    puts("v" WOAD_FG_GREEN WOAD_VER_STRING WOAD_RESET);
-
-    printf(
-        "v%s%s%s (0x%08lx)\n"
-    ,   WOAD_FG_GREEN
-    ,   woad_version_string()
-    ,   WOAD_RESET
-    ,   woad_version()
+    unsigned long const expected_ver = (0ul
+        | (0ul << 24)
+        | (0ul << 16)
+        | (1ul <<  8)
+        | (0x81ul << 0)
     );
+
+    ASSERT_TRUE_(0 == WOAD_VER_MAJOR);
+    ASSERT_TRUE_(0 == WOAD_VER_MINOR);
+    ASSERT_TRUE_(1 == WOAD_VER_PATCH);
+    ASSERT_TRUE_(0x81 == WOAD_VER_ALPHABETA);
+    ASSERT_TRUE_(WOAD_VER_REVISION == WOAD_VER_PATCH);
+    ASSERT_TRUE_((unsigned long)WOAD_VER == expected_ver);
+    ASSERT_TRUE_(0 == strcmp(WOAD_VER_STRING, "0.0.1"));
+
+    ASSERT_TRUE_(woad_version() == expected_ver);
+    ASSERT_TRUE_(woad_version() == (unsigned long)WOAD_VER);
+    ASSERT_TRUE_(0 == strcmp(woad_version_string(), "0.0.1"));
+    ASSERT_TRUE_(0 == strcmp(woad_version_string(), WOAD_VER_STRING));
 
     return EXIT_SUCCESS;
 }

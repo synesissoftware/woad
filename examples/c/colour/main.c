@@ -1,10 +1,10 @@
 /* /////////////////////////////////////////////////////////////////////////
- * File:    test/unit/test.unit.version.c
+ * File:    examples/c/colour/main.c
  *
- * Purpose: Unit tests for woad version macros and functions.
+ * Purpose: Example program that emits a coloured status string.
  *
- * Created: 15th August 2026
- * Updated: 27th August 2026
+ * Created: 16th August 2026
+ * Updated: 7th October 2026
  *
  * Home:    https://github.com/synesissoftware/woad/
  *
@@ -43,53 +43,21 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 
-static int
-fail_(
-    char const*  expr
-,   char const*  file
-,   int          line
-)
+int main(int argc, char* argv[])
 {
-    fprintf(stderr, "%s:%d: assertion failed: %s\n", file, line, expr);
+    ((void)argc);
+    ((void)argv);
 
-    return EXIT_FAILURE;
-}
-
-#define ASSERT_TRUE_(expr)                                  \
-                                                            \
-    do                                                      \
-    {                                                       \
-        if (!(expr))                                        \
-        {                                                   \
-            return fail_(#expr, __FILE__, __LINE__);        \
-        }                                                   \
-    } while (0)
-
-
-int main(void)
-{
-    unsigned long const expected_ver = (0ul
-        | (0ul << 24)
-        | (0ul << 16)
-        | (1ul <<  8)
-        | (0x81ul << 0)
-    );
-
-    ASSERT_TRUE_(0 == WOAD_VER_MAJOR);
-    ASSERT_TRUE_(0 == WOAD_VER_MINOR);
-    ASSERT_TRUE_(1 == WOAD_VER_PATCH);
-    ASSERT_TRUE_(0x81 == WOAD_VER_ALPHABETA);
-    ASSERT_TRUE_(WOAD_VER_REVISION == WOAD_VER_PATCH);
-    ASSERT_TRUE_((unsigned long)WOAD_VER == expected_ver);
-    ASSERT_TRUE_(0 == strcmp(WOAD_VER_STRING, "0.0.1"));
-
-    ASSERT_TRUE_(woad_version() == expected_ver);
-    ASSERT_TRUE_(woad_version() == (unsigned long)WOAD_VER);
-    ASSERT_TRUE_(0 == strcmp(woad_version_string(), "0.0.1"));
-    ASSERT_TRUE_(0 == strcmp(woad_version_string(), WOAD_VER_STRING));
+    puts("the colour is " WOAD_FG_GREEN "green" WOAD_RESET ".");
+    puts("the colour is " WOAD_FG_RED "red" WOAD_RESET ".");
+    puts("the colour is " WOAD_FG_YELLOW "yellow" WOAD_RESET ".");
+    puts("the colour is " WOAD_FG_BLUE "blue" WOAD_RESET ".");
+    puts("the colour is " WOAD_FG_MAGENTA "magenta" WOAD_RESET ".");
+    puts("the colour is " WOAD_FG_CYAN "cyan" WOAD_RESET ".");
+    puts("the colour is " WOAD_FG_WHITE "white" WOAD_RESET ".");
+    puts("the colour is " WOAD_FG_BRIGHT_BLACK "bright black" WOAD_RESET ".");
 
     return EXIT_SUCCESS;
 }
