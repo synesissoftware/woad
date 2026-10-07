@@ -182,9 +182,11 @@ Flags/options:
         forces use of colours even when stdout is not a TTY
 
     --build-shared-libs
-        passes BUILD_SHARED_LIBS=ON. woad is header-only, so this does
-        not produce a shared library; the flag is accepted so the helper
-        contract matches other libraries
+        builds ${ProjectName} as a shared library (by setting
+        BUILD_SHARED_LIBS=ON); the default is a static library. NOTE: only in
+        shared form are ${ProjectName}'s once-per-process determinations -
+        such as the Windows console capability detection - once per *process*;
+        in static form they are once per binary module
 
     -v
     --cmake-verbose-makefile
@@ -272,9 +274,9 @@ cmake \
   -DCMAKE_VERBOSE_MAKEFILE:BOOL=$CMakeVerboseMakefileFlag \
   -DMSVC_USE_MT:BOOL=$CMakeMsvcMtFlag \
   "${CMakeGeneratorArgs[@]}" \
-  -B "$CMakeDir" \
   -S "$Dir" \
-  || exit 1
+  -B "$CMakeDir" \
+  || (cd ->/dev/null ; exit 1)
 
 status=0
 

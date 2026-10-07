@@ -1,0 +1,487 @@
+.\" /////////////////////////////////////////////////////////////////////////
+.\" File:    man/woad.3.in
+.\"
+.\" Purpose: Manual page (section 3) for the woad C library.
+.\"
+.\" Created: 27th August 2026
+.\" Updated: 27th August 2026
+.\"
+.\" Home:    https://github.com/synesissoftware/woad/
+.\"
+.\" Copyright (c) 2026, Matthew Wilson and Synesis Information Systems
+.\" All rights reserved.
+.\"
+.\" NOTE: this file is a template, from which CMake generates man/woad.3, so
+.\" that the version in the .TH line below cannot drift from the version
+.\" scraped from include/woad/woad.h. Edit this file, never the generated one.
+.\"
+.\" ////////////////////////////////////////////////////////////////////// */
+.\"
+.TH WOAD 3 "August 27, 2026" "woad @PROJECT_VERSION@" "woad Library Functions"
+.
+.
+.SH NAME
+woad \- minimal ANSI terminal colour codes for C and C++
+.
+.
+.SH LIBRARY
+woad (\fB\-lwoad\fR), or none, according to the facilities used; see
+\fBNOTES\fR.
+.
+.
+.SH SYNOPSIS
+.nf
+.B #include <woad/woad.h>
+.sp
+.B unsigned long woad_version(void);
+.B char const *woad_version_string(void);
+.sp
+.B int woad_colour_policy(void);
+.B void woad_refresh(void);
+.B int woad_console_supports_ansi(void);
+.sp
+.BI "int woad_stream_is_tty(FILE *" stm ");"
+.BI "int woad_fd_is_tty(int " fd ");"
+.BI "int woad_stream_supports_colour(FILE *" stm ");"
+.BI "int woad_fd_supports_colour(int " fd ");"
+.sp
+.BI "char const *woad_seq_for_stream(char const *" seq ", FILE *" stm ");"
+.BI "char const *woad_seq_for_fd(char const *" seq ", int " fd ");"
+.sp
+.B "/* Windows only: */"
+.BI "int woad_handle_is_tty(void *" h ");"
+.BI "int woad_std_handle_is_tty(unsigned long " id ");"
+.BI "int woad_handle_supports_colour(void *" h ");"
+.BI "int woad_std_handle_supports_colour(unsigned long " id ");"
+.BI "char const *woad_seq_for_handle(char const *" seq ", void *" h ");"
+.BI "char const *woad_seq_for_std_handle(char const *" seq ", unsigned long " id ");"
+.fi
+.
+.
+.SH DESCRIPTION
+.B woad
+provides ANSI SGR (Select Graphic Rendition) colour sequences in two forms:
+as fixed string macros, which require no library binding at all, and as
+stream-conditional counterparts, which yield a sequence only when colour
+should actually be emitted for the stream in question.
+.
+.SS Fixed sequences
+The object-like macros expand to string literals, and so may be concatenated
+at compile time and used entirely without linking against the library:
+.PP
+.RS
+.nf
+printf(WOAD_FG_RED "error" WOAD_RESET "\en");
+.fi
+.RE
+.PP
+The reset sequence is
+.BR WOAD_RESET .
+The foreground sequences are
+.BR WOAD_FG_ \fIC\fR,
+and the background sequences
+.BR WOAD_BG_ \fIC\fR,
+where \fIC\fR is one of
+.BR BLACK ,
+.BR RED ,
+.BR GREEN ,
+.BR YELLOW ,
+.BR BLUE ,
+.BR MAGENTA ,
+.BR CYAN ,
+or
+.BR WHITE .
+Each has a bright variant, spelled
+.BR WOAD_FG_BRIGHT_ \fIC\fR
+and
+.BR WOAD_BG_BRIGHT_ \fIC\fR.
+There are thus 32 colour macros and one reset macro; for example
+.BR WOAD_FG_RED " is " \(dq\e033[31m\(dq ,
+and
+.BR WOAD_BG_BRIGHT_CYAN " is " \(dq\e033[106m\(dq .
+.
+.SS Conditional sequences
+Each fixed macro has a function-like counterpart, named by suffixing
+.BR _FOR ,
+which takes the stream for which the sequence is intended and yields either
+the sequence or the empty string:
+.PP
+.RS
+.nf
+fprintf(stderr, "%serror%s\en", WOAD_FG_RED_FOR(stderr), WOAD_RESET_FOR(stderr));
+.fi
+.RE
+.PP
+Since the result is chosen at run time, these are not string literals and
+cannot be concatenated; they must be printed, as above, through a conversion
+specifier.
+.PP
+Three further macros take the sequence as a parameter, which is useful when
+the colour is itself selected by the caller:
+.TP
+.BI WOAD_SEQ_FOR( seq ", " stm )
+Yields \fIseq\fR if colour should be emitted for \fIstm\fR, else \fB""\fR.
+.TP
+.BI WOAD_FG_FOR( clr ", " stm ) "\fR, " WOAD_BG_FOR( clr ", " stm )
+Spelling variants of
+.BR WOAD_SEQ_FOR ,
+provided so that the intent of the call site reads correctly; they are
+otherwise identical, since a sequence carries its own foreground or
+background sense.
+.TP
+.BI WOAD_RESET_FOR( stm )
+Equivalent to
+.BI "WOAD_SEQ_FOR(WOAD_RESET, " stm ")\fR."
+.
+.SS Stream currencies
+The
+.B _FOR
+macros, and the
+.B woad_seq_for()
+and
+.B woad_supports_colour()
+wrappers, accept any of the following, dispatching on its type:
+.TP
+.B FILE *
+e.g.
+.BR stdout ,
+.BR stderr .
+.TP
+.B int
+a file descriptor, e.g. 1 for standard output, 2 for standard error.
+.TP
+.B void *
+[Windows only] a console handle, as from
+.BR GetStdHandle() .
+.TP
+.B unsigned long
+[Windows only] a standard-handle identifier, e.g.
+.BR STD_ERROR_HANDLE .
+.PP
+Dispatch is by
+.B _Generic
+in C11 and later, and by overloading in C++. In earlier C dialects the
+wrappers accept
+.B FILE *
+only, and the other currencies must be reached by naming the specific
+function, e.g.
+.BR woad_seq_for_fd() .
+.
+.
+.SH FUNCTIONS
+.TP
+.B woad_version()
+Returns the composite version of the library implementation to which the
+caller is bound, with the major version in bits 24\-31, the minor in bits
+16\-23, the patch in bits 8\-15, and the pre-release marker in bits 0\-7.
+Unlike the
+.B WOAD_VER
+macro, which records the header the caller compiled against, this is usable
+as an ABI probe.
+.TP
+.B woad_version_string()
+Returns the version as a nul-terminated string of the form
+.IR M . m . p \fR.
+Never NULL; never to be released by the caller.
+.TP
+.B woad_colour_policy()
+Returns the prevailing policy, as determined from the environment:
+.BR WOAD_COLOUR_POLICY_AUTO ,
+.BR WOAD_COLOUR_POLICY_FORCE ,
+or
+.BR WOAD_COLOUR_POLICY_INHIBIT .
+See
+.BR ENVIRONMENT .
+.TP
+.B woad_refresh()
+Discards all cached determinations \- colour policy,
+.B TERM
+inspection, and, on Windows, console capability \- so that the next query
+re-evaluates them. Intended for test programs, and for the rare client that
+alters its own environment at run time. Not necessary in normal use, and not
+safe to call concurrently with other
+.B woad
+functions.
+.TP
+.B woad_console_supports_ansi()
+Returns non-zero if the attached console is known to interpret ANSI SGR
+sequences. On platforms other than Windows this is always non-zero; on
+Windows see
+.BR NOTES .
+.TP
+.BR woad_stream_is_tty() ", " woad_fd_is_tty()
+Return non-zero if the stream or descriptor is attached to a terminal. A
+NULL stream yields 0. These exist so that client code need never choose
+between
+.BR isatty (3),
+.BR _isatty() ,
+.BR fileno (3),
+and the feature-test macros governing which of them are visible.
+.TP
+.BR woad_stream_supports_colour() ", " woad_fd_supports_colour()
+Return non-zero if colour should be emitted, combining the prevailing
+policy, the terminal attachment of the stream, and the console's ANSI
+capability. A NULL stream yields the result of the policy alone.
+.TP
+.BR woad_seq_for_stream() ", " woad_seq_for_fd()
+Return \fIseq\fR if colour should be emitted for the given stream, else
+.BR "" .
+A NULL \fIseq\fR is treated as the empty string. The result is never NULL and
+never requires release: it is either the caller's own argument or a string
+literal, and so remains valid for as long as \fIseq\fR does.
+.PP
+On Windows,
+.BR woad_handle_is_tty() ,
+.BR woad_std_handle_is_tty() ,
+.BR woad_handle_supports_colour() ,
+.BR woad_std_handle_supports_colour() ,
+.BR woad_seq_for_handle() ,
+and
+.BR woad_seq_for_std_handle()
+are the handle-based equivalents of the corresponding stream functions. The
+handle parameters are declared
+.B void *
+and
+.BR "unsigned long" ,
+rather than
+.B HANDLE
+and
+.BR DWORD ,
+precisely so that
+.I <woad/woad.h>
+need not include
+.IR <windows.h> .
+.
+.
+.SH RETURN VALUE
+The predicates return non-zero for true and 0 for false; they do not fail,
+and do not set
+.IR errno .
+The sequence-returning functions never return NULL. No function in this
+library returns storage that the caller must release.
+.
+.
+.SH ENVIRONMENT
+The environment is examined once, upon first need, and the result cached for
+the lifetime of the process (see
+.BR woad_refresh() ).
+The following are consulted, in descending order of precedence; the first
+that expresses an opinion decides the policy. (One further variable,
+.BR WOAD_SET_CONSOLE_MODE ,
+governs not the policy but the console, and is described separately below.)
+.TP
+.BR WOAD_COLOUR ", " WOAD_COLOR
+Application-specific override, consulted in that order. A truey value
+.RB ( 1 ,
+.BR always ,
+.BR force ,
+.BR on ,
+.BR true ,
+.BR yes )
+forces colour; a falsey value
+.RB ( 0 ,
+.BR never ,
+.BR none ,
+.BR off ,
+.BR false ,
+.BR no )
+inhibits it;
+.B auto
+\- or any unrecognised value \- selects automatic detection. Comparison is
+case-insensitive.
+.TP
+.B NO_COLOR
+If set and non-empty, colour is inhibited, as required by the
+.UR https://no\-color.org/
+NO_COLOR standard
+.UE .
+.TP
+.B CLICOLOR_FORCE
+If set, non-empty, and not
+.BR 0 ,
+colour is forced.
+.TP
+.B CLICOLOR
+If set to
+.BR 0 ,
+colour is inhibited.
+.TP
+.B TERM
+If set to
+.BR dumb ,
+colour is not emitted under automatic detection. This is consulted only
+after the above: an explicit force overrides it.
+.PP
+.B NO_COLOR
+is placed above
+.BR CLICOLOR_FORCE
+because the former standard requires that colour be suppressed when the
+variable is present, whereas the application's own variable
+.RB ( WOAD_COLOUR )
+is placed above both, that standard explicitly reserving to the application
+a means of overriding it.
+.PP
+Separately from the policy:
+.TP
+.B WOAD_SET_CONSOLE_MODE
+[Windows only] Whether
+.B woad
+may modify the console. A falsey value \- the same set as above \- withholds
+permission; absence of the variable grants it, as does any value that is not
+falsey.
+.IP
+Permission is relevant only on those Windows builds for which
+.B woad
+would otherwise call
+.BR SetConsoleMode()
+to enable virtual-terminal processing; on Windows 11 (build 22000 and later)
+nothing is modified in any case. When permission is withheld, the
+determination degenerates to a pure query: a console upon which
+virtual-terminal processing is
+.I already
+enabled is still reported as capable, and one upon which it is not is
+reported as incapable rather than being modified.
+.IP
+This is for the caller who requires that no library alter a console it has
+configured itself. To suppress colour, rather than the modification, use
+.B NO_COLOR
+or
+.BR WOAD_COLOUR = never .
+.
+.
+.SH THREAD SAFETY
+All functions may be called concurrently, subject to the two qualifications
+below.
+.PP
+.B woad_refresh()
+must not be called concurrently with any other
+.B woad
+function.
+.PP
+The environment is parsed upon first need. Should several threads arrive at
+that point together, each computes the same values and stores them, so the
+result is unaffected; strictly, however, those stores are unsynchronised, so
+a client that must be provably free of data races \- under
+.B ThreadSanitizer
+or similar \- should call
+.B woad_colour_policy()
+once, from a single thread, before becoming multi-threaded.
+.PP
+On Windows the console determination mutates process-wide state, by way of
+.BR SetConsoleMode() ,
+and is therefore performed exactly once, with a single thread elected by
+compare-and-swap, however many threads call in and however often.
+.
+.
+.SH NOTES
+The fixed sequence macros require no binding to the library, so a client
+that wants only literal colour codes may copy or include the header alone.
+The conditional macros and every function documented here are implemented in
+the compiled component, and require
+.BR \-lwoad .
+.PP
+The header includes
+.I <stdio.h>
+and nothing else \- solely for
+.B FILE
+\- so that no client translation unit inherits
+.IR <windows.h> ,
+.IR <io.h> ,
+or
+.I <unistd.h>
+merely by using
+.BR woad .
+.PP
+The once-per-process determinations are once per \fIprocess\fR only when
+.B woad
+is a shared library; when it is static they are once per binary module, so a
+program and a plugin that each link it statically will each perform them.
+.PP
+On Windows, ANSI capability is settled by inspecting the operating-system
+build number and, for builds that require it, attempting to enable
+virtual-terminal processing on the standard output and error handles. That
+attempt may be withheld; see
+.B WOAD_SET_CONSOLE_MODE
+under
+.BR ENVIRONMENT .
+.
+.
+.SH EXAMPLES
+Colour that respects the terminal, the policy, and the platform:
+.PP
+.RS
+.nf
+#include <woad/woad.h>
+#include <stdio.h>
+
+int main(void)
+{
+    fprintf(stderr, "%swarning%s: %s\en"
+    ,   WOAD_FG_YELLOW_FOR(stderr)
+    ,   WOAD_RESET_FOR(stderr)
+    ,   "the roof is on fire");
+
+    return 0;
+}
+.fi
+.RE
+.PP
+Compile and link, and then observe the policy at work:
+.PP
+.RS
+.nf
+$ cc \-o warn warn.c \-lwoad
+$ ./warn                          # coloured, if stderr is a terminal
+$ ./warn 2>&1 | cat               # not coloured: stderr is a pipe
+$ WOAD_COLOUR=always ./warn 2>&1 | cat  # coloured regardless
+$ NO_COLOR=1 ./warn               # not coloured, terminal or not
+.fi
+.RE
+.
+.
+.SH CONFORMING TO
+The sequences are those of ECMA\-48 (ISO/IEC 6429) SGR, as universally
+implemented by ANSI/VT-compatible terminals.
+.B NO_COLOR
+is handled as required by the informal standard published at
+.UR https://no\-color.org/
+no\-color.org
+.UE .
+.
+.
+.SH FILES
+.TP
+.I <woad/woad.h>
+The sole header.
+.TP
+.I libwoad.a\fR, \fIlibwoad.so
+The compiled component.
+.TP
+.I woad.pc
+.BR pkg\-config (1)
+metadata; see
+.BR "pkg\-config \-\-cflags \-\-libs woad" .
+.
+.
+.SH SEE ALSO
+.BR isatty (3),
+.BR fileno (3),
+.BR printf (3),
+.BR pkg\-config (1),
+.BR terminfo (5)
+.PP
+Full documentation, including the rationale for the compiled component, is at
+.UR https://github.com/synesissoftware/woad/
+the woad repository
+.UE .
+.
+.
+.SH AUTHORS
+Matthew Wilson <matthew@synesis.com.au>
+.
+.
+.SH COPYRIGHT
+Copyright (c) 2026, Matthew Wilson and Synesis Information Systems. All
+rights reserved. Distributed under the terms of the 3-clause BSD licence.
+.\"
+.\" ############################## end of file ############################# */

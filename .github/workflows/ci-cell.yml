@@ -206,3 +206,74 @@ jobs:
           set SIS_CMAKE_BUILD_DIR=%GITHUB_WORKSPACE%\build
           if /I "${{ inputs.toolchain }}"=="mingw" set "PATH=${{ steps.msys2.outputs.msys2-location }}\mingw64\bin;%PATH%"
           call run_all_examples.cmd
+
+      # CI stdout is not a terminal, so policy overrides are the only way to
+      # exercise the emitting path; the plain path falls out for free.
+      - name: Smoke-test colour policy
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ inputs.toolchain }}" = "mingw" ]; then
+            MSYS_ROOT="${{ steps.msys2.outputs.msys2-location }}"
+            MSYS_ROOT="${MSYS_ROOT//\\//}"
+            export PATH="${MSYS_ROOT}/mingw64/bin:$PATH"
+          fi
+
+          locate_example()
+          {
+            name="$1"
+            found=""
+            while IFS= read -r -d '' candidate; do
+              found="$candidate"
+              break
+            done < <(find build -type f \( -name "$name" -o -name "${name}.exe" \) -print0)
+            if [ -z "$found" ]; then
+              echo "${name} executable not found under build/" >&2
+              find build -type f -name 'example*' >&2 || true
+              return 1
+            fi
+            printf '%s\n' "$found"
+          }
+
+          colour=$(locate_example example.c.colour)
+          colour_for=$(locate_example example.c.colour_for)
+
+          esc=$(printf '\033')
+          failures=0
+
+          assert_colour()
+          {
+            desc="$1"; shift
+            expect="$1"; shift
+
+            out="$("$@" 2>&1)"
+
+            case "$out" in
+              *"$esc"*) actual=colour ;;
+              *)        actual=plain ;;
+            esac
+
+            if [ "$actual" != "$expect" ]; then
+              echo "FAIL: ${desc}: expected ${expect}, got ${actual}" >&2
+              failures=$((failures + 1))
+            else
+              echo "ok: ${desc} (${actual})"
+            fi
+          }
+
+          unset CLICOLOR CLICOLOR_FORCE NO_COLOR TERM WOAD_COLOR WOAD_COLOUR
+
+          assert_colour "auto, not a tty"                        plain  "$colour_for"
+          assert_colour "WOAD_COLOUR=always"                     colour env WOAD_COLOUR=always "$colour_for"
+          assert_colour "WOAD_COLOUR=ALWAYS (case-insensitive)"  colour env WOAD_COLOUR=ALWAYS "$colour_for"
+          assert_colour "WOAD_COLOR=1 (alternative spelling)"    colour env WOAD_COLOR=1 "$colour_for"
+          assert_colour "CLICOLOR_FORCE=1"                       colour env CLICOLOR_FORCE=1 "$colour_for"
+          assert_colour "WOAD_COLOUR=never beats CLICOLOR_FORCE" plain  env WOAD_COLOUR=never CLICOLOR_FORCE=1 "$colour_for"
+          assert_colour "NO_COLOR beats CLICOLOR_FORCE"          plain  env NO_COLOR=1 CLICOLOR_FORCE=1 "$colour_for"
+          assert_colour "WOAD_COLOUR=always beats NO_COLOR"      colour env WOAD_COLOUR=always NO_COLOR=1 "$colour_for"
+          assert_colour "unbound macros ignore policy"           colour env NO_COLOR=1 "$colour"
+
+          if [ "$failures" != "0" ]; then
+            echo "${failures} colour-policy assertion(s) failed" >&2
+            exit 1
+          fi
