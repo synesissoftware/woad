@@ -7,5 +7,5 @@ Name: woad
 Description: Minimal ANSI terminal colour codes
 Version: @PROJECT_VERSION@
 URL: https://github.com/synesissoftware/woad
-Libs:
+Libs: -L${libdir} -lwoad
 Cflags: -I${includedir}

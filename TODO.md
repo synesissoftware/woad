@@ -16,35 +16,47 @@
 
 ### Synesis CMake helper scripts
 
-* [x] `prepare_cmake.sh`;
-* [x] `build_cmake.sh`;
-* [x] `clean_cmake.sh`;
-* [x] `remove_cmake_artefacts.sh`;
-* [x] `ctest_cmake.sh`;
-* [x] `run_all_examples.sh`;
+* [x] ~~~**prepare_cmake.sh**~~~ - ✅;
+* [x] ~~~**build_cmake.sh**~~~ - ✅;
+* [x] ~~~**clean_cmake.sh**~~~ - ✅;
+* [x] ~~~**remove_cmake_artefacts.sh**~~~ - ✅;
+* [x] ~~~**ctest_cmake.sh**~~~ - ✅;
+* [x] ~~~**run_all_automated_tests.sh**~~~ - ✅;
+* [x] ~~~**run_all_component_tests.sh**~~~ - ✅;
+* [x] ~~~**run_all_examples.sh**~~~ - ✅;
+* [x] ~~~**run_all_performance_tests.sh**~~~ - ✅;
+* [x] ~~~**run_all_scratch_tests.sh**~~~ - ✅;
+* [x] ~~~**run_all_unit_tests.sh**~~~ - ✅;
+* [x] ~~~native **.cmd** counterparts~~~ - ✅;
 
 
 ### Continuous integration
 
-* [x] OS × GCC / Clang / MSVC / MinGW matrix;
+* [x] ~~~OS × GCC / Clang / MSVC / MinGW matrix~~~ - ✅;
+* [x] ~~~modular **ci.yml** + **ci-cell.yml**~~~ - ✅;
 
 
 ## Functional improvements
 
-* [x] ~~~SGR colour and reset codes~~~ ✅;
+* [x] ~~~SGR colour and reset codes~~~ - ✅;
 * [x] ~~~fixed bold and blinking SGR attributes~~~ - ✅;
-* [ ] TTY-conditional colour codes (process and per-stream);
-* [ ] Windows virtual-terminal gating (OS build + `GetConsoleMode`);
+* [x] ~~~runtime version API (`woad_version()`, `woad_version_string()`)~~~ - ✅;
+* [x] ~~~TTY-conditional colour codes (process and per-stream)~~~ - ✅;
+* [x] ~~~Windows virtual-terminal gating (OS build + `GetConsoleMode`)~~~ - ✅;
+* [x] ~~~environment override of colour policy (force / inhibit)~~~ - ✅;
+* [ ] `COLORTERM` / `TERM` capability inspection beyond the `dumb` special case;
+* [ ] Cygwin, MSYS2, and Git-Bash (mintty) terminals: work out how to be compatible with them. Built against the MSVC runtime, these present as pipes rather than as consoles, so `_isatty()` answers 0 and `GetConsoleMode()` fails, and **woad** therefore suppresses colour even though mintty interprets ANSI perfectly well. Probing the pipe's name for the `msys-`/`cygwin-`…`-pty`…`-to-master` form via `GetFileInformationByHandleEx(FileNameInfo)` is the usual remedy; native Cygwin builds (`__CYGWIN__`) need none of it, since their `isatty()` is already correct. Decide also whether such a terminal should be reported by `woad_stream_is_tty()`, by `woad_console_supports_ansi()`, or by both, and how that interacts with `WOAD_SET_CONSOLE_MODE`, there being no console mode to set;
+* [ ] 256-colour and 24-bit (truecolour) sequences;
 
 
 ## Performance improvements
 
-* \<none
+* \<none>
 
 
 ## Packaging improvements
 
-* \<none
+* \<none>
 
 
 <!-- ########################### end of file ########################### -->

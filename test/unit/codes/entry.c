@@ -1,10 +1,10 @@
 /* /////////////////////////////////////////////////////////////////////////
- * File:    test/unit/test.unit.codes.c
+ * File:    test/unit/codes/entry.c
  *
  * Purpose: Unit tests for woad SGR attribute and colour codes.
  *
  * Created: 16th August 2026
- * Updated: 15th September 2026
+ * Updated: 7th October 2026
  *
  * Home:    https://github.com/synesissoftware/woad/
  *
@@ -174,3 +174,4 @@ int main(void)
 
 
 /* ///////////////////////////// end of file //////////////////////////// */
+
