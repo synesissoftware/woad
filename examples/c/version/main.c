@@ -1,10 +1,10 @@
 /* /////////////////////////////////////////////////////////////////////////
- * File:    test/unit/test.unit.version.c
+ * File:    examples/c/version/main.c
  *
- * Purpose: Unit tests for woad version macros.
+ * Purpose: Example program that prints the woad version string.
  *
  * Created: 15th August 2026
- * Updated: 16th August 2026
+ * Updated: 7th October 2026
  *
  * Home:    https://github.com/synesissoftware/woad/
  *
@@ -43,48 +43,14 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 
-static int
-fail_(
-    char const*  expr
-,   char const*  file
-,   int          line
-)
+int main(int argc, char* argv[])
 {
-    fprintf(stderr, "%s:%d: assertion failed: %s\n", file, line, expr);
+    ((void)&argc);
+    ((void)&argv);
 
-    return EXIT_FAILURE;
-}
-
-#define ASSERT_TRUE_(expr)                                  \
-                                                            \
-    do                                                      \
-    {                                                       \
-        if (!(expr))                                        \
-        {                                                   \
-            return fail_(#expr, __FILE__, __LINE__);        \
-        }                                                   \
-    } while (0)
-
-
-int main(void)
-{
-    unsigned long const expected_ver = (0ul
-        | (0ul << 24)
-        | (0ul << 16)
-        | (1ul <<  8)
-        | (0x42ul << 0)
-    );
-
-    ASSERT_TRUE_(0 == WOAD_VER_MAJOR);
-    ASSERT_TRUE_(0 == WOAD_VER_MINOR);
-    ASSERT_TRUE_(1 == WOAD_VER_PATCH);
-    ASSERT_TRUE_(0x42 == WOAD_VER_ALPHABETA);
-    ASSERT_TRUE_(WOAD_VER_REVISION == WOAD_VER_PATCH);
-    ASSERT_TRUE_((unsigned long)WOAD_VER == expected_ver);
-    ASSERT_TRUE_(0 == strcmp(WOAD_VER_STRING, "0.0.1"));
+    puts("v" WOAD_FG_GREEN WOAD_VER_STRING WOAD_RESET);
 
     return EXIT_SUCCESS;
 }

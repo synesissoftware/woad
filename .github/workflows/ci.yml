@@ -1,67 +1,91 @@
-#
-# Created: 15th August 2026
-# Updated: 15th August 2026
-#
-
 name: CI
 
 on:
   push:
     branches:
-      - boilerplate
-      - dev
-      - idiomatic
       - master
+      - dev
+      - boilerplate
+      - idiomatic
       - rc1
       - rc2
       - rc3
   pull_request:
 
-permissions:
-  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
-defaults:
-  run:
-    shell: bash
+env:
+  BUILD_TYPE: Release
 
 jobs:
-  build:
+  cell:
+    name: CI (${{ matrix.id }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - id: linux-clang
+            os: ubuntu-latest
+            c_compiler: clang
+            cpp_compiler: clang++
+          - id: linux-gcc
+            os: ubuntu-latest
+            c_compiler: gcc
+            cpp_compiler: g++
+          - id: macos-clang
+            os: macos-latest
+            c_compiler: clang
+            cpp_compiler: clang++
+          - id: macos-gcc
+            os: macos-latest
+            c_compiler: gcc
+            cpp_compiler: g++
+          - id: windows-cl
+            os: windows-latest
+            c_compiler: cl
+            cpp_compiler: cl
+          # `toolchain` carries what is not a compiler: MinGW needs its own
+          # generator and PATH, but the compilers it drives are gcc and g++
+          - id: windows-mingw
+            os: windows-latest
+            c_compiler: gcc
+            cpp_compiler: g++
+            toolchain: mingw
+    uses: ./.github/workflows/ci-cell.yml
+    with:
+      cell-id: ${{ matrix.id }}
+      os: ${{ matrix.os }}
+      c-compiler: ${{ matrix.c_compiler }}
+      cpp-compiler: ${{ matrix.cpp_compiler }}
+      build-type: Release
+      toolchain: ${{ matrix.toolchain }}
+    secrets: inherit
+
+  install-smoke:
+    name: Install smoke (${{ matrix.os }}, ${{ matrix.toolchain || matrix.c_compiler }})
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         include:
           - os: ubuntu-latest
             c_compiler: gcc
-            build_type: Debug
+            cpp_compiler: g++
           - os: ubuntu-latest
+            c_compiler: clang
+            cpp_compiler: clang++
+          - os: macos-latest
+            c_compiler: clang
+            cpp_compiler: clang++
+          - os: windows-latest
+            c_compiler: cl
+            cpp_compiler: cl
+          - os: windows-latest
             c_compiler: gcc
-            build_type: Release
-          - os: ubuntu-latest
-            c_compiler: clang
-            build_type: Debug
-          - os: ubuntu-latest
-            c_compiler: clang
-            build_type: Release
-          - os: macos-latest
-            c_compiler: clang
-            build_type: Debug
-          - os: macos-latest
-            c_compiler: clang
-            build_type: Release
-          - os: windows-latest
+            cpp_compiler: g++
             toolchain: mingw
-            build_type: Debug
-          - os: windows-latest
-            toolchain: mingw
-            build_type: Release
-          - os: windows-latest
-            toolchain: msvc
-            build_type: Debug
-          - os: windows-latest
-            toolchain: msvc
-            build_type: Release
-
-    runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v4
@@ -70,90 +94,138 @@ jobs:
         if: runner.os == 'Linux' && matrix.c_compiler == 'clang'
         run: sudo apt-get update && sudo apt-get install -y clang
 
-      - name: Configure
+      - name: Setup MSYS2 MinGW
+        if: runner.os == 'Windows' && matrix.toolchain == 'mingw'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            mingw-w64-x86_64-toolchain
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-make
+
+      - name: Helper scripts prepare-clean-build-remove-reprepare-build
+        shell: bash
         run: |
-          if [ "${{ runner.os }}" = "Windows" ] && \
-             [ "${{ matrix.toolchain }}" = "msvc" ]; then
-            cmake -B build -A x64 \
-              -DCMAKE_INSTALL_PREFIX="${{ runner.temp }}/install"
-          elif [ "${{ runner.os }}" = "Windows" ] && \
-               [ "${{ matrix.toolchain }}" = "mingw" ]; then
+          set -euo pipefail
+          # Exercise prepare/clean/build/remove helpers on a dedicated tree
+          # (does not replace the install-smoke configure/build below).
+          export SIS_CMAKE_BUILD_DIR="${{ github.workspace }}/_build-helper-smoke"
+          PREPARE_ARGS=(-E -T)
+          if [ "${{ matrix.toolchain }}" = "mingw" ]; then
+            export PATH="/mingw64/bin:$PATH"
+            PREPARE_ARGS+=(--mingw)
+          elif [ "${{ matrix.c_compiler }}" != "cl" ]; then
+            export CC="${{ matrix.c_compiler }}"
+            export CXX="${{ matrix.cpp_compiler }}"
+          fi
+          ./prepare_cmake.sh "${PREPARE_ARGS[@]}"
+          ./clean_cmake.sh
+          ./build_cmake.sh
+          ./clean_cmake.sh
+          ./build_cmake.sh
+          ./remove_cmake_artefacts.sh
+          ./prepare_cmake.sh "${PREPARE_ARGS[@]}"
+          ./build_cmake.sh
+
+      - name: Configure
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ matrix.c_compiler }}" = "cl" ]; then
+            cmake -B build -S . \
+              -DBUILD_EXAMPLES=OFF \
+              -DBUILD_TESTING=OFF
+          elif [ "${{ matrix.toolchain }}" = "mingw" ]; then
+            export PATH="/mingw64/bin:$PATH"
             cmake -B build -G "MinGW Makefiles" \
-              -DCMAKE_BUILD_TYPE="${{ matrix.build_type }}" \
-              -DCMAKE_INSTALL_PREFIX="${{ runner.temp }}/install"
+              -DCMAKE_BUILD_TYPE="${{ env.BUILD_TYPE }}" \
+              -DCMAKE_C_COMPILER=gcc \
+              -DCMAKE_CXX_COMPILER=g++ \
+              -DBUILD_EXAMPLES=OFF \
+              -DBUILD_TESTING=OFF
           else
-            cmake -B build \
-              -DCMAKE_BUILD_TYPE="${{ matrix.build_type }}" \
+            cmake -B build -S . \
+              -DCMAKE_BUILD_TYPE="${{ env.BUILD_TYPE }}" \
               -DCMAKE_C_COMPILER="${{ matrix.c_compiler }}" \
-              -DCMAKE_INSTALL_PREFIX="${{ runner.temp }}/install"
+              -DCMAKE_CXX_COMPILER="${{ matrix.cpp_compiler }}" \
+              -DBUILD_EXAMPLES=OFF \
+              -DBUILD_TESTING=OFF
           fi
 
       - name: Build
+        shell: bash
         run: |
-          if [ "${{ runner.os }}" = "Windows" ] && \
-             [ "${{ matrix.toolchain }}" = "msvc" ]; then
-            cmake --build build --config ${{ matrix.build_type }} --parallel
+          set -euo pipefail
+          if [ "${{ matrix.c_compiler }}" = "cl" ]; then
+            cmake --build build --config "${{ env.BUILD_TYPE }}" --parallel
+          elif [ "${{ matrix.toolchain }}" = "mingw" ]; then
+            export PATH="/mingw64/bin:$PATH"
+            cmake --build build --parallel 2
           else
-            cmake --build build --config ${{ matrix.build_type }} --parallel
+            cmake --build build --parallel
           fi
-
-      - name: Test
-        run: |
-          if [ "${{ runner.os }}" = "Windows" ] && \
-             [ "${{ matrix.toolchain }}" = "msvc" ]; then
-            ctest --test-dir build --output-on-failure \
-              --build-config ${{ matrix.build_type }} --timeout 30
-          else
-            ctest --test-dir build --output-on-failure \
-              --build-config ${{ matrix.build_type }} --timeout 30
-          fi
-
-      - name: Smoke-run example
-        run: |
-          if [ "${{ runner.os }}" = "Windows" ] && \
-             [ "${{ matrix.toolchain }}" = "msvc" ]; then
-            EXE_SUFFIX=.exe
-            EXE_DIR=build/${{ matrix.build_type }}
-          else
-            EXE_SUFFIX=
-            EXE_DIR=build
-          fi
-          example=""
-          for candidate in \
-            "${EXE_DIR}/version${EXE_SUFFIX}" \
-            "build/version${EXE_SUFFIX}" \
-            "build/${{ matrix.build_type }}/version${EXE_SUFFIX}"
-          do
-            if [ -f "$candidate" ]; then
-              example="$candidate"
-              break
-            fi
-          done
-          if [ -z "$example" ]; then
-            echo "version executable not found under build/" >&2
-            ls -la build/ >&2 || true
-            ls -la "build/${{ matrix.build_type }}" >&2 || true
-            exit 1
-          fi
-          "$example"
 
       - name: Install
+        shell: bash
         run: |
-          if [ "${{ runner.os }}" = "Windows" ] && \
-             [ "${{ matrix.toolchain }}" = "msvc" ]; then
-            cmake --install build --config ${{ matrix.build_type }} \
-              --prefix "${{ runner.temp }}/install"
+          set -euo pipefail
+          PREFIX="${RUNNER_TEMP}/install-prefix"
+          echo "INSTALL_PREFIX=$PREFIX" >> "$GITHUB_ENV"
+          if [ "${{ matrix.c_compiler }}" = "cl" ]; then
+            cmake --install build --config "${{ env.BUILD_TYPE }}" --prefix "$PREFIX"
           else
-            cmake --install build --prefix "${{ runner.temp }}/install"
+            cmake --install build --prefix "$PREFIX"
           fi
 
-      - name: Verify installed files
+      - name: Verify install tree
+        shell: bash
         run: |
-          prefix="${{ runner.temp }}/install"
-          test -f "${prefix}/include/woad/woad.h"
-          test -f "${prefix}/lib/cmake/woad/woad-config.cmake" || \
-            test -f "${prefix}/lib64/cmake/woad/woad-config.cmake"
+          set -euo pipefail
+          test -f "${INSTALL_PREFIX}/include/woad/woad.h"
+          test -f "${INSTALL_PREFIX}/lib/cmake/woad/woad-config.cmake" || \
+            test -f "${INSTALL_PREFIX}/lib64/cmake/woad/woad-config.cmake"
           if [ "${{ runner.os }}" != "Windows" ]; then
-            test -f "${prefix}/lib/pkgconfig/woad.pc" || \
-              test -f "${prefix}/lib64/pkgconfig/woad.pc"
+            test -f "${INSTALL_PREFIX}/lib/pkgconfig/woad.pc" || \
+              test -f "${INSTALL_PREFIX}/lib64/pkgconfig/woad.pc"
+          fi
+
+      - name: Configure and run install smoke consumer
+        shell: bash
+        run: |
+          set -euo pipefail
+          CONSUMER="${RUNNER_TEMP}/consumer"
+          mkdir -p "$CONSUMER"
+          cat > "$CONSUMER/CMakeLists.txt" <<'EOF'
+          cmake_minimum_required(VERSION 3.16)
+          project(woad_install_smoke C)
+          find_package(woad REQUIRED)
+          add_executable(consumer consumer.c)
+          target_link_libraries(consumer PRIVATE woad::woad)
+          EOF
+          cat > "$CONSUMER/consumer.c" <<'EOF'
+          #include <woad/woad.h>
+          int main(void) { return 0; }
+          EOF
+          if [ "${{ matrix.c_compiler }}" = "cl" ]; then
+            cmake -S "$CONSUMER" -B consumer-build \
+              -DCMAKE_PREFIX_PATH="${INSTALL_PREFIX}"
+            cmake --build consumer-build --config "${{ env.BUILD_TYPE }}" --parallel
+            consumer-build/${{ env.BUILD_TYPE }}/consumer.exe
+          elif [ "${{ matrix.toolchain }}" = "mingw" ]; then
+            export PATH="/mingw64/bin:$PATH"
+            cmake -S "$CONSUMER" -B consumer-build -G "MinGW Makefiles" \
+              -DCMAKE_BUILD_TYPE="${{ env.BUILD_TYPE }}" \
+              -DCMAKE_PREFIX_PATH="${INSTALL_PREFIX}"
+            cmake --build consumer-build --parallel 2
+            consumer-build/consumer.exe
+          else
+            cmake -S "$CONSUMER" -B consumer-build \
+              -DCMAKE_BUILD_TYPE="${{ env.BUILD_TYPE }}" \
+              -DCMAKE_C_COMPILER="${{ matrix.c_compiler }}" \
+              -DCMAKE_CXX_COMPILER="${{ matrix.cpp_compiler }}" \
+              -DCMAKE_PREFIX_PATH="${INSTALL_PREFIX}"
+            cmake --build consumer-build --parallel
+            consumer-build/consumer
           fi

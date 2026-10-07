@@ -1,24 +1,6 @@
 #! /bin/bash
 
 # ##########################################################
-# functions - 1
-
-sis_cmake_is_truey() {
-  case "$(printf '%s' "${1:-}" | tr '[:upper:]' '[:lower:]')" in
-
-    1|ok|on|true|yes|y)
-
-      return 0
-    ;;
-    *)
-
-      return 1
-      ;;
-  esac
-}
-
-
-# ##########################################################
 # constants and variables
 
 Basename=$(basename "$0")
@@ -29,9 +11,10 @@ ProjectName=$(tr -d '[:space:]' < "$ProjectNameFile")
 ScriptPath=$0
 
 AlwaysUseColours=${SIS_CMAKE_ALWAYS_USE_COLOURS:-${SIS_ALWAYS_USE_COLOURS:-0}}
-CTestVerbose=
-RunMake=1
+ComponentOnly=0
+ForwardedArgs=()
 SisUseColours=0
+UnitOnly=0
 
 
 # ##########################################################
@@ -87,33 +70,8 @@ if [ $SisUseColours -ne 0 ]; then
   SisClr_Yellow=${FG_YELLOW:-$(tput setaf 3)}
 fi
 
-CMakeDirClr="${SisClr_Blue}${SisClr_Bold}${CMakeDir}${SisClr_None}"
 ProjectNameClr="${SisClr_Blue}${SisClr_Bold}${ProjectName}${SisClr_None}"
 ScriptPathClr="${SisClr_Blue}${SisClr_Bold}${ScriptPath}${SisClr_None}"
-
-
-# ##########################################################
-# functions - 2
-
-sis_cmake_build() {
-
-  local config="${SIS_CMAKE_CONFIG:-Release}"
-  local args=(--build "$CMakeDir")
-  if [ -f "$CMakeDir/CMakeCache.txt" ] && grep -q '^CMAKE_CONFIGURATION_TYPES:' "$CMakeDir/CMakeCache.txt" 2>/dev/null; then
-
-    args+=(--config "$config")
-  fi
-  if [ "$#" -gt 0 ]; then
-
-    local t
-    for t in "$@"; do
-
-      args+=(--target "$t")
-    done
-  fi
-
-  cmake "${args[@]}"
-}
 
 
 # ##########################################################
@@ -124,21 +82,22 @@ while [[ $# -gt 0 ]]; do
   case $1 in
     --always-use-colors|--always-use-colours|-A)
 
-      # AlwaysUseColours=1 - this is handled by the for loop above
+      # AlwaysUseColours=1 - handled above; forward so category runners see it
+      ForwardedArgs+=("$1")
       ;;
-    --no-make|-M)
+    --unit-only)
 
-      RunMake=0
+      UnitOnly=1
       ;;
-    --verbose|-V)
+    --component-only)
 
-      CTestVerbose=--verbose
+      ComponentOnly=1
       ;;
     --help)
 
       [ -f "$Dir/.sis/script_info_lines.txt" ] && cat "$Dir/.sis/script_info_lines.txt"
       cat << EOF
-Runs CMake's CTest test program(s)
+Runs all (matching) automated test programs (unit and component)
 
 ${ScriptPath} [ ... flags/options ... ]
 
@@ -151,13 +110,13 @@ Flags/options:
     --always-use-colours
         forces use of colours even when stdout is not a TTY
 
-    -M
-    --no-make
-        does not execute a build before running tests
+    --component-only
+        runs only component-test programs
 
-    -V
-    --verbose
-        verbose test output
+    --unit-only
+        runs only unit-test programs
+
+    (all other flags are forwarded to the category runner script)
 
 
     standard flags:
@@ -171,14 +130,19 @@ EOF
       ;;
     *)
 
-      >&2 echo "${ScriptPathClr}: unrecognised argument '${SisClr_Red}${SisClr_Bold}$1${SisClr_None}'; use --help for usage"
-
-      exit 1
+      ForwardedArgs+=("$1")
       ;;
   esac
 
   shift
 done
+
+if [ $UnitOnly -ne 0 ] && [ $ComponentOnly -ne 0 ]; then
+
+  >&2 echo "${ScriptPathClr}: ${SisClr_Red}${SisClr_Bold}--unit-only${SisClr_None} and ${SisClr_Red}${SisClr_Bold}--component-only${SisClr_None} are mutually exclusive"
+
+  exit 1
+fi
 
 
 # ##########################################################
@@ -186,50 +150,27 @@ done
 
 status=0
 
-if [ $RunMake -ne 0 ]; then
+if [ $UnitOnly -ne 0 ]; then
 
-  echo
-  echo "Executing build of ${ProjectNameClr} (via cmake --build) and then running CTest"
-
-  mkdir -p "$CMakeDir" || exit 1
-
-  if [ ! -f "$CMakeDir/CMakeCache.txt" ]; then
-
-    >&2 echo "${ScriptPathClr}: '${CMakeDirClr}' is not configured; use prepare_cmake.sh first"
-
-    exit 1
-  fi
-
-  sis_cmake_build
-  status=$?
-else
-
-  if [ ! -d "$CMakeDir" ] || [ ! -f "$CMakeDir/CMakeCache.txt" ]; then
-
-    >&2 echo "${ScriptPathClr}: cannot run in '--no-make' mode without a previous successful configure/build"
-
-    exit 1
-  fi
+  "$Dir/run_all_unit_tests.sh" "${ForwardedArgs[@]}"
+  exit $?
 fi
+
+if [ $ComponentOnly -ne 0 ]; then
+
+  "$Dir/run_all_component_tests.sh" "${ForwardedArgs[@]}"
+  exit $?
+fi
+
+echo
+echo "Running all ${ProjectNameClr} automated test programs (unit and component)"
+
+"$Dir/run_all_unit_tests.sh" "${ForwardedArgs[@]}"
+status=$?
 
 if [ $status -eq 0 ]; then
 
-  echo
-  echo "Running ${ProjectNameClr} CMake tests"
-
-  # Multi-config generators (e.g. Visual Studio) need -C <config>;
-  # mirror sis_cmake_build's CMAKE_CONFIGURATION_TYPES detection.
-  ctest_args=(--test-dir "$CMakeDir" --output-on-failure)
-  if [ -n "$CTestVerbose" ]; then
-
-    ctest_args+=("$CTestVerbose")
-  fi
-  if [ -f "$CMakeDir/CMakeCache.txt" ] && grep -q '^CMAKE_CONFIGURATION_TYPES:' "$CMakeDir/CMakeCache.txt" 2>/dev/null; then
-
-    ctest_args+=(-C "${SIS_CMAKE_CONFIG:-Release}")
-  fi
-
-  ctest "${ctest_args[@]}"
+  "$Dir/run_all_component_tests.sh" "${ForwardedArgs[@]}"
   status=$?
 fi
 

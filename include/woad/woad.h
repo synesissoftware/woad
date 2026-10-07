@@ -5,7 +5,7 @@
  *          and fixed ANSI SGR colour sequences.
  *
  * Created: 15th August 2026
- * Updated: 17th September 2026
+ * Updated: 7th October 2026
  *
  * Home:    https://github.com/synesissoftware/woad/
  *
@@ -52,7 +52,7 @@
 # define WOAD_VER_WOAD_H_WOAD_MAJOR                     0
 # define WOAD_VER_WOAD_H_WOAD_MINOR                     0
 # define WOAD_VER_WOAD_H_WOAD_PATCH                     2
-# define WOAD_VER_WOAD_H_WOAD_EDIT                      3
+# define WOAD_VER_WOAD_H_WOAD_EDIT                      4
 #endif /* !WOAD_DOCUMENTATION_SKIP_SECTION */
 
 

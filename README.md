@@ -2,7 +2,8 @@
 
 Minimal ANSI terminal colour codes, for C
 
-![Language](https://img.shields.io/badge/C-00599C?style=flat&logo=c&logoColor=white)
+
+![C](https://img.shields.io/badge/C-00599C?style=flat&logo=c&logoColor=white)
 [![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 [![GitHub release](https://img.shields.io/github/v/release/synesissoftware/woad.svg)](https://github.com/synesissoftware/woad/releases/latest)
 [![Last Commit](https://img.shields.io/github/last-commit/synesissoftware/woad)](https://github.com/synesissoftware/woad/commits/master)
@@ -13,15 +14,12 @@ Minimal ANSI terminal colour codes, for C
 
 - [Introduction](#introduction)
 - [Installation](#installation)
-- [Building](#building)
 - [Components](#components)
+- [Examples](#examples)
 - [Project Information](#project-information)
   - [Where to get help](#where-to-get-help)
   - [Contribution guidelines](#contribution-guidelines)
   - [Dependencies](#dependencies)
-    - [Efferent (fan-out)](#efferent-fan-out)
-    - [Development Dependencies](#development-dependencies)
-    - [Afferent (fan-in)](#afferent-fan-in)
   - [Related projects](#related-projects)
   - [License](#license)
 
@@ -30,50 +28,55 @@ Minimal ANSI terminal colour codes, for C
 
 **woad** provides the smallest useful set of fixed ANSI SGR colour sequences for library authors. It is not a console or TUI framework.
 
-**woad** is the **C** implementation.
+**woad** is the **C** implementation. The public surface is string macros: there are no functions. The sequences are always the colour codes; they do not inspect TTY state or Windows console mode.
 
 
 ## Installation
 
-**woad** is a header-only C library. Install via **CMake**:
+**woad** is a header-only C library. The install flow is in [INSTALL.md](./INSTALL.md). From a clone:
 
-```
-cmake -S . -B _build
-cmake --build _build
-cmake --install _build
-```
-
-Use via **include**:
-
-```C
-#include <woad/woad.h>
-
-puts(WOAD_FG_GREEN "ok" WOAD_RESET);
-```
-
-
-## Building
-
-From a clone, the Synesis helper scripts are:
-
-```
+```bash
 ./prepare_cmake.sh
 ./build_cmake.sh
 ./ctest_cmake.sh --verbose
 ```
 
-Equivalent raw **CMake**:
+Use via include. Nothing is linked:
 
-```
-cmake -S . -B _build -DCMAKE_BUILD_TYPE=Release
-cmake --build _build
-ctest --test-dir _build --output-on-failure
+```c
+#include <woad/woad.h>
+
+#include <stdio.h>
+
+int main(void)
+{
+    puts(WOAD_FG_GREEN "ok" WOAD_RESET);
+
+    return 0;
+}
 ```
 
 
 ## Components
 
-**woad** ships SGR string macros (`WOAD_RESET`, `WOAD_FG_*`, `WOAD_BG_*`, including bright variants) and version macros (`WOAD_VER_MAJOR`, `WOAD_VER_MINOR`, `WOAD_VER_PATCH`, `WOAD_VER_REVISION`, `WOAD_VER_ALPHABETA`, `WOAD_VER`, `WOAD_VER_STRING`). TTY/stream gating and Windows virtual-terminal opt-in are not implemented yet.
+**woad** ships SGR string macros and version macros. TTY/stream gating and Windows virtual-terminal opt-in are not implemented yet.
+
+
+### Constants
+
+* `WOAD_RESET` — reset all attributes;
+* `WOAD_FG_*` / `WOAD_BG_*` — foreground and background, including `WOAD_FG_BRIGHT_*` and `WOAD_BG_BRIGHT_*`;
+* `WOAD_VER_MAJOR`, `WOAD_VER_MINOR`, `WOAD_VER_PATCH`, `WOAD_VER_REVISION`, `WOAD_VER_ALPHABETA`, `WOAD_VER`, `WOAD_VER_STRING`.
+
+
+## Examples
+
+Examples live under **examples/c/**. The directory is the subject; the built program is `example.c.<subject>`. Build them with `BUILD_EXAMPLES` (on by default); run via **run_all_examples.sh**.
+
+| Example | Language | Notes |
+| ------- | -------- | ----- |
+| [**example.c.colour**](./examples/c/colour/) | C | Emits a coloured status line for each foreground |
+| [**example.c.version**](./examples/c/version/) | C | Prints `WOAD_VER_STRING` in green |
 
 
 ## Project Information
@@ -81,38 +84,36 @@ ctest --test-dir _build --output-on-failure
 
 ### Where to get help
 
-[GitHub Page](https://github.com/synesissoftware/woad "GitHub Page")
+* [GitHub Page](https://github.com/synesissoftware/woad)
+* [GitHub Issues](https://github.com/synesissoftware/woad/issues)
+* [FAQ.md](./FAQ.md)
+* [HOW_YOU_CAN_HELP.md](./HOW_YOU_CAN_HELP.md)
 
 
 ### Contribution guidelines
 
 Defect reports, feature requests, and pull requests are welcome on https://github.com/synesissoftware/woad.
 
+See also [HOW_YOU_CAN_HELP.md](./HOW_YOU_CAN_HELP.md).
+
 
 ### Dependencies
 
-
-#### Efferent (fan-out)
-
-None.
-
-
-#### Development Dependencies
-
-* [**CMake**](https://cmake.org/) 3.16 or later;
-* a C11 toolchain (C90-capable MSVC is accepted on older Visual C++);
-
-
-#### Afferent (fan-in)
-
-None (currently).
+The **C** API has no non-standard dependencies. Building examples and tests needs **CMake** 3.16 or later and a C11 toolchain (C90-capable MSVC is accepted on older Visual C++).
 
 
 ### Related projects
 
-* [**woad.Python**](https://github.com/synesissoftware/woad.Python/)
-* [**woad.Ruby**](https://github.com/synesissoftware/woad.Ruby/)
-* [**woad.Rust**](https://github.com/synesissoftware/woad.Rust/)
+The other **woad** implementations:
+
+| Project | Language |
+| ------- | -------- |
+| [**woad.Go**](https://github.com/synesissoftware/woad.Go/) | Go |
+| [**woad.NET**](https://github.com/synesissoftware/woad.NET/) | .NET |
+| [**woad.Python**](https://github.com/synesissoftware/woad.Python/) | Python |
+| [**woad.Ruby**](https://github.com/synesissoftware/woad.Ruby/) | Ruby |
+| [**woad.Rust**](https://github.com/synesissoftware/woad.Rust/) | Rust |
+| [**woad.Zig**](https://github.com/synesissoftware/woad.Zig/) | Zig |
 
 
 ### License

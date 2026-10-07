@@ -4,7 +4,7 @@
  * Purpose: Prints woad composite version.
  *
  * Created: 17th September 2026
- * Updated: 17th September 2026
+ * Updated: 7th October 2026
  *
  * ////////////////////////////////////////////////////////////////////// */
 
@@ -44,8 +44,8 @@ version(
 
 int main(int argc, char* argv[])
 {
-    ((void)&argc);
-    ((void)&argv);
+    ((void)argc);
+    ((void)argv);
 
     {
         unsigned const libver = (unsigned)WOAD_VER;
@@ -58,3 +58,4 @@ int main(int argc, char* argv[])
 
 
 /* ///////////////////////////// end of file //////////////////////////// */
+

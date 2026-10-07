@@ -1,5 +1,6 @@
 # SIS:AUTO_GENERATED: Remove this line if you edit the file, otherwise it will be overwritten
-define_example_program(test.scratch.versions main.c)
+add_subdirectory(colour)
+add_subdirectory(version)
 
 
 # ############################## end of file ############################# #

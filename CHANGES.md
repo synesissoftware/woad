@@ -1,15 +1,16 @@
 # woad - Changes <!-- omit in toc -->
 
 
-## Unreleased
+## 0.0.1-alpha2 - 7th October 2026
 
-* Applied **misc-dev-scripts** **0.6.0** editor/Git/`.sis` drop-in templates on **boilerplate**;
-* Restored historical **.gitignore** patterns as a sorted union with **misc-dev-scripts** gold section layout;
-
-
-## 0.0.1-alpha2 - 27th August 2026
-
-T.B.C.
+* Added **.gitattributes**, **.vimrc**, and **.vscode/settings.json**;
+* Added **cmake/BuildType.cmake** and **cmake/TargetMacros.cmake**;
+* Aligned **prepare_cmake.sh**, **build_cmake.sh**, **clean_cmake.sh**, **ctest_cmake.sh**, and **remove_cmake_artefacts.sh** with the current **cstring** helpers;
+* Added **run_all_automated_tests.sh**, **run_all_component_tests.sh**, **run_all_examples.sh**, **run_all_performance_tests.sh**, **run_all_scratch_tests.sh**, **run_all_unit_tests.sh**, and native **.cmd** counterparts;
+* Switched CI to modular **ci.yml** and **ci-cell.yml**;
+* Moved examples to **examples/c/colour** and **examples/c/version** (`example.c.colour`, `example.c.version`);
+* Moved unit tests to **test/unit/codes** and **test/unit/version**, and named the scratch reporter `test.scratch.versions`;
+* Added **INSTALL.md**, **FAQ.md**, **HOW_YOU_CAN_HELP.md**, and **KNOWN_ISSUES.md**;
 
 
 ## 0.0.1-alpha1 - 16th August 2026
