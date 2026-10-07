@@ -29,7 +29,7 @@ ProjectName=$(tr -d '[:space:]' < "$ProjectNameFile")
 ScriptPath=$0
 
 AlwaysUseColours=${SIS_CMAKE_ALWAYS_USE_COLOURS:-${SIS_ALWAYS_USE_COLOURS:-0}}
-CTestVerbose=
+ListOnly=0
 RunMake=1
 SisUseColours=0
 
@@ -126,19 +126,19 @@ while [[ $# -gt 0 ]]; do
 
       # AlwaysUseColours=1 - this is handled by the for loop above
       ;;
+    --list-only|-l)
+
+      ListOnly=1
+      ;;
     --no-make|-M)
 
       RunMake=0
-      ;;
-    --verbose|-V)
-
-      CTestVerbose=--verbose
       ;;
     --help)
 
       [ -f "$Dir/.sis/script_info_lines.txt" ] && cat "$Dir/.sis/script_info_lines.txt"
       cat << EOF
-Runs CMake's CTest test program(s)
+Runs all (matching) scratch-test programs
 
 ${ScriptPath} [ ... flags/options ... ]
 
@@ -151,13 +151,13 @@ Flags/options:
     --always-use-colours
         forces use of colours even when stdout is not a TTY
 
+    -l
+    --list-only
+        lists the target programs but does not execute them
+
     -M
     --no-make
-        does not execute a build before running tests
-
-    -V
-    --verbose
-        verbose test output
+        does not execute a build before running programs
 
 
     standard flags:
@@ -188,20 +188,23 @@ status=0
 
 if [ $RunMake -ne 0 ]; then
 
-  echo
-  echo "Executing build of ${ProjectNameClr} (via cmake --build) and then running CTest"
+  if [ $ListOnly -eq 0 ]; then
 
-  mkdir -p "$CMakeDir" || exit 1
+    echo
+    echo "Executing build of ${ProjectNameClr} (via cmake --build) and then running all scratch-test programs"
 
-  if [ ! -f "$CMakeDir/CMakeCache.txt" ]; then
+    mkdir -p "$CMakeDir" || exit 1
 
-    >&2 echo "${ScriptPathClr}: '${CMakeDirClr}' is not configured; use prepare_cmake.sh first"
+    if [ ! -f "$CMakeDir/CMakeCache.txt" ]; then
 
-    exit 1
+      >&2 echo "${ScriptPathClr}: '${CMakeDirClr}' is not configured; use prepare_cmake.sh first"
+
+      exit 1
+    fi
+
+    sis_cmake_build
+    status=$?
   fi
-
-  sis_cmake_build
-  status=$?
 else
 
   if [ ! -d "$CMakeDir" ] || [ ! -f "$CMakeDir/CMakeCache.txt" ]; then
@@ -214,23 +217,57 @@ fi
 
 if [ $status -eq 0 ]; then
 
-  echo
-  echo "Running ${ProjectNameClr} CMake tests"
+  if [ $ListOnly -ne 0 ]; then
 
-  # Multi-config generators (e.g. Visual Studio) need -C <config>;
-  # mirror sis_cmake_build's CMAKE_CONFIGURATION_TYPES detection.
-  ctest_args=(--test-dir "$CMakeDir" --output-on-failure)
-  if [ -n "$CTestVerbose" ]; then
+    echo
+    echo "Listing all ${ProjectNameClr} scratch-test programs"
+  else
 
-    ctest_args+=("$CTestVerbose")
-  fi
-  if [ -f "$CMakeDir/CMakeCache.txt" ] && grep -q '^CMAKE_CONFIGURATION_TYPES:' "$CMakeDir/CMakeCache.txt" 2>/dev/null; then
-
-    ctest_args+=(-C "${SIS_CMAKE_CONFIG:-Release}")
+    echo
+    echo "Running all ${ProjectNameClr} scratch-test programs"
   fi
 
-  ctest "${ctest_args[@]}"
-  status=$?
+  NumPrograms=0
+
+  while IFS= read -r -d '' f; do
+
+    case "$f" in
+      *.pdb|*.ilk|*.log|*.obj|*.o)
+        continue
+        ;;
+    esac
+
+    NumPrograms=$((NumPrograms + 1))
+
+    fClr="${SisClr_Blue}${SisClr_Bold}${f}${SisClr_None}"
+
+    if [ $ListOnly -ne 0 ]; then
+
+      echo "would execute ${fClr}:"
+
+      continue
+    fi
+
+    echo
+    echo "executing ${fClr}:"
+
+    if "$f"; then
+
+      :
+    else
+
+      status=$?
+
+      break 1
+    fi
+  done < <(find "$CMakeDir" -type f \( -name 'test_scratch*' -o -name 'test.scratch.*' \) \( -perm -100 -o -name '*.exe' \) -print0 2>/dev/null | sort -z)
+
+  if [ $NumPrograms -eq 0 ]; then
+
+    echo "${ScriptPathClr}: found no scratch-test programs under '${CMakeDirClr}' (none found)"
+
+    exit 0
+  fi
 fi
 
 exit $status
