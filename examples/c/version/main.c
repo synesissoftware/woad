@@ -51,14 +51,21 @@ int main(int argc, char* argv[])
     ((void)argc);
     ((void)argv);
 
-    puts("v" WOAD_FG_GREEN WOAD_VER_STRING WOAD_RESET);
+    printf(
+        "%sv%s%s\n"
+    ,   WOAD_FG_GREEN_FOR(stdout)
+    ,   WOAD_VER_STRING
+    ,   WOAD_RESET_FOR(stdout)
+    );
 
     printf(
-        "v%s%s%s (0x%08lx)\n"
-    ,   WOAD_FG_GREEN
+        "%sv%s%s (%s0x%08lx%s)\n"
+    ,   WOAD_FG_GREEN_FOR(stdout)
     ,   woad_version_string()
-    ,   WOAD_RESET
+    ,   WOAD_RESET_FOR(stdout)
+    ,   WOAD_FG_GREEN_FOR(stdout)
     ,   woad_version()
+    ,   WOAD_RESET_FOR(stdout)
     );
 
     return EXIT_SUCCESS;
