@@ -1,7 +1,12 @@
 # woad - Changes <!-- omit in toc -->
 
 
-## 0.1.0-beta1 - 8th October 2026
+## 0.1.0-beta2 - 10th October 2026
+
+* SGR attribute macros `WOAD_BOLD` (SGR 1) and `WOAD_BLINKING` (SGR 5), and their stream-conditional forms `WOAD_BOLD_FOR()` and `WOAD_BLINKING_FOR()`;
+
+
+## 0.1.0-beta1 - 9th October 2026
 
 * stream-conditional colour API, in **src/api.c**: `woad_seq_for_stream()`, `woad_seq_for_fd()`, and, on Windows, `woad_seq_for_handle()` and `woad_seq_for_std_handle()`;
 * stream inspection - `woad_stream_is_tty()`, `woad_fd_is_tty()`, `woad_stream_supports_colour()`, and companions - so that client code need never choose between `isatty()`, `_isatty()`, `fileno()`, and the feature-test macros that govern them;
@@ -9,7 +14,6 @@
 * Windows virtual-terminal gating, via `RtlGetVersion()` and `SetConsoleMode()`, performed exactly once, and elected to a single thread by compare-and-swap, since it mutates process-wide console state;
 * `WOAD_SET_CONSOLE_MODE` withholds permission for the Windows `SetConsoleMode()` modification, for callers that require no library to alter a console they have configured; the determination then degenerates to a pure query, so a console already in virtual-terminal mode is still reported as capable;
 * function-like conditional colour macros, both colour-named (`WOAD_FG_RED_FOR()`, `WOAD_BG_BLACK_FOR()`, and so on for every sequence) and colour-parameterised (`WOAD_SEQ_FOR()`, `WOAD_FG_FOR()`, `WOAD_BG_FOR()`, `WOAD_RESET_FOR()`);
-* SGR attribute macros `WOAD_BOLD` (SGR 1) and `WOAD_BLINKING` (SGR 5), and their stream-conditional forms `WOAD_BOLD_FOR()` and `WOAD_BLINKING_FOR()`;
 * type-dispatched stream currencies - `FILE*`, file descriptor, and, on Windows, console handle and standard-handle identifier - by `_Generic` in C11 and later, and by overloading in C++;
 * runtime version API: `woad_version()` and `woad_version_string()`, for parity with **woad.Go**, and, being bound to the library, usable as an ABI probe;
 * the object-like SGR macros remain header-only and require no binding, so clients wanting only fixed colours need not link;

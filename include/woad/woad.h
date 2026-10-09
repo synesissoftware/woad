@@ -7,7 +7,7 @@
  *          version and colour-policy API.
  *
  * Created: 15th August 2026
- * Updated: 8th October 2026
+ * Updated: 10th October 2026
  *
  * Home:    https://github.com/synesissoftware/woad/
  *

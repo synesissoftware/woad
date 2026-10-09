@@ -4,7 +4,7 @@
 .\" Purpose: Manual page (section 3) for the woad C library.
 .\"
 .\" Created: 27th August 2026
-.\" Updated: 7th October 2026
+.\" Updated: 10th October 2026
 .\"
 .\" Home:    https://github.com/synesissoftware/woad/
 .\"
@@ -17,7 +17,7 @@
 .\"
 .\" ////////////////////////////////////////////////////////////////////// */
 .\"
-.TH WOAD 3 "October 7, 2026" "woad @PROJECT_VERSION@" "woad Library Functions"
+.TH WOAD 3 "October 10, 2026" "woad @PROJECT_VERSION@" "woad Library Functions"
 .
 .
 .SH NAME
