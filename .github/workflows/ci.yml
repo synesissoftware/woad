@@ -1,3 +1,8 @@
+#
+# Created: 15th August 2026
+# Updated: 7th October 2026
+#
+
 name: CI
 
 on:
@@ -5,6 +10,7 @@ on:
     branches:
       - master
       - dev
+      - api
       - boilerplate
       - idiomatic
       - rc1
@@ -184,11 +190,31 @@ jobs:
         run: |
           set -euo pipefail
           test -f "${INSTALL_PREFIX}/include/woad/woad.h"
+          test -f "${INSTALL_PREFIX}/share/man/man3/woad.3"
+          # the generated page must carry the real version, not the @...@ token
+          grep -q '^\.TH WOAD 3 .* "woad [0-9]' "${INSTALL_PREFIX}/share/man/man3/woad.3"
           test -f "${INSTALL_PREFIX}/lib/cmake/woad/woad-config.cmake" || \
             test -f "${INSTALL_PREFIX}/lib64/cmake/woad/woad-config.cmake"
           if [ "${{ runner.os }}" != "Windows" ]; then
             test -f "${INSTALL_PREFIX}/lib/pkgconfig/woad.pc" || \
               test -f "${INSTALL_PREFIX}/lib64/pkgconfig/woad.pc"
+          fi
+          # the compiled component, whose name varies by toolchain
+          found=0
+          for candidate in \
+            "${INSTALL_PREFIX}/lib/libwoad.a" \
+            "${INSTALL_PREFIX}/lib64/libwoad.a" \
+            "${INSTALL_PREFIX}/lib/woad.lib"
+          do
+            if [ -f "$candidate" ]; then
+              found=1
+              break
+            fi
+          done
+          if [ "$found" != "1" ]; then
+            echo "no woad library artefact found under ${INSTALL_PREFIX}" >&2
+            ls -la "${INSTALL_PREFIX}/lib" >&2 || true
+            exit 1
           fi
 
       - name: Configure and run install smoke consumer

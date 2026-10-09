@@ -55,9 +55,7 @@ set(PROJECT_VERSION_MINOR ${_VERSION_MINOR})
 set(PROJECT_VERSION_PATCH ${_VERSION_PATCH})
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
 
-# adhere strictly to C standards plus extensions. These are actually
-# unused by the (header-only) library; they merely state our intention
-# for tests and examples.
+# adhere strictly to C standards plus extensions
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS ON)
@@ -133,13 +131,43 @@ include(GNUInstallDirs)
 # ##########################################################
 # library
 
-add_library(woad INTERFACE)
+set(WOAD_COMPILE_OPTIONS
+	$<$<C_COMPILER_ID:GNU,Clang,AppleClang>:-Wall>
+	$<$<C_COMPILER_ID:GNU,Clang,AppleClang>:-Werror>
+	$<$<C_COMPILER_ID:GNU,Clang,AppleClang>:-Wextra>
+	$<$<C_COMPILER_ID:GNU,Clang,AppleClang>:-Wpedantic>
+	$<$<C_COMPILER_ID:MSVC>:/W4>
+	$<$<C_COMPILER_ID:MSVC>:/WX>
+)
+
+# NOTE: the SGR colour macros in <woad/woad.h> require no binding, and
+# clients that use only those need not link. The compiled component exists
+# for the stream-conditional part of the API, whose once-per-process
+# determinations (and, on Windows, `SetConsoleMode()` side effect) cannot
+# meaningfully be cached in a header, and for the version functions, which
+# are thereby usable as an ABI probe.
+add_library(woad
+	src/api.c
+)
 add_library(woad::woad ALIAS woad)
 
 target_include_directories(woad
-	INTERFACE
+	PUBLIC
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
+
+target_compile_options(woad
+	PRIVATE
+		${WOAD_COMPILE_OPTIONS}
+)
+
+# NOTE: the C standard is deliberately not pinned for the library, so that
+# the C90 fallback applied above for older Visual C++ is honoured.
+set_target_properties(woad PROPERTIES
+	SOVERSION ${PROJECT_VERSION_MAJOR}
+	VERSION ${PROJECT_VERSION}
+	WINDOWS_EXPORT_ALL_SYMBOLS ON
 )
 
 
@@ -182,16 +210,37 @@ configure_file(
 
 
 # ##########################################################
+# manual page
+
+# NOTE: generated, rather than kept as a literal man/woad.3, so that the
+# version in its .TH line cannot drift from the version scraped from
+# include/woad/woad.h.
+
+configure_file(
+	"${CMAKE_CURRENT_SOURCE_DIR}/man/woad.3.in"
+	"${CMAKE_CURRENT_BINARY_DIR}/man/woad.3"
+	@ONLY
+)
+
+
+# ##########################################################
 # install / export
 
 set(EXPORT_NAME ${PROJECT_NAME_LOWER})
 
 install(TARGETS woad
 	EXPORT project-targets
+	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include/woad"
 	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/man/woad.3"
+	DESTINATION ${CMAKE_INSTALL_MANDIR}/man3
 )
 
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/woad.pc"

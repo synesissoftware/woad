@@ -36,6 +36,11 @@ function(define_automated_test_program program_name entry_point_source_name)
 		NAME ${program_name}
 		COMMAND ${program_name}
 	)
+
+	set_tests_properties(${program_name}
+		PROPERTIES
+			TIMEOUT 30
+	)
 endfunction(define_automated_test_program)
 
 
