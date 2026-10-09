@@ -103,7 +103,7 @@ ctest --test-dir _build --output-on-failure
 
 ### Fixed SGR macros (no binding required)
 
-Object-like macros that expand to string literals: `WOAD_RESET`, `WOAD_FG_*`, and `WOAD_BG_*`, each in normal and `BRIGHT` variants. They are unconditional - they never inspect the destination - and, being literals, they concatenate at compile time:
+Object-like macros that expand to string literals: `WOAD_RESET`, `WOAD_BOLD` (SGR 1), `WOAD_BLINKING` (SGR 5), `WOAD_FG_*`, and `WOAD_BG_*`, the colours each in normal and `BRIGHT` variants. They are unconditional - they never inspect the destination - and, being literals, they concatenate at compile time:
 
 ```C
 puts(WOAD_FG_GREEN "ok" WOAD_RESET);
@@ -122,6 +122,8 @@ Function-like counterparts that yield the sequence when colour is warranted for 
 | Colour-parameterised | `WOAD_FG_FOR(WOAD_FG_RED, stdout)`   | A colour chosen by the caller, possibly a variable |
 | General              | `WOAD_SEQ_FOR(WOAD_BG_BLUE, stderr)` | Any sequence, for any stream                       |
 | Reset                | `WOAD_RESET_FOR(stderr)`             | `WOAD_RESET`, for that stream                      |
+| Bold                 | `WOAD_BOLD_FOR(stdout)`              | `WOAD_BOLD`, for that stream                       |
+| Blinking             | `WOAD_BLINKING_FOR(stdout)`          | `WOAD_BLINKING`, for that stream                   |
 
 ```C
 printf(
@@ -283,7 +285,7 @@ Examples live under **examples/c/**. The directory is the subject; the built pro
 
 | Example | Language | Notes |
 | ------- | -------- | ----- |
-| [**example.c.colour**](./examples/c/colour/) | C | Emits a coloured status line for each foreground |
+| [**example.c.colour**](./examples/c/colour/) | C | Emits foreground colours, plus bold and blinking |
 | [**example.c.colour_for**](./examples/c/colour_for/) | C | Emits colour only when the destination warrants it |
 | [**example.c.version**](./examples/c/version/) | C | Prints the macro and `woad_version_string()` |
 

@@ -1,6 +1,11 @@
 # woad - Changes <!-- omit in toc -->
 
 
+## 0.1.0-beta2 - 10th October 2026
+
+* SGR attribute macros `WOAD_BOLD` (SGR 1) and `WOAD_BLINKING` (SGR 5), and their stream-conditional forms `WOAD_BOLD_FOR()` and `WOAD_BLINKING_FOR()`;
+
+
 ## 0.1.0-beta1 - 9th October 2026
 
 * stream-conditional colour API, in **src/api.c**: `woad_seq_for_stream()`, `woad_seq_for_fd()`, and, on Windows, `woad_seq_for_handle()` and `woad_seq_for_std_handle()`;
