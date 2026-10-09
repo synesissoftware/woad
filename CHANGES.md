@@ -1,7 +1,7 @@
 # woad - Changes <!-- omit in toc -->
 
 
-## 0.1.0-beta1 - 8th October 2026
+## 0.1.0-beta1 - 9th October 2026
 
 * stream-conditional colour API, in **src/api.c**: `woad_seq_for_stream()`, `woad_seq_for_fd()`, and, on Windows, `woad_seq_for_handle()` and `woad_seq_for_std_handle()`;
 * stream inspection - `woad_stream_is_tty()`, `woad_fd_is_tty()`, `woad_stream_supports_colour()`, and companions - so that client code need never choose between `isatty()`, `_isatty()`, `fileno()`, and the feature-test macros that govern them;
