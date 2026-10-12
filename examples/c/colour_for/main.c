@@ -90,6 +90,18 @@ int main(void)
     ,   WOAD_RESET_FOR(stdout)
     );
 
+    printf(
+        "%sthis line is bold if, and only if, stdout warrants colour%s\n"
+    ,   WOAD_BOLD_FOR(stdout)
+    ,   WOAD_RESET_FOR(stdout)
+    );
+
+    printf(
+        "%sthis line blinks if, and only if, stdout warrants colour%s\n"
+    ,   WOAD_BLINKING_FOR(stdout)
+    ,   WOAD_RESET_FOR(stdout)
+    );
+
     fprintf(
         stderr
     ,   "%s%sthis line is white-on-red if, and only if, stderr warrants colour%s\n"

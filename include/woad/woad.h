@@ -1,13 +1,13 @@
 /* /////////////////////////////////////////////////////////////////////////
  * File:    woad/woad.h
  *
- * Purpose: Root header for woad (C-API). Provides fixed ANSI SGR colour
- *          sequence macros (usable without binding to the library),
- *          stream-conditional counterparts, and the library version and
- *          colour-policy API.
+ * Purpose: Root header for woad (C-API). Provides fixed ANSI SGR attribute
+ *          and colour sequence macros (usable without binding to the
+ *          library), stream-conditional counterparts, and the library
+ *          version and colour-policy API.
  *
  * Created: 15th August 2026
- * Updated: 9th October 2026
+ * Updated: 10th October 2026
  *
  * Home:    https://github.com/synesissoftware/woad/
  *
@@ -54,7 +54,7 @@
 # define WOAD_VER_WOAD_H_WOAD_MAJOR     0
 # define WOAD_VER_WOAD_H_WOAD_MINOR     0
 # define WOAD_VER_WOAD_H_WOAD_PATCH     4
-# define WOAD_VER_WOAD_H_WOAD_EDIT      6
+# define WOAD_VER_WOAD_H_WOAD_EDIT      7
 #endif /* !WOAD_DOCUMENTATION_SKIP_SECTION */
 
 
@@ -126,8 +126,8 @@
 /* /////////////////////////////////////////////////////////////////////////
  * SGR colour codes
  *
- * Fixed ANSI SGR sequences. These are always the colour codes; they do
- * not inspect TTY state or Windows console mode.
+ * Fixed ANSI SGR sequences (attributes and colours). These always emit;
+ * they do not inspect TTY state or Windows console mode.
  */
 
 /**
@@ -136,6 +136,19 @@
  */
 
 #define WOAD_RESET                                          "\033[0m"
+
+/* SGR attributes (always emit; compile-time string literals) */
+
+/**
+ * \def WOAD_BOLD
+ * Bold / increased intensity.
+ *
+ * \def WOAD_BLINKING
+ * Slow blink.
+ */
+
+#define WOAD_BOLD                                           "\033[1m"
+#define WOAD_BLINKING                                       "\033[5m"
 
 /**
  * \def WOAD_FG_BLACK
@@ -742,12 +755,12 @@ woad_supports_colour(
 
 
 /* /////////////////////////////////////////////////////////////////////////
- * conditional SGR colour codes
+ * conditional SGR sequences
  *
- * Function-like counterparts of the object-like macros above. Each yields
- * the sequence when colour is appropriate for the nominated stream, and the
- * empty string when it is not, and so must be used as a `%s` argument
- * rather than by string-literal concatenation.
+ * Function-like counterparts of the object-like macros above, including the
+ * attribute sequences. Each yields the sequence when it is warranted for
+ * the nominated stream, and the empty string when it is not, and so must be
+ * used as a `%s` argument rather than by string-literal concatenation.
  */
 
 /**
@@ -764,6 +777,12 @@ woad_supports_colour(
  * \def WOAD_RESET_FOR(stm)
  * Yields WOAD_RESET for \c stm, or `""`.
  *
+ * \def WOAD_BOLD_FOR(stm)
+ * Yields WOAD_BOLD for \c stm, or `""`.
+ *
+ * \def WOAD_BLINKING_FOR(stm)
+ * Yields WOAD_BLINKING for \c stm, or `""`.
+ *
  * \note WOAD_FG_FOR() and WOAD_BG_FOR() are synonyms of WOAD_SEQ_FOR():
  *   since the sequence passed already carries its own SGR parameter, the
  *   distinction is one of expressing intent at the call site, not of
@@ -774,6 +793,8 @@ woad_supports_colour(
 #define WOAD_FG_FOR(clr, stm)                               WOAD_SEQ_FOR(clr, stm)
 #define WOAD_BG_FOR(clr, stm)                               WOAD_SEQ_FOR(clr, stm)
 #define WOAD_RESET_FOR(stm)                                 WOAD_SEQ_FOR(WOAD_RESET, stm)
+#define WOAD_BOLD_FOR(stm)                                  WOAD_SEQ_FOR(WOAD_BOLD, stm)
+#define WOAD_BLINKING_FOR(stm)                              WOAD_SEQ_FOR(WOAD_BLINKING, stm)
 
 /**
  * \def WOAD_FG_BLACK_FOR
