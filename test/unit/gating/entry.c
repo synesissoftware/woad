@@ -172,6 +172,8 @@ int main(void)
     ASSERT_TRUE_(0 == woad_stream_supports_colour(not_a_tty));
     ASSERT_SEQ_("", woad_seq_for_stream(WOAD_FG_RED, not_a_tty));
     ASSERT_SEQ_("", WOAD_FG_RED_FOR(not_a_tty));
+    ASSERT_SEQ_("", WOAD_BOLD_FOR(not_a_tty));
+    ASSERT_SEQ_("", WOAD_BLINKING_FOR(not_a_tty));
     ASSERT_SEQ_("", WOAD_RESET_FOR(not_a_tty));
 
 
@@ -185,6 +187,8 @@ int main(void)
     ASSERT_SEQ_(WOAD_FG_RED, WOAD_FG_RED_FOR(not_a_tty));
     ASSERT_SEQ_(WOAD_BG_BLACK, WOAD_BG_BLACK_FOR(not_a_tty));
     ASSERT_SEQ_(WOAD_BG_RED, WOAD_FG_FOR(WOAD_BG_RED, not_a_tty));
+    ASSERT_SEQ_(WOAD_BOLD, WOAD_BOLD_FOR(not_a_tty));
+    ASSERT_SEQ_(WOAD_BLINKING, WOAD_BLINKING_FOR(not_a_tty));
     ASSERT_SEQ_(WOAD_RESET, WOAD_RESET_FOR(not_a_tty));
 
     /* ... and the value is matched case-insensitively */

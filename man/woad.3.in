@@ -4,7 +4,7 @@
 .\" Purpose: Manual page (section 3) for the woad C library.
 .\"
 .\" Created: 27th August 2026
-.\" Updated: 27th August 2026
+.\" Updated: 10th October 2026
 .\"
 .\" Home:    https://github.com/synesissoftware/woad/
 .\"
@@ -17,7 +17,7 @@
 .\"
 .\" ////////////////////////////////////////////////////////////////////// */
 .\"
-.TH WOAD 3 "August 27, 2026" "woad @PROJECT_VERSION@" "woad Library Functions"
+.TH WOAD 3 "October 10, 2026" "woad @PROJECT_VERSION@" "woad Library Functions"
 .
 .
 .SH NAME
@@ -77,6 +77,11 @@ printf(WOAD_FG_RED "error" WOAD_RESET "\en");
 .PP
 The reset sequence is
 .BR WOAD_RESET .
+The attribute sequences are
+.BR WOAD_BOLD
+(SGR 1) and
+.BR WOAD_BLINKING
+(SGR 5).
 The foreground sequences are
 .BR WOAD_FG_ \fIC\fR,
 and the background sequences
@@ -95,7 +100,7 @@ Each has a bright variant, spelled
 .BR WOAD_FG_BRIGHT_ \fIC\fR
 and
 .BR WOAD_BG_BRIGHT_ \fIC\fR.
-There are thus 32 colour macros and one reset macro; for example
+There are thus 32 colour macros, two attribute macros, and one reset macro; for example
 .BR WOAD_FG_RED " is " \(dq\e033[31m\(dq ,
 and
 .BR WOAD_BG_BRIGHT_CYAN " is " \(dq\e033[106m\(dq .
@@ -132,6 +137,14 @@ background sense.
 .BI WOAD_RESET_FOR( stm )
 Equivalent to
 .BI "WOAD_SEQ_FOR(WOAD_RESET, " stm ")\fR."
+.TP
+.BI WOAD_BOLD_FOR( stm )
+Equivalent to
+.BI "WOAD_SEQ_FOR(WOAD_BOLD, " stm ")\fR."
+.TP
+.BI WOAD_BLINKING_FOR( stm )
+Equivalent to
+.BI "WOAD_SEQ_FOR(WOAD_BLINKING, " stm ")\fR."
 .
 .SS Stream currencies
 The
