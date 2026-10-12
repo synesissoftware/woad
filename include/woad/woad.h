@@ -86,7 +86,7 @@
 #define WOAD_VER_MAJOR      0
 #define WOAD_VER_MINOR      1
 #define WOAD_VER_PATCH      0
-#define WOAD_VER_ALPHABETA  0x81
+#define WOAD_VER_ALPHABETA  0x83
 
 #define WOAD_VER \
     (0\
