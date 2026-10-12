@@ -39,6 +39,7 @@
 ## Functional improvements
 
 * [x] ~~~SGR colour and reset codes~~~ - ✅;
+* [x] ~~~fixed bold and blinking SGR attributes~~~ - ✅;
 * [x] ~~~runtime version API (`woad_version()`, `woad_version_string()`)~~~ - ✅;
 * [x] ~~~TTY-conditional colour codes (process and per-stream)~~~ - ✅;
 * [x] ~~~Windows virtual-terminal gating (OS build + `GetConsoleMode`)~~~ - ✅;

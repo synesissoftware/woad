@@ -3,10 +3,15 @@
 
 ## 0.1.0-beta3 - 14th October 2026
 
-* added **test/performance/colour_for** (`test.performance.colour_for`), which times the per-call terminal probe paid by every colour-for currency and, on Windows, the console-handle currencies plus the once-per-process virtual-terminal determination against its cached steady state; when the inherited standard handles are not consoles (the usual CI case) it `AllocConsole()`s and opens `CONOUT$`, reports the OS build and VT path, and rebinds standard handles only for the console-determination group so those costs are still measured;
+* added **test/performance/colour_for** (`test.performance.colour_for`), which times the per-call terminal probe paid by every colour-for currency and, on Windows, the console-handle currencies plus the once-per-process virtual-terminal determination against its cached steady state; names the host via PlatformSTL when available;
 
 
-## 0.1.0-beta1 - 8th October 2026
+## 0.1.0-beta2 - 12th October 2026
+
+* SGR attribute macros `WOAD_BOLD` (SGR 1) and `WOAD_BLINKING` (SGR 5), and their stream-conditional forms `WOAD_BOLD_FOR()` and `WOAD_BLINKING_FOR()`;
+
+
+## 0.1.0-beta1 - 9th October 2026
 
 * stream-conditional colour API, in **src/api.c**: `woad_seq_for_stream()`, `woad_seq_for_fd()`, and, on Windows, `woad_seq_for_handle()` and `woad_seq_for_std_handle()`;
 * stream inspection - `woad_stream_is_tty()`, `woad_fd_is_tty()`, `woad_stream_supports_colour()`, and companions - so that client code need never choose between `isatty()`, `_isatty()`, `fileno()`, and the feature-test macros that govern them;

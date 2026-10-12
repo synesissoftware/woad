@@ -16,7 +16,7 @@
  *            WOAD_COLOUR=never ./example.c.colour_for
  *
  * Created: 27th August 2026
- * Updated: 7th October 2026
+ * Updated: 14th October 2026
  *
  * Home:    https://github.com/synesissoftware/woad/
  *
@@ -87,6 +87,18 @@ int main(void)
     printf(
         "%sthis line is green if, and only if, stdout warrants colour%s\n"
     ,   WOAD_FG_GREEN_FOR(stdout)
+    ,   WOAD_RESET_FOR(stdout)
+    );
+
+    printf(
+        "%sthis line is bold if, and only if, stdout warrants colour%s\n"
+    ,   WOAD_BOLD_FOR(stdout)
+    ,   WOAD_RESET_FOR(stdout)
+    );
+
+    printf(
+        "%sthis line blinks if, and only if, stdout warrants colour%s\n"
+    ,   WOAD_BLINKING_FOR(stdout)
     ,   WOAD_RESET_FOR(stdout)
     );
 
