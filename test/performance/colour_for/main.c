@@ -28,7 +28,7 @@
  *          line between groups.
  *
  * Created: 7th October 2026
- * Updated: 7th October 2026
+ * Updated: 14th October 2026
  *
  * Home:    https://github.com/synesissoftware/woad/
  *
@@ -268,17 +268,48 @@ format_ns_per_(
 {
     unsigned long long tenths;
     char               whole[32];
+    size_t             n;
+
+    if (0 == dest_n)
+    {
+        return;
+    }
 
     if (0 == iterations)
     {
-        snprintf(dest, dest_n, "0.0");
+        if (dest_n >= 4)
+        {
+            dest[0] = '0';
+            dest[1] = '.';
+            dest[2] = '0';
+            dest[3] = '\0';
+        }
+        else
+        {
+            dest[0] = '\0';
+        }
 
         return;
     }
 
     tenths = (elapsed_ns * 10ull + iterations / 2ull) / iterations;
     format_u64_(whole, sizeof(whole), tenths / 10ull);
-    snprintf(dest, dest_n, "%s.%llu", whole, tenths % 10ull);
+    n = strlen(whole);
+
+    /* whole + '.' + one digit + NUL; avoid snprintf so MinGW does not
+     * diagnose a theoretical truncation of the concatenated form.
+     */
+    if (n + 3 > dest_n)
+    {
+        dest[0] = '\0';
+
+        return;
+    }
+
+    memcpy(dest, whole, n);
+    dest[n] = '.';
+    dest[n + 1] = (char)('0' + (int)(tenths % 10ull));
+    dest[n + 2] = '\0';
 }
 
 static unsigned long long
