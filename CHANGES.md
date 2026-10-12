@@ -1,7 +1,7 @@
 # woad - Changes <!-- omit in toc -->
 
 
-## 0.1.0-beta2 - 10th October 2026
+## 0.1.0-beta2 - 12th October 2026
 
 * SGR attribute macros `WOAD_BOLD` (SGR 1) and `WOAD_BLINKING` (SGR 5), and their stream-conditional forms `WOAD_BOLD_FOR()` and `WOAD_BLINKING_FOR()`;
 
