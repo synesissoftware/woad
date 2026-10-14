@@ -4,6 +4,8 @@
 ## 0.1.0-beta3 - 14th October 2026
 
 * added **test/performance/colour_for** (`test.performance.colour_for`), which times the per-call terminal probe paid by every colour-for currency and, on Windows, the console-handle currencies plus the once-per-process virtual-terminal determination against its cached steady state; names the host via PlatformSTL when available;
+* hardened the CI colour-policy smoke step so `find`'s EPIPE status after an early match cannot abort the job under `set -e` (windows-cl), and aligned example discovery with **run_all_examples.sh** (prefer `.exe` / `+x`, exclude **CMakeFiles**);
+* Windows CI `.cmd` steps now propagate failure via `if errorlevel 1 exit /b 1`, and the execute-bit restore excludes **CMakeFiles** / `*.d` / `*.o` / `*.obj`;
 
 
 ## 0.1.0-beta2 - 12th October 2026

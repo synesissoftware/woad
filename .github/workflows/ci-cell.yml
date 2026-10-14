@@ -124,18 +124,25 @@ jobs:
 
       # download-artifact does not reliably restore Unix execute bits;
       # run_all_*.sh discovery requires -perm -100 (or *.exe on Windows).
+      # Exclude CMakeFiles / *.d / *.o / *.obj so dependency sidecars are
+      # not chmod'd and later mistaken for programs.
       - name: Restore execute bits on test and example binaries
         if: runner.os != 'Windows'
         shell: bash
         run: |
           set -euo pipefail
-          find build -type f \( \
-            -name 'test_unit*' -o -name 'test.unit.*' -o \
-            -name 'test_component*' -o -name 'test.component.*' -o \
-            -name 'test_performance*' -o -name 'test.performance.*' -o \
-            -name 'test_scratch*' -o -name 'test.scratch.*' -o \
-            \( -name 'example*' ! -name '*.md' \) \
-          \) -exec chmod +x {} +
+          find build -type f \
+            ! -path '*/CMakeFiles/*' \
+            ! -name '*.d' \
+            ! -name '*.o' \
+            ! -name '*.obj' \
+            \( \
+              -name 'test_unit*' -o -name 'test.unit.*' -o \
+              -name 'test_component*' -o -name 'test.component.*' -o \
+              -name 'test_performance*' -o -name 'test.performance.*' -o \
+              -name 'test_scratch*' -o -name 'test.scratch.*' -o \
+              \( -name 'example*' ! -name '*.md' \) \
+            \) -exec chmod +x {} +
 
       - name: Automated tests (unit then component) [non-Windows]
         if: runner.os != 'Windows'
@@ -148,10 +155,13 @@ jobs:
       - name: Automated tests (unit then component) [Windows]
         if: runner.os == 'Windows'
         shell: cmd
+        env:
+          MSYS2_LOCATION: ${{ steps.msys2.outputs.msys2-location }}
+          SIS_CMAKE_BUILD_DIR: ${{ github.workspace }}\build
         run: |
-          set SIS_CMAKE_BUILD_DIR=%GITHUB_WORKSPACE%\build
-          if /I "${{ inputs.toolchain }}"=="mingw" set "PATH=${{ steps.msys2.outputs.msys2-location }}\mingw64\bin;%PATH%"
+          if /I "${{ inputs.toolchain }}"=="mingw" set "PATH=%MSYS2_LOCATION%\mingw64\bin;%PATH%"
           call run_all_automated_tests.cmd
+          if errorlevel 1 exit /b 1
 
       - name: Performance tests [non-Windows]
         if: runner.os != 'Windows'
@@ -167,11 +177,13 @@ jobs:
         if: runner.os == 'Windows'
         shell: cmd
         env:
+          MSYS2_LOCATION: ${{ steps.msys2.outputs.msys2-location }}
+          SIS_CMAKE_BUILD_DIR: ${{ github.workspace }}\build
           SIS_PERFTESTS_GROUPGAPS: '1'
         run: |
-          set SIS_CMAKE_BUILD_DIR=%GITHUB_WORKSPACE%\build
-          if /I "${{ inputs.toolchain }}"=="mingw" set "PATH=${{ steps.msys2.outputs.msys2-location }}\mingw64\bin;%PATH%"
+          if /I "${{ inputs.toolchain }}"=="mingw" set "PATH=%MSYS2_LOCATION%\mingw64\bin;%PATH%"
           call run_all_performance_tests.cmd
+          if errorlevel 1 exit /b 1
 
       - name: Scratch tests [non-Windows]
         if: runner.os != 'Windows'
@@ -186,10 +198,13 @@ jobs:
         if: runner.os == 'Windows'
         continue-on-error: true
         shell: cmd
+        env:
+          MSYS2_LOCATION: ${{ steps.msys2.outputs.msys2-location }}
+          SIS_CMAKE_BUILD_DIR: ${{ github.workspace }}\build
         run: |
-          set SIS_CMAKE_BUILD_DIR=%GITHUB_WORKSPACE%\build
-          if /I "${{ inputs.toolchain }}"=="mingw" set "PATH=${{ steps.msys2.outputs.msys2-location }}\mingw64\bin;%PATH%"
+          if /I "${{ inputs.toolchain }}"=="mingw" set "PATH=%MSYS2_LOCATION%\mingw64\bin;%PATH%"
           call run_all_scratch_tests.cmd
+          if errorlevel 1 exit /b 1
 
       - name: Examples [non-Windows]
         if: runner.os != 'Windows'
@@ -202,13 +217,20 @@ jobs:
       - name: Examples [Windows]
         if: runner.os == 'Windows'
         shell: cmd
+        env:
+          MSYS2_LOCATION: ${{ steps.msys2.outputs.msys2-location }}
+          SIS_CMAKE_BUILD_DIR: ${{ github.workspace }}\build
         run: |
-          set SIS_CMAKE_BUILD_DIR=%GITHUB_WORKSPACE%\build
-          if /I "${{ inputs.toolchain }}"=="mingw" set "PATH=${{ steps.msys2.outputs.msys2-location }}\mingw64\bin;%PATH%"
+          if /I "${{ inputs.toolchain }}"=="mingw" set "PATH=%MSYS2_LOCATION%\mingw64\bin;%PATH%"
           call run_all_examples.cmd
+          if errorlevel 1 exit /b 1
 
       # CI stdout is not a terminal, so policy overrides are the only way to
       # exercise the emitting path; the plain path falls out for free.
+      # Discovery matches run_all_examples.sh (exe or +x; no CMakeFiles).
+      # find is allowed to exit non-zero: an early break closes the -print0
+      # pipe and MSVC trees often have more than one match, so find's EPIPE
+      # status must not abort the step under set -e (windows-cl exit 4).
       - name: Smoke-test colour policy
         shell: bash
         run: |
@@ -226,10 +248,23 @@ jobs:
             while IFS= read -r -d '' candidate; do
               found="$candidate"
               break
-            done < <(find build -type f \( -name "$name" -o -name "${name}.exe" \) -print0)
+            done < <(
+              find build -type f \
+                ! -path '*/CMakeFiles/*' \
+                ! -name '*.d' \
+                ! -name '*.o' \
+                ! -name '*.obj' \
+                \( -name "${name}.exe" -o -name "$name" \) \
+                \( -name '*.exe' -o -perm -100 \) \
+                -print0 2>/dev/null \
+              || true
+            )
             if [ -z "$found" ]; then
               echo "${name} executable not found under build/" >&2
-              find build -type f -name 'example*' >&2 || true
+              find build -type f \
+                ! -path '*/CMakeFiles/*' \
+                \( -name 'example*' ! -name '*.md' \) \
+                >&2 || true
               return 1
             fi
             printf '%s\n' "$found"
@@ -237,6 +272,8 @@ jobs:
 
           colour=$(locate_example example.c.colour)
           colour_for=$(locate_example example.c.colour_for)
+          echo "using colour=${colour}"
+          echo "using colour_for=${colour_for}"
 
           esc=$(printf '\033')
           failures=0
@@ -246,7 +283,17 @@ jobs:
             desc="$1"; shift
             expect="$1"; shift
 
+            set +e
             out="$("$@" 2>&1)"
+            rc=$?
+            set -e
+
+            if [ "$rc" -ne 0 ]; then
+              echo "FAIL: ${desc}: program exited ${rc}" >&2
+              echo "$out" >&2
+              failures=$((failures + 1))
+              return 0
+            fi
 
             case "$out" in
               *"$esc"*) actual=colour ;;
