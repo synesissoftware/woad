@@ -1,6 +1,11 @@
 # woad - Changes <!-- omit in toc -->
 
 
+## 0.1.0-beta3 - 14th October 2026
+
+* added **test/performance/colour_for** (`test.performance.colour_for`), which times the per-call terminal probe paid by every colour-for currency and, on Windows, the console-handle currencies plus the once-per-process virtual-terminal determination against its cached steady state; names the host via PlatformSTL when available;
+
+
 ## 0.1.0-beta2 - 12th October 2026
 
 * SGR attribute macros `WOAD_BOLD` (SGR 1) and `WOAD_BLINKING` (SGR 5), and their stream-conditional forms `WOAD_BOLD_FOR()` and `WOAD_BLINKING_FOR()`;

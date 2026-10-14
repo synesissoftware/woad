@@ -152,7 +152,7 @@ On Windows, `WINDOWS_EXPORT_ALL_SYMBOLS` is set on the target, so no export deco
 
 ### Test
 
-Unit tests and example programs are provided. Component and performance runners are present and exit successfully when they find no programs. Scratch coverage is `test.scratch.versions`. Windows hosts have native **`.cmd`** counterparts of each runner.
+Unit tests and example programs are provided. Performance coverage is `test.performance.colour_for`, which times colour-for on each currency, including, on Windows, console handles and the once-per-process virtual-terminal determination. Scratch coverage is `test.scratch.versions`. Component runners are present and exit successfully when they find no programs. Windows hosts have native **`.cmd`** counterparts of each runner.
 
 > **NOTE**: If you do not provide the flag `--no-make` (=== `-M`) then the scripts will also run a build.
 
@@ -167,6 +167,12 @@ The same unit tests, via the taxonomy runner:
 
 ```bash
 ./run_all_unit_tests.sh --no-make
+```
+
+The colour-for timings, via the performance runner:
+
+```bash
+./run_all_performance_tests.sh --no-make
 ```
 
 **run_all_automated_tests.sh** aggregates the automated categories. **run_all_component_tests.sh**, **run_all_scratch_tests.sh**, and **run_all_performance_tests.sh** cover the other kinds. Examples, when enabled, run via **run_all_examples.sh**.
