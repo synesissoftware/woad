@@ -47,12 +47,25 @@ jobs:
             mingw-w64-x86_64-cmake
             mingw-w64-x86_64-make
 
+
+      # Dependency order is deliberate (not lexicographic): each package
+      # configures against those already installed in the shared prefix.
+      - name: Install SIS dependencies
+        uses: ./.github/actions/install-sis-deps
+        with:
+          build-type: ${{ inputs.build-type }}
+          c-compiler: ${{ inputs.c-compiler == 'mingw' && 'gcc' || inputs.c-compiler }}
+          cpp-compiler: ${{ inputs.c-compiler == 'mingw' && 'g++' || inputs.cpp-compiler }}
+          dependencies: STLSoft
+          toolchain: ${{ inputs.c-compiler == 'mingw' && 'mingw' || '' }}
+
       - name: Configure via prepare_cmake.sh
         shell: bash
         run: |
           set -euo pipefail
           export SIS_CMAKE_BUILD_DIR="${{ github.workspace }}/build"
           export SIS_CMAKE_CONFIG="${{ inputs.build-type }}"
+          export CMAKE_PREFIX_PATH="${{ env.SIS_DEPS }}${CMAKE_PREFIX_PATH:+:${CMAKE_PREFIX_PATH}}"
           # Bash 3.2 (macOS) + set -u treats an empty "${arr[@]}" as
           # unbound; use the ${arr[@]+…} form so Release/non-mingw is OK.
           PREPARE_ARGS=()
@@ -64,7 +77,7 @@ jobs:
             PREPARE_ARGS+=(--mingw)
           elif [ "${{ inputs.c-compiler }}" != "cl" ]; then
             export CC="${{ inputs.c-compiler }}"
-            export CXX="${{ inputs.cpp_compiler }}"
+            export CXX="${{ inputs.cpp-compiler }}"
           fi
           ./prepare_cmake.sh ${PREPARE_ARGS[@]+"${PREPARE_ARGS[@]}"}
 

@@ -27,7 +27,6 @@ Files=(
   Makefile
   cmake_install.cmake
   install_manifest.txt
-  woad.pc
 )
 SisUseColours=0
 

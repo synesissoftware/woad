@@ -1,6 +1,14 @@
 # woad - Changes <!-- omit in toc -->
 
 
+## 0.1.0 - 14th October 2026
+
+* Synced tip **cmake-helpers** runners (incl. performance / **remove_cmake_artefacts**);
+* Migrated `WOAD_VER_ALPHABETA` to `WOAD_VER_RELSTATUS` (alias retained) and promoted to release status `0xFF`;
+* Phase **4c** polish: `PROGRAM_NAME` **test.scratch.versions**;
+* CI hygiene: **install-sis-deps** wiring and execute-bit exclusion form;
+
+
 ## 0.1.0-beta3 - 14th October 2026
 
 * added **test/performance/colour_for** (`test.performance.colour_for`), which times the per-call terminal probe paid by every colour-for currency and, on Windows, the console-handle currencies plus the once-per-process virtual-terminal determination against its cached steady state; names the host via PlatformSTL when available;
