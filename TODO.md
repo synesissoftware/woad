@@ -51,7 +51,9 @@
 
 ## Performance improvements
 
-* \<none>
+* [ ] apply colour policy before the per-call terminal probe in `woad_supports_colour_()` (and thus colour-for): force and inhibit already decide the answer, yet today they still pay `isatty()` / `_isatty()` / `GetConsoleMode()`; **test.performance.colour_for** shows those probes are the hot cost (Unix `isatty` ~150–700 ns; Windows handle/`GetConsoleMode` ~1 µs even when the handle is not a console), while a warm policy read is near the measurement floor;
+* [ ] measure a live Windows virtual-terminal path in **test.performance.colour_for**: CI redirects stdout/stderr, so cold `woad_console_supports_ansi` only times `RtlGetVersion` plus failed `GetConsoleMode` on pipes (~2 µs), not a successful `SetConsoleMode` enable; discover a console (`AllocConsole` + `CONOUT$`, rebind `STD_*` only for that group) and report OS build / VT path in the preamble so Win10-server versus Win11+ branches are visible in Actions logs;
+* [ ] decide whether Windows handle / std-handle currencies should cache or otherwise amortise `GetConsoleMode` across repeated colour-for calls on the same handle: stream/fd colour-for on redirected Windows is ~4–13 ns, while the handle currencies stay ~1 µs per call; document the trade-off against handle lifetime and `woad_refresh()`;
 
 
 ## Packaging improvements

@@ -1,8 +1,9 @@
 # woad - News <!-- omit in toc -->
 
 
-| Date                | News Item                 | Details                                       |
-|---------------------|---------------------------|-----------------------------------------------|
+| Date                | News Item                                                   | Details                       |
+| ------------------- | ----------------------------------------------------------- | ----------------------------- |
+| 14th October 2026   | [**woad** 0.1.0-beta3](https://github.com/synesissoftware/woad/releases/tag/0.1.0-beta3) | Colour-for performance timings |
 | 12th October 2026   | [**woad** 0.1.0-beta2](https://github.com/synesissoftware/woad/releases/tag/0.1.0-beta2) | Bold and blinking |
 | 9th October 2026    | [**woad** 0.1.0-beta1](https://github.com/synesissoftware/woad/releases/tag/0.1.0-beta1) | Stream-conditional colour API |
 | 7th October 2026    | [**woad** 0.0.1-alpha2](https://github.com/synesissoftware/woad/releases/tag/0.0.1-alpha2) | Helpers, modular CI, and docs |

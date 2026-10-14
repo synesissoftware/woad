@@ -16,7 +16,7 @@
  *            WOAD_COLOUR=never ./example.c.colour_for
  *
  * Created: 27th August 2026
- * Updated: 7th October 2026
+ * Updated: 14th October 2026
  *
  * Home:    https://github.com/synesissoftware/woad/
  *

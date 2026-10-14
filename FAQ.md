@@ -36,10 +36,11 @@ See [INSTALL.md](./INSTALL.md) for details of how to install **woad**.
 
 ## Q3: "How do I use woad?"
 
-Include **woad/woad.h**. There is no library to link. The **CMake** target
-is `woad::woad`.
+Include **woad/woad.h**. The fixed SGR macros need no linking; the
+stream-conditional API and version functions require the compiled library.
+The **CMake** target is `woad::woad`.
 
-A minimal sketch:
+A minimal sketch (header-only fixed macros):
 
 ```c
 #include <woad/woad.h>
@@ -61,11 +62,13 @@ See [INSTALL.md](./INSTALL.md) and the examples under **examples/**.
 
 Yes. Automated tests live under:
 
-* **./test/unit** — unit tests (`test.unit.codes`, `test.unit.version`);
+* **./test/unit** — unit tests (`test.unit.codes`, `test.unit.gating`,
+  `test.unit.version`);
+* **./test/performance** — performance programs (**test.performance.colour_for**);
 * **./test/scratch** — scratch / exploratory programs (**test.scratch.versions**);
 
-**woad** does not yet ship component or performance programs. Those runners
-exit successfully when they find none.
+**woad** does not yet ship component programs. That runner exits successfully
+when it finds none.
 
 When testing is enabled, build them via **prepare_cmake.sh** / **build_cmake.sh**
 and run with **run_all_unit_tests.sh** (and **CTest** where configured). The

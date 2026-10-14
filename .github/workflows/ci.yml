@@ -1,6 +1,6 @@
 #
 # Created: 15th August 2026
-# Updated: 7th October 2026
+# Updated: 14th October 2026
 #
 
 name: CI
@@ -10,7 +10,6 @@ on:
     branches:
       - master
       - dev
-      - api
       - boilerplate
       - idiomatic
       - rc1
@@ -191,7 +190,7 @@ jobs:
           set -euo pipefail
           test -f "${INSTALL_PREFIX}/include/woad/woad.h"
           test -f "${INSTALL_PREFIX}/share/man/man3/woad.3"
-          # the generated page must carry the real version, not the @...@ token
+          # generated page must carry the real version, not the @...@ token
           grep -q '^\.TH WOAD 3 .* "woad [0-9]' "${INSTALL_PREFIX}/share/man/man3/woad.3"
           test -f "${INSTALL_PREFIX}/lib/cmake/woad/woad-config.cmake" || \
             test -f "${INSTALL_PREFIX}/lib64/cmake/woad/woad-config.cmake"
