@@ -104,9 +104,9 @@ int main(void)
 
     fprintf(
         stderr
-    ,   "%s%sthis line is white-on-red if, and only if, stderr warrants colour%s\n"
-    ,   WOAD_BG_RED_FOR(stderr)
-    ,   WOAD_FG_BRIGHT_WHITE_FOR(stderr)
+    ,   "'%s%sthis line is magenta-on-bright_black if, and only if, stderr warrants colour%s'\n"
+    ,   WOAD_BG_BRIGHT_BLACK_FOR(stderr)
+    ,   WOAD_FG_BRIGHT_MAGENTA_FOR(stderr)
     ,   WOAD_RESET_FOR(stderr)
     );
 

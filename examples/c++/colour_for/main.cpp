@@ -79,52 +79,140 @@ int main(void)
         << "policy: " << policy_name(woad_colour_policy())
         << "; "
         << "std::cout is" << (woad::stream_is_tty(std::cout) ? "" : "not") << " a tty"
+        << "; "
         << "std::cerr is" << (woad::stream_is_tty(std::cerr) ? "" : "not") << " a tty"
         << "; "
         << std::endl
         ;
 
-    /* The colour-named conditional macros. */
 
-    std::cout
-        << WOAD_FG_GREEN_FOR(std::cout)
-        << "this line is green if, and only if, stdout warrants colour"
-        << WOAD_RESET_FOR(std::cout)
-        << std::endl
-        ;
+    /* macros */
+    {
+        std::cout << "\nmacros:\n";
 
-    std::cout
-        << WOAD_BOLD_FOR(std::cout)
-        << "this line is bold if, and only if, stdout warrants colour"
-        << WOAD_RESET_FOR(std::cout)
-        << std::endl
-        ;
+        std::cout
+            << "\t"
+            << WOAD_FG_GREEN_FOR(std::cout)
+            << "this line is green if, and only if, std::cout warrants colour"
+            << WOAD_RESET_FOR(std::cout)
+            << std::endl
+            ;
 
-    std::cout
-        << WOAD_BLINKING_FOR(std::cout)
-        << "this line blinks if, and only if, stdout warrants colour"
-        << WOAD_RESET_FOR(std::cout)
-        << std::endl
-        ;
+        std::cout
+            << "\t"
+            << WOAD_BOLD_FOR(std::cout)
+            << "this line is bold if, and only if, std::cout warrants colour"
+            << WOAD_RESET_FOR(std::cout)
+            << std::endl
+            ;
 
-    std::cout
-        << WOAD_BG_RED_FOR(std::cout)
-        << WOAD_FG_BRIGHT_WHITE_FOR(std::cout)
-        << "this line is white-on-red if, and only if, stderr warrants colour"
-        << WOAD_RESET_FOR(std::cout)
-        << std::endl
-        ;
+        std::cout
+            << "\t"
+            << WOAD_BLINKING_FOR(std::cout)
+            << "this line blinks if, and only if, std::cout warrants colour"
+            << WOAD_RESET_FOR(std::cout)
+            << std::endl
+            ;
 
-    /* The colour-parameterised conditional macros, which take the sequence
-     * to be applied, and so may be driven by a variable.
-     */
+        std::cerr
+            << "\t"
+            << "'"
+            << WOAD_BG_BRIGHT_BLACK_FOR(std::cerr)
+            << WOAD_FG_BRIGHT_MAGENTA_FOR(std::cerr)
+            << "this line is magenta-on-bright_black if, and only if, std::cerr warrants colour"
+            << WOAD_RESET_FOR(std::cerr)
+            << "'"
+            << std::endl
+            ;
 
-    std::cout
-        << WOAD_FG_FOR(WOAD_FG_YELLOW, std::cout)
-        << "this line is yellow if, and only if, stdout warrants colour"
-        << WOAD_RESET_FOR(std::cout)
-        << std::endl
-        ;
+        /* The colour-parameterised conditional macros, which take the sequence
+         * to be applied, and so may be driven by a variable.
+         */
+
+        std::cout
+            << "\t"
+            << WOAD_FG_FOR(WOAD_FG_YELLOW, std::cout)
+            << "this line is yellow if, and only if, std::cout warrants colour"
+            << WOAD_RESET_FOR(std::cout)
+            << std::endl
+            ;
+    }
+
+
+    /* manipulators */
+    {
+        std::cout << "\nmanipulators:\n";
+
+        std::cout
+            << "\t"
+            << woad::green
+            << "this line is green if, and only if, std::cout warrants colour"
+            << woad::reset
+            << std::endl
+            ;
+
+        std::cout
+            << "\t"
+            << woad::bold
+            << "this line is bold if, and only if, std::cout warrants colour"
+            << woad::reset
+            << std::endl
+            ;
+
+        std::cout
+            << "\t"
+            << woad::blinking
+            << "this line blinks if, and only if, std::cout warrants colour"
+            << woad::reset
+            << std::endl
+            ;
+
+        std::cerr
+            << "\t"
+            << "'"
+            << woad::bg_bright_black
+            << woad::bright_magenta
+            << "this line is magenta-on-bright_black if, and only if, std::cerr warrants colour"
+            << woad::reset
+            << "'"
+            << std::endl
+            ;
+    }
+
+
+    /* inserters */
+    {
+        std::cout << "\ninserters:\n";
+
+        std::cout
+            << "\t"
+            << "this " << woad::green("word") << " is " << WOAD_FG_GREEN << "green" << WOAD_RESET << " if, and only if, std::cout warrants " << woad::cyan("colour")
+            << std::endl
+            ;
+
+        std::cout
+            << "\t"
+            << woad::bold("this line is bold if, and only if, std::cout warrants colour")
+            << std::endl
+            ;
+
+        std::cout
+            << "\t"
+            << woad::blinking
+            << "this line blinks if, and only if, std::cout warrants colour"
+            << woad::reset
+            << std::endl
+            ;
+
+        std::cerr
+            << "\t"
+            << "'"
+            << woad::bright_magenta(woad::bg_bright_black("this line is magenta-on-bright_black if, and only if, std::cerr warrants colour"))
+            << "'"
+            << std::endl
+            ;
+    }
+
 
     return EXIT_SUCCESS;
 }
