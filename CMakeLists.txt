@@ -32,7 +32,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 project(woad
 	DESCRIPTION "Minimal ANSI terminal colour codes"
 	HOMEPAGE_URL "https://github.com/synesissoftware/woad"
-	LANGUAGES C
+	LANGUAGES C CXX
 )
 
 string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
