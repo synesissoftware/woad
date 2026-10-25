@@ -3,6 +3,7 @@
 
 | Date                | News Item                                                   | Details |
 | ------------------- | ----------------------------------------------------------- | ------- |
+| 26th October 2026   | [**woad** 0.1.2](https://github.com/synesissoftware/woad/releases/tag/0.1.2) | C++ adjustments, and examples |
 | 26th October 2026   | [**woad** 0.1.1](https://github.com/synesissoftware/woad/releases/tag/0.1.1) | Doxygen API reference |
 | 14th October 2026   | [**woad** 0.1.0](https://github.com/synesissoftware/woad/releases/tag/0.1.0) | Tip helpers; RelSt promote; Phase **4c**; CI **install-sis-deps** |
 | 14th October 2026   | [**woad** 0.1.0-beta3](https://github.com/synesissoftware/woad/releases/tag/0.1.0-beta3) | Colour-for performance timings |
