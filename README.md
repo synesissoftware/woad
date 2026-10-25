@@ -21,6 +21,8 @@ Minimal ANSI terminal colour codes, for C
   - [Colour policy, from the environment](#colour-policy-from-the-environment)
   - [Keeping woad away from the console (Windows)](#keeping-woad-away-from-the-console-windows)
   - [Stream inspection](#stream-inspection)
+  - [C++ API](#c-api)
+  - [IOStreams interface](#iostreams-interface)
   - [Version](#version)
 - [Design notes](#design-notes)
   - [Why a compiled component?](#why-a-compiled-component)
@@ -42,7 +44,7 @@ Minimal ANSI terminal colour codes, for C
 
 **woad** provides the smallest useful set of ANSI SGR colour sequences for C and C++ library authors: fixed sequences that always emit, and stream-conditional counterparts that emit only when the destination warrants it, with the decision overridable from the environment. It is not a console or TUI framework.
 
-**woad** is the **C** implementation.
+**woad** is the **C** implementation. Its headers are usable unchanged from C++, which additionally gains a `woad` namespace of inline wrappers and, via **woad/iostreams.hpp**, manipulators and inserters for standard IOStreams.
 
 
 ## Installation
@@ -225,6 +227,95 @@ int woad_console_supports_ansi(void);
 Note that the Windows currencies are declared as `void*` and `unsigned long` rather than `HANDLE` and `DWORD`. That is deliberate: it means **woad.h** never includes `<windows.h>`, and so no client translation unit inherits it, or its macro pollution, merely by using **woad**.
 
 
+### C++ API
+
+When compiled as C++, **woad.h** also provides, in namespace `woad`, an inline wrapper for each C function, with the `woad_` prefix and the stream-currency suffix dropped. The wrappers add no state and no linkage: each simply calls the C function, which retains C linkage (supplied by `WOAD_CALL()`).
+
+| C                                              | C++                                          |
+| ---------------------------------------------- | -------------------------------------------- |
+| `woad_version()`                               | `woad::version()`                            |
+| `woad_version_string()`                        | `woad::version_string()`                     |
+| `woad_colour_policy()`                         | `woad::colour_policy()`                      |
+| `woad_refresh()`                               | `woad::refresh()`                            |
+| `woad_console_supports_ansi()`                 | `woad::console_supports_ansi()`              |
+| `woad_stream_is_tty(FILE*)`                    | `woad::stream_is_tty(FILE*)`                 |
+| `woad_fd_is_tty(int)`                          | `woad::fd_is_tty(int)`                       |
+| `woad_stream_supports_colour(FILE*)`           | `woad::stream_supports_colour(FILE*)`        |
+| `woad_fd_supports_colour(int)`                 | `woad::fd_supports_colour(int)`              |
+| `woad_seq_for_stream(seq, FILE*)`              | `woad::seq_for_stream(seq, FILE*)`           |
+| `woad_seq_for_fd(seq, int)`                    | `woad::seq_for_fd(seq, int)`                 |
+
+The Windows-only functions (`*_handle_*`, `*_std_handle_*`) are wrapped likewise. The macros of the earlier sections are unchanged, and, in C++, the `*_FOR()` forms dispatch by overloading on the stream type:
+
+```C++
+#include <woad/woad.h>
+
+#include <stdio.h>
+
+printf(
+    "%sbold%s\n"
+,   WOAD_BOLD_FOR(stdout)
+,   WOAD_RESET_FOR(stdout)
+);
+```
+
+
+### IOStreams interface
+
+**woad/iostreams.hpp** adds support for standard IOStreams. It includes **woad.h**, so need be the only **woad** header included. As with the macros, nothing is emitted unless colour is warranted for the stream, as decided by `woad_seq_for_stream()`: policy, terminal attachment, and console capability all apply.
+
+A standard stream is mapped to the C stream with which it is associated: `std::cout` and `std::wcout` to `stdout`; `std::cerr`, `std::clog`, and their wide counterparts to `stderr`. Any other stream - a `std::ostringstream`, say - maps to no C stream, so that the colour policy alone decides (and so `WOAD_COLOUR=always` or `CLICOLOR_FORCE` will colour it, while `auto` will not).
+
+**Manipulators** apply an attribute or colour to subsequent output, and are reset with `woad::reset`:
+
+```C++
+#include <woad/iostreams.hpp>
+
+std::cout
+    << woad::green << "ok" << woad::reset
+    << ", "
+    << woad::bold << woad::red << "failed" << woad::reset
+    << std::endl
+    ;
+```
+
+**Inserters** wrap a message, applying the colour for just that message and then resetting. They compose, so that attributes combine:
+
+```C++
+std::cout
+    << woad::green("ok")
+    << ", "
+    << woad::bold(woad::red("failed"))
+    << std::endl
+    ;
+```
+
+Both are available for every attribute and colour:
+
+| Kind       | Names                                                                                          |
+| ---------- | ---------------------------------------------------------------------------------------------- |
+| Attributes | `bold`, `blinking`, and (manipulator only) `reset`                                             |
+| Foreground | `black`, `red`, `green`, `yellow`, `blue`, `magenta`, `cyan`, `white`                          |
+| Foreground (bright) | `bright_black`, `bright_red`, `bright_green`, `bright_yellow`, `bright_blue`, `bright_magenta`, `bright_cyan`, `bright_white` |
+| Background | `bg_black`, `bg_red`, `bg_green`, `bg_yellow`, `bg_blue`, `bg_magenta`, `bg_cyan`, `bg_white`  |
+| Background (bright) | `bg_bright_black`, `bg_bright_red`, ... , `bg_bright_white`                           |
+
+All are in namespace `woad`; the manipulators take a `std::ios_base&`, and the inserters take a `char const*` or another inserter.
+
+The header also provides `woad::stream_is_tty(stm)`, for any IOStream, and an overload of `woad_seq_for()` for IOStreams so that the stream-conditional macros accept one directly:
+
+```C++
+std::cout
+    << WOAD_FG_GREEN_FOR(std::cout)
+    << "green, if std::cout warrants colour"
+    << WOAD_RESET_FOR(std::cout)
+    << std::endl
+    ;
+```
+
+> **Note:** a manipulator changes the state of the *terminal*, not of the stream. If output is interleaved from several threads, or the program exits abnormally, the terminal may be left in a non-default state; prefer inserters, which always reset, in such cases.
+
+
 ### Version
 
 ```C
@@ -281,13 +372,17 @@ A static library therefore gives once-per-module rather than once-per-process - 
 
 ## Examples
 
-Examples live under **examples/c/**. The directory is the subject; the built program is `example.c.<subject>`. Build them with `BUILD_EXAMPLES` (on by default); run via **run_all_examples.sh**.
+Examples live under **examples/c/**, **examples/c++/**, and **examples/iostreams/**. The directory is the subject; the built program is `example.<language>.<subject>`. Build them with `BUILD_EXAMPLES` (on by default); run via **run_all_examples.sh**.
 
 | Example | Language | Notes |
 | ------- | -------- | ----- |
 | [**example.c.colour**](./examples/c/colour/) | C | Emits foreground colours, plus bold and blinking |
 | [**example.c.colour_for**](./examples/c/colour_for/) | C | Emits colour only when the destination warrants it |
 | [**example.c.version**](./examples/c/version/) | C | Prints the macro and `woad_version_string()` |
+| [**example.c++.colour**](./examples/c++/colour/) | C++ | Emits foreground colours, plus bold and blinking, from C++ |
+| [**example.c++.version**](./examples/c++/version/) | C++ | Prints the macro and `woad_version_string()`, from C++ |
+| [**example.iostreams.colour_for**](./examples/iostreams/colour_for/) | C++ | Emits colour to IOStreams only when the destination warrants it |
+| [**example.iostreams.version**](./examples/iostreams/version/) | C++ | Prints the version using IOStreams manipulators and inserters |
 
 
 ## Project Information

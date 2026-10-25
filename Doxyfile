@@ -2,7 +2,7 @@
 
 PROJECT_NAME           = "woad"
 PROJECT_BRIEF          = "Minimal ANSI terminal colour codes, for C (and C++)"
-PROJECT_NUMBER         = 0.2.0
+PROJECT_NUMBER         = 0.3.0
 
 # Prefer SIS_CMAKE_BUILD_DIR-aligned output (same convention as BDUT /
 # CLASP / cstring / Diagnosticism). ./dox/ remains gitignored for
@@ -24,10 +24,6 @@ FILE_PATTERNS          = *.h \
                          *.hpp \
                          *.md
 RECURSIVE              = NO
-# iostreams.hpp does not yet parse and is not a stable API. Drop this
-# exclusion when that header is finished and documented.
-EXCLUDE                = include/woad/iostreams.hpp
-
 USE_MDFILE_AS_MAINPAGE = doc/mainpage.md
 
 EXAMPLE_PATH           = examples
@@ -66,9 +62,14 @@ EXPAND_ONLY_PREDEF     = YES
 SKIP_FUNCTION_MACROS   = YES
 # Hide per-header edit macros and the legacy version aliases. Strip the
 # linkage wrapper so prototypes read as the return type alone. Defining
-# the skip section also keeps the Windows-only prototypes visible.
+# the skip section also keeps the Windows-only prototypes visible. The
+# two WOAD_DEFINE_* macros of iostreams.hpp expand to one prototype each,
+# so that the comment before each invocation documents that function (the
+# inserter's second overload is described in the group documentation).
 PREDEFINED             = WOAD_DOCUMENTATION_SKIP_SECTION \
-                         WOAD_CALL(rt)=rt
+                         WOAD_CALL(rt)=rt \
+                         "WOAD_DEFINE_MANIPULATOR_0_(manip_name, seq)=std::ios_base& manip_name(std::ios_base& stm);" \
+                         "WOAD_DEFINE_INSERTER_1_(ins_name, seq)=woad_inserter_t ins_name(char const* msg);"
 
 HAVE_DOT               = NO
 

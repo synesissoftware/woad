@@ -3,6 +3,7 @@
 
 | Date                | News Item                                                   | Details |
 | ------------------- | ----------------------------------------------------------- | ------- |
+| 28th October 2026   | [**woad** 0.3.0](https://github.com/synesissoftware/woad/releases/tag/0.3.0) | IOStreams interface (**woad/iostreams.hpp**) and examples |
 | 26th October 2026   | [**woad** 0.2.0](https://github.com/synesissoftware/woad/releases/tag/0.2.0) | C++ API (`woad` namespace) and examples; `WOAD_CALL()` sole source of C linkage |
 | 26th October 2026   | [**woad** 0.1.1](https://github.com/synesissoftware/woad/releases/tag/0.1.1) | Doxygen API reference |
 | 14th October 2026   | [**woad** 0.1.0](https://github.com/synesissoftware/woad/releases/tag/0.1.0) | Tip helpers; RelSt promote; Phase **4c**; CI **install-sis-deps** |

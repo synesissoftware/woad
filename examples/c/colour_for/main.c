@@ -16,7 +16,7 @@
  *            WOAD_COLOUR=never ./example.c.colour_for
  *
  * Created: 27th August 2026
- * Updated: 14th October 2026
+ * Updated: 26th October 2026
  *
  * ////////////////////////////////////////////////////////////////////// */
 
@@ -45,8 +45,10 @@ static char const* policy_name(int policy)
 
 int main(void)
 {
+    puts("C:");
+
     printf(
-        "policy: %s; stdout is%s a tty; stderr is%s a tty\n"
+        "\tpolicy: %s; stdout is%s a tty; stderr is%s a tty\n"
     ,   policy_name(woad_colour_policy())
     ,   woad_stream_is_tty(stdout) ? "" : " not"
     ,   woad_stream_is_tty(stderr) ? "" : " not"
@@ -55,28 +57,28 @@ int main(void)
     /* The colour-named conditional macros. */
 
     printf(
-        "%sthis line is green if, and only if, stdout warrants colour%s\n"
+        "\t%sthis line is green if, and only if, stdout warrants colour%s\n"
     ,   WOAD_FG_GREEN_FOR(stdout)
     ,   WOAD_RESET_FOR(stdout)
     );
 
     printf(
-        "%sthis line is bold if, and only if, stdout warrants colour%s\n"
+        "\t%sthis line is bold if, and only if, stdout warrants colour%s\n"
     ,   WOAD_BOLD_FOR(stdout)
     ,   WOAD_RESET_FOR(stdout)
     );
 
     printf(
-        "%sthis line blinks if, and only if, stdout warrants colour%s\n"
+        "\t%sthis line blinks if, and only if, stdout warrants colour%s\n"
     ,   WOAD_BLINKING_FOR(stdout)
     ,   WOAD_RESET_FOR(stdout)
     );
 
     fprintf(
         stderr
-    ,   "%s%sthis line is white-on-red if, and only if, stderr warrants colour%s\n"
-    ,   WOAD_BG_RED_FOR(stderr)
-    ,   WOAD_FG_BRIGHT_WHITE_FOR(stderr)
+    ,   "\t'%s%sthis line is magenta-on-bright_black if, and only if, stderr warrants colour%s'\n"
+    ,   WOAD_BG_BRIGHT_BLACK_FOR(stderr)
+    ,   WOAD_FG_BRIGHT_MAGENTA_FOR(stderr)
     ,   WOAD_RESET_FOR(stderr)
     );
 
@@ -85,7 +87,7 @@ int main(void)
      */
 
     printf(
-        "%sthis line is yellow if, and only if, stdout warrants colour%s\n"
+        "\t%sthis line is yellow if, and only if, stdout warrants colour%s\n"
     ,   WOAD_FG_FOR(WOAD_FG_YELLOW, stdout)
     ,   WOAD_RESET_FOR(stdout)
     );
@@ -99,7 +101,7 @@ int main(void)
         __STDC_VERSION__ >= 201112L)
 
     printf(
-        "%sthis line is cyan if, and only if, descriptor 1 warrants colour%s\n"
+        "\t%sthis line is cyan if, and only if, descriptor 1 warrants colour%s\n"
     ,   WOAD_SEQ_FOR(WOAD_FG_CYAN, 1)
     ,   WOAD_SEQ_FOR(WOAD_RESET, 1)
     );
