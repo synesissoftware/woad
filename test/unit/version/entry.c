@@ -75,13 +75,13 @@ int main(void)
         | (0ul << 24)
         | (3ul << 16)
         | (0ul <<  8)
-        | (0x41ul << 0)
+        | (0xFFul << 0)
     );
 
     ASSERT_TRUE_(0 == WOAD_VER_MAJOR);
-    ASSERT_TRUE_(3);
+    ASSERT_TRUE_(3 == WOAD_VER_MINOR);
     ASSERT_TRUE_(0 == WOAD_VER_PATCH);
-    ASSERT_TRUE_(0x41 == WOAD_VER_ALPHABETA);
+    ASSERT_TRUE_(0xFF == WOAD_VER_ALPHABETA);
     ASSERT_TRUE_(WOAD_VER_REVISION == WOAD_VER_PATCH);
     ASSERT_TRUE_((unsigned long)WOAD_VER == expected_ver);
     ASSERT_TRUE_(0 == strcmp(WOAD_VER_STRING, "0.3.0"));
