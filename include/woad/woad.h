@@ -53,8 +53,8 @@
 #ifndef WOAD_DOCUMENTATION_SKIP_SECTION
 # define WOAD_VER_WOAD_H_WOAD_MAJOR     0
 # define WOAD_VER_WOAD_H_WOAD_MINOR     0
-# define WOAD_VER_WOAD_H_WOAD_PATCH     4
-# define WOAD_VER_WOAD_H_WOAD_EDIT      11
+# define WOAD_VER_WOAD_H_WOAD_PATCH     6
+# define WOAD_VER_WOAD_H_WOAD_EDIT      13
 #endif /* !WOAD_DOCUMENTATION_SKIP_SECTION */
 
 
@@ -134,8 +134,8 @@
  */
 
 #define WOAD_VER_MAJOR      0
-#define WOAD_VER_MINOR      1
-#define WOAD_VER_PATCH      1
+#define WOAD_VER_MINOR      2
+#define WOAD_VER_PATCH      0
 #define WOAD_VER_RELSTATUS  0xFF
 
 #define WOAD_VER \
@@ -147,7 +147,7 @@
     )
 
 #ifndef WOAD_DOCUMENTATION_SKIP_SECTION
-# define WOAD_VER_ALPHABETA                                  WOAD_VER_RELSTATUS
+# define WOAD_VER_ALPHABETA                                 WOAD_VER_RELSTATUS
 # define WOAD_VER_REVISION                                  WOAD_VER_PATCH
 # define WOAD_VER_STRINGIZE_(j, n, p)                       #j "." #n "." #p
 # define WOAD_VER_STRINGIZE(j, n, p)                        WOAD_VER_STRINGIZE_(j, n, p)
@@ -359,10 +359,10 @@
 # ifndef WOAD_CALL
 #  ifdef __cplusplus
 #   define WOAD_CALL(rt)                                    extern "C" rt
-#  else
+#  else /* ? C++ */
 
 #   define WOAD_CALL(rt)                                    rt
-#  endif
+#  endif /* C++ */
 # endif /* !WOAD_CALL */
 
 /* Type-dispatched wrappers are available in C++ (by overloading) and in C11
@@ -406,16 +406,6 @@
 #define WOAD_COLOUR_POLICY_INHIBIT                          (2)
 
 /** @} */
-
-
-/* /////////////////////////////////////////////////////////////////////////
- * language
- */
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
 
 
 /* /////////////////////////////////////////////////////////////////////////
@@ -733,15 +723,6 @@ woad_seq_for_std_handle(
 
 
 /* /////////////////////////////////////////////////////////////////////////
- * language
- */
-
-#ifdef __cplusplus
-} /* extern "C" */
-#endif
-
-
-/* /////////////////////////////////////////////////////////////////////////
  * type-dispatched wrappers
  *
  * `woad_seq_for()` and `woad_supports_colour()` accept any of the stream
@@ -754,7 +735,8 @@ woad_seq_for_std_handle(
  * currencies remain available under their specific names.
  */
 
-#ifdef __cplusplus
+#if 0
+#elif defined(__cplusplus)
 
 /** `FILE*` overload of woad_seq_for_stream().
  *
@@ -958,6 +940,190 @@ woad_supports_colour(
  */
 # define woad_supports_colour(stm)                          woad_stream_supports_colour(stm)
 #endif /* dispatch */
+
+
+/* /////////////////////////////////////////////////////////////////////////
+ * C++ API functions
+ */
+
+#ifdef __cplusplus
+
+namespace woad
+{
+
+/** \see woad_version */
+inline
+unsigned long
+version()
+{
+    return woad_version();
+}
+
+/** \see woad_version_string */
+inline
+char const*
+version_string()
+{
+    return woad_version_string();
+}
+
+/** \see woad_colour_policy */
+inline
+int
+colour_policy()
+{
+    return woad_colour_policy();
+}
+
+/** \see woad_refresh */
+inline
+void
+refresh()
+{
+    woad_refresh();
+}
+
+/** \see woad_console_supports_ansi */
+inline
+int
+console_supports_ansi()
+{
+    return woad_console_supports_ansi();
+}
+
+/** \see woad_stream_is_tty */
+inline
+int
+stream_is_tty(
+    FILE*           stm
+)
+{
+    return woad_stream_is_tty(stm);
+}
+
+/** \see woad_fd_is_tty */
+inline
+int
+fd_is_tty(
+    int             fd
+)
+{
+    return woad_fd_is_tty(fd);
+}
+
+/** \see woad_stream_supports_colour */
+inline
+int
+stream_supports_colour(
+    FILE*           stm
+)
+{
+    return woad_stream_supports_colour(stm);
+}
+
+/** \see woad_fd_supports_colour */
+inline
+int
+fd_supports_colour(
+    int             fd
+)
+{
+    return woad_fd_supports_colour(fd);
+}
+
+# if defined(_WIN32) || \
+     defined(WOAD_DOCUMENTATION_SKIP_SECTION)
+
+/** \see woad_console_handle_is_tty */
+inline
+int
+console_handle_is_tty(
+    void*           h
+)
+{
+    return woad_console_handle_is_tty(h);
+}
+
+/** \see woad_std_handle_is_tty */
+inline
+int
+std_handle_is_tty(
+    unsigned long   id
+)
+{
+    return woad_std_handle_is_tty(id);
+}
+
+/** \see woad_console_handle_supports_colour */
+inline
+int
+console_handle_supports_colour(
+    void*           h
+)
+{
+    return woad_console_handle_supports_colour(h);
+}
+
+/** \see woad_std_handle_supports_colour */
+inline
+int
+std_handle_supports_colour(
+    unsigned long   id
+)
+{
+    return woad_std_handle_supports_colour(id);
+}
+# endif /* _WIN32 */
+
+/** \see woad_seq_for_stream */
+inline
+char const*
+seq_for_stream(
+    char const*     seq
+,   FILE*           stm
+)
+{
+    return woad_seq_for_stream(seq, stm);
+}
+
+/** \see woad_seq_for_fd */
+inline
+char const*
+seq_for_fd(
+    char const*     seq
+,   int             fd
+)
+{
+    return woad_seq_for_fd(seq, fd);
+}
+
+# if defined(_WIN32) || \
+     defined(WOAD_DOCUMENTATION_SKIP_SECTION)
+
+/** \see woad_seq_for_handle */
+inline
+char const*
+seq_for_handle(
+    char const*     seq
+,   void*           h
+)
+{
+    return woad_seq_for_handle(seq, h);
+}
+
+/** \see woad_seq_for_std_handle */
+inline
+char const*
+seq_for_std_handle(
+    char const*     seq
+,   unsigned long   id
+)
+{
+    return woad_seq_for_std_handle(seq, id);
+}
+# endif /* _WIN32 */
+} /* namespace woad */
+#endif /* C++ */
 
 
 /* /////////////////////////////////////////////////////////////////////////
