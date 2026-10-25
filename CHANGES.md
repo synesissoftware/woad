@@ -10,7 +10,6 @@
 * **README.md** describes **woad** as serving C and C++ library authors, and lists the afferent dependants;
 
 
-
 ## 0.1.1 - 26th October 2026
 
 * Added Doxygen module groups on the public API in **woad.h**, a front page in **doc/mainpage.md**, a compact **Doxyfile**, and **generate_doxygen.sh** (version taken from `WOAD_VER_*`; exit status from `PIPESTATUS`);
