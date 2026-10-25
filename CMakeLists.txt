@@ -63,7 +63,7 @@ set(CMAKE_C_EXTENSIONS ON)
 # C++ is used by the C++ examples and tests only
 if(NOT DEFINED CMAKE_CXX_STANDARD)
 
-       set(CMAKE_CXX_STANDARD 11)
+	set(CMAKE_CXX_STANDARD 11)
 endif()
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS ON)
