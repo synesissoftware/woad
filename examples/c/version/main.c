@@ -22,16 +22,14 @@ int main(int argc, char* argv[])
     ((void)argv);
 
     printf(
-        "%sv%s%s\n"
-    ,   WOAD_FG_GREEN_FOR(stdout)
-    ,   WOAD_VER_STRING
+        "%swoad%s: v%s%s%s (%s%s%s = %s0x%08lx%s)\n"
+    ,   WOAD_FG_BLUE_FOR(stdout)
     ,   WOAD_RESET_FOR(stdout)
-    );
-
-    printf(
-        "%sv%s%s (%s0x%08lx%s)\n"
     ,   WOAD_FG_GREEN_FOR(stdout)
     ,   woad_version_string()
+    ,   WOAD_RESET_FOR(stdout)
+    ,   WOAD_FG_CYAN_FOR(stdout)
+    ,   "WOAD_VER"
     ,   WOAD_RESET_FOR(stdout)
     ,   WOAD_FG_GREEN_FOR(stdout)
     ,   woad_version()

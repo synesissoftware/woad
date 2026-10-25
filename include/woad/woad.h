@@ -53,8 +53,8 @@
 #ifndef WOAD_DOCUMENTATION_SKIP_SECTION
 # define WOAD_VER_WOAD_H_WOAD_MAJOR     0
 # define WOAD_VER_WOAD_H_WOAD_MINOR     0
-# define WOAD_VER_WOAD_H_WOAD_PATCH     4
-# define WOAD_VER_WOAD_H_WOAD_EDIT      11
+# define WOAD_VER_WOAD_H_WOAD_PATCH     5
+# define WOAD_VER_WOAD_H_WOAD_EDIT      12
 #endif /* !WOAD_DOCUMENTATION_SKIP_SECTION */
 
 
@@ -135,7 +135,7 @@
 
 #define WOAD_VER_MAJOR      0
 #define WOAD_VER_MINOR      1
-#define WOAD_VER_PATCH      1
+#define WOAD_VER_PATCH      2
 #define WOAD_VER_RELSTATUS  0xFF
 
 #define WOAD_VER \
@@ -147,7 +147,7 @@
     )
 
 #ifndef WOAD_DOCUMENTATION_SKIP_SECTION
-# define WOAD_VER_ALPHABETA                                  WOAD_VER_RELSTATUS
+# define WOAD_VER_ALPHABETA                                 WOAD_VER_RELSTATUS
 # define WOAD_VER_REVISION                                  WOAD_VER_PATCH
 # define WOAD_VER_STRINGIZE_(j, n, p)                       #j "." #n "." #p
 # define WOAD_VER_STRINGIZE(j, n, p)                        WOAD_VER_STRINGIZE_(j, n, p)
@@ -359,10 +359,10 @@
 # ifndef WOAD_CALL
 #  ifdef __cplusplus
 #   define WOAD_CALL(rt)                                    extern "C" rt
-#  else
+#  else /* ? C++ */
 
 #   define WOAD_CALL(rt)                                    rt
-#  endif
+#  endif /* C++ */
 # endif /* !WOAD_CALL */
 
 /* Type-dispatched wrappers are available in C++ (by overloading) and in C11
@@ -406,16 +406,6 @@
 #define WOAD_COLOUR_POLICY_INHIBIT                          (2)
 
 /** @} */
-
-
-/* /////////////////////////////////////////////////////////////////////////
- * language
- */
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
 
 
 /* /////////////////////////////////////////////////////////////////////////
@@ -733,15 +723,6 @@ woad_seq_for_std_handle(
 
 
 /* /////////////////////////////////////////////////////////////////////////
- * language
- */
-
-#ifdef __cplusplus
-} /* extern "C" */
-#endif
-
-
-/* /////////////////////////////////////////////////////////////////////////
  * type-dispatched wrappers
  *
  * `woad_seq_for()` and `woad_supports_colour()` accept any of the stream
@@ -754,7 +735,8 @@ woad_seq_for_std_handle(
  * currencies remain available under their specific names.
  */
 
-#ifdef __cplusplus
+#if 0
+#elif defined(__cplusplus)
 
 /** `FILE*` overload of woad_seq_for_stream().
  *
