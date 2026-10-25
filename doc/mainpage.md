@@ -16,6 +16,9 @@ environment.
 | @ref group__woad__policy | `<woad/woad.h>` | `WOAD_COLOUR`, `NO_COLOR`, `CLICOLOR`, and console capability |
 | @ref group__woad__inspection | `<woad/woad.h>` | Terminal attachment and per-destination colour support |
 | @ref group__woad__sequences | `<woad/woad.h>` | `WOAD_*_FOR()` and `woad_seq_for()` |
+| @ref group__woad__iostreams | `<woad/iostreams.hpp>` | [C++ only] Stream queries, manipulators, and inserters for IOStreams |
+| @ref group__woad__iostreams__manipulators | `<woad/iostreams.hpp>` | `woad::green`, `woad::reset`, ... applied to subsequent output |
+| @ref group__woad__iostreams__inserters | `<woad/iostreams.hpp>` | `woad::green("ok")`, ... applied to one message |
 
 
 ## Quick start
