@@ -7,7 +7,7 @@
  *          version and colour-policy API.
  *
  * Created: 15th August 2026
- * Updated: 23rd October 2026
+ * Updated: 26th October 2026
  *
  * Home:    https://github.com/synesissoftware/woad/
  *
@@ -54,12 +54,62 @@
 # define WOAD_VER_WOAD_H_WOAD_MAJOR     0
 # define WOAD_VER_WOAD_H_WOAD_MINOR     0
 # define WOAD_VER_WOAD_H_WOAD_PATCH     5
-# define WOAD_VER_WOAD_H_WOAD_EDIT      10
+# define WOAD_VER_WOAD_H_WOAD_EDIT      12
 #endif /* !WOAD_DOCUMENTATION_SKIP_SECTION */
 
 
 /* /////////////////////////////////////////////////////////////////////////
+ * documentation
+ */
+
+/** \defgroup group__woad woad
+ *
+ * \brief Minimal ANSI terminal colour codes.
+ *
+ * Fixed SGR sequences that always emit, and stream-conditional
+ * counterparts that emit only when the destination warrants colour.
+ */
+
+/** \defgroup group__woad__version Version
+ * \ingroup group__woad
+ *
+ * \brief Header macros and the library version functions.
+ */
+
+/** \defgroup group__woad__sgr Fixed SGR sequences
+ * \ingroup group__woad
+ *
+ * \brief Compile-time ANSI SGR string literals.
+ *
+ * These always emit. They do not inspect the destination, and they
+ * require no binding to the library.
+ */
+
+/** \defgroup group__woad__policy Colour policy
+ * \ingroup group__woad
+ *
+ * \brief Environment colour policy and console ANSI capability.
+ */
+
+/** \defgroup group__woad__inspection Stream inspection
+ * \ingroup group__woad
+ *
+ * \brief Terminal attachment and per-destination colour support.
+ */
+
+/** \defgroup group__woad__sequences Conditional sequences
+ * \ingroup group__woad
+ *
+ * \brief SGR sequences that emit only when colour is warranted.
+ */
+
+
+/* /////////////////////////////////////////////////////////////////////////
  * version information
+ */
+
+/** \addtogroup group__woad__version
+ * @{
  */
 
 /**
@@ -72,9 +122,9 @@
  * \def WOAD_VER_PATCH
  * The patch number of the **woad** library
  *
- * \def WOAD_VER_ALPHABETA
- * Pre-release marker in the low byte of WOAD_VER. `0xFF` for a numbered
- * (non-alpha, non-beta, non-rc) release.
+ * \def WOAD_VER_RELSTATUS
+ * Pre-release marker in the low byte of \c WOAD_VER. `0xFF` for a
+ * numbered (non-alpha, non-beta, non-rc) release.
  *
  * \def WOAD_VER
  * The composite version of the **woad** library
@@ -97,13 +147,15 @@
     )
 
 #ifndef WOAD_DOCUMENTATION_SKIP_SECTION
-# define WOAD_VER_ALPHABETA                                  WOAD_VER_RELSTATUS
+# define WOAD_VER_ALPHABETA                                 WOAD_VER_RELSTATUS
 # define WOAD_VER_REVISION                                  WOAD_VER_PATCH
+# define WOAD_VER_STRINGIZE_(j, n, p)                       #j "." #n "." #p
+# define WOAD_VER_STRINGIZE(j, n, p)                        WOAD_VER_STRINGIZE_(j, n, p)
 #endif /* !WOAD_DOCUMENTATION_SKIP_SECTION */
 
-#define WOAD_VER_STRINGIZE_(j, n, p)                        #j "." #n "." #p
-#define WOAD_VER_STRINGIZE(j, n, p)                         WOAD_VER_STRINGIZE_(j, n, p)
 #define WOAD_VER_STRING                                     WOAD_VER_STRINGIZE(WOAD_VER_MAJOR, WOAD_VER_MINOR, WOAD_VER_PATCH)
+
+/** @} */
 
 
 /* /////////////////////////////////////////////////////////////////////////
@@ -129,6 +181,10 @@
  *
  * Fixed ANSI SGR sequences (attributes and colours). These always emit;
  * they do not inspect TTY state or Windows console mode.
+ */
+
+/** \addtogroup group__woad__sgr
+ * @{
  */
 
 /**
@@ -291,6 +347,8 @@
 #define WOAD_BG_BRIGHT_CYAN                                 "\033[106m"
 #define WOAD_BG_BRIGHT_WHITE                                "\033[107m"
 
+/** @} */
+
 
 /* /////////////////////////////////////////////////////////////////////////
  * implementation constructs
@@ -301,10 +359,10 @@
 # ifndef WOAD_CALL
 #  ifdef __cplusplus
 #   define WOAD_CALL(rt)                                    extern "C" rt
-#  else
+#  else /* ? C++ */
 
 #   define WOAD_CALL(rt)                                    rt
-#  endif
+#  endif /* C++ */
 # endif /* !WOAD_CALL */
 
 /* Type-dispatched wrappers are available in C++ (by overloading) and in C11
@@ -327,6 +385,10 @@
  * colour policy
  */
 
+/** \addtogroup group__woad__policy
+ * @{
+ */
+
 /**
  * \def WOAD_COLOUR_POLICY_AUTO
  * Colour is selected per-stream, according to whether the stream is
@@ -343,15 +405,7 @@
 #define WOAD_COLOUR_POLICY_FORCE                            (1)
 #define WOAD_COLOUR_POLICY_INHIBIT                          (2)
 
-
-/* /////////////////////////////////////////////////////////////////////////
- * language
- */
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+/** @} */
 
 
 /* /////////////////////////////////////////////////////////////////////////
@@ -360,6 +414,10 @@ extern "C"
 
 /* /////////////////////////////////////////////////////////////////
  * API functions - version
+ */
+
+/** \addtogroup group__woad__version
+ * @{
  */
 
 /** Obtains the **woad** version, as the composite value WOAD_VER.
@@ -386,9 +444,15 @@ woad_version(void);
 WOAD_CALL(char const*)
 woad_version_string(void);
 
+/** @} */
+
 
 /* /////////////////////////////////////////////////////////////////
  * API functions - policy
+ */
+
+/** \addtogroup group__woad__policy
+ * @{
  */
 
 /** Obtains the prevailing colour policy, as determined from the
@@ -452,9 +516,15 @@ woad_refresh(void);
 WOAD_CALL(int)
 woad_console_supports_ansi(void);
 
+/** @} */
+
 
 /* /////////////////////////////////////////////////////////////////
  * API functions - stream inspection
+ */
+
+/** \addtogroup group__woad__inspection
+ * @{
  */
 
 /** Determines whether the given stream is attached to a terminal.
@@ -544,6 +614,12 @@ woad_std_handle_is_tty(
 
 /** [Windows-only] Handle-based equivalent of
  * woad_stream_supports_colour().
+ *
+ * \param h The console handle to be tested, as obtained from, e.g.,
+ *   `GetStdHandle()`. Declared as `void*` rather than `HANDLE` so that
+ *   this header need not include <windows.h>;
+ *
+ * \return Non-zero if colour should be emitted; 0 otherwise.
  */
 WOAD_CALL(int)
 woad_console_handle_supports_colour(
@@ -552,6 +628,12 @@ woad_console_handle_supports_colour(
 
 /** [Windows-only] Standard-handle-based equivalent of
  * woad_stream_supports_colour().
+ *
+ * \param id The standard-handle identifier, e.g. `STD_OUTPUT_HANDLE`.
+ *   Declared as `unsigned long` rather than `DWORD` so that this header
+ *   need not include <windows.h>;
+ *
+ * \return Non-zero if colour should be emitted; 0 otherwise.
  */
 WOAD_CALL(int)
 woad_std_handle_supports_colour(
@@ -559,9 +641,15 @@ woad_std_handle_supports_colour(
 );
 #endif /* _WIN32 */
 
+/** @} */
+
 
 /* /////////////////////////////////////////////////////////////////
  * API functions - conditional sequences
+ */
+
+/** \addtogroup group__woad__sequences
+ * @{
  */
 
 /** Obtains the given SGR sequence if colour should be emitted for the
@@ -581,7 +669,15 @@ woad_seq_for_stream(
 ,   FILE*           stm
 );
 
-/** Descriptor-based equivalent of woad_seq_for_stream(). */
+/** Descriptor-based equivalent of woad_seq_for_stream().
+ *
+ * \param seq The SGR sequence, e.g. \c WOAD_FG_RED. May be NULL, which
+ *   is treated as the empty string;
+ * \param fd The file descriptor for which the sequence is intended;
+ *
+ * \return Either \c seq or `""`. Never NULL, and never requires release
+ *   by the caller.
+ */
 WOAD_CALL(char const*)
 woad_seq_for_fd(
     char const*     seq
@@ -591,7 +687,16 @@ woad_seq_for_fd(
 #if defined(_WIN32) || \
     defined(WOAD_DOCUMENTATION_SKIP_SECTION)
 
-/** [Windows-only] Handle-based equivalent of woad_seq_for_stream(). */
+/** [Windows-only] Handle-based equivalent of woad_seq_for_stream().
+ *
+ * \param seq The SGR sequence, e.g. \c WOAD_FG_RED. May be NULL, which
+ *   is treated as the empty string;
+ * \param h The console handle for which the sequence is intended. May
+ *   be NULL. Declared as `void*` rather than `HANDLE`;
+ *
+ * \return Either \c seq or `""`. Never NULL, and never requires release
+ *   by the caller.
+ */
 WOAD_CALL(char const*)
 woad_seq_for_handle(
     char const*     seq
@@ -600,6 +705,14 @@ woad_seq_for_handle(
 
 /** [Windows-only] Standard-handle-based equivalent of
  * woad_seq_for_stream().
+ *
+ * \param seq The SGR sequence, e.g. \c WOAD_FG_RED. May be NULL, which
+ *   is treated as the empty string;
+ * \param id The standard-handle identifier, e.g. `STD_OUTPUT_HANDLE`.
+ *   Declared as `unsigned long` rather than `DWORD`;
+ *
+ * \return Either \c seq or `""`. Never NULL, and never requires release
+ *   by the caller.
  */
 WOAD_CALL(char const*)
 woad_seq_for_std_handle(
@@ -607,15 +720,6 @@ woad_seq_for_std_handle(
 ,   unsigned long   id
 );
 #endif /* _WIN32 */
-
-
-/* /////////////////////////////////////////////////////////////////////////
- * language
- */
-
-#ifdef __cplusplus
-} /* extern "C" */
-#endif
 
 
 /* /////////////////////////////////////////////////////////////////////////
@@ -631,8 +735,16 @@ woad_seq_for_std_handle(
  * currencies remain available under their specific names.
  */
 
-#ifdef __cplusplus
+#if 0
+#elif defined(__cplusplus)
 
+/** `FILE*` overload of woad_seq_for_stream().
+ *
+ * \param seq The SGR sequence. May be NULL, which is treated as `""`;
+ * \param stm The stream. May be NULL;
+ *
+ * \return Either \c seq or `""`. Never NULL.
+ */
 inline
 char const*
 woad_seq_for(
@@ -643,6 +755,13 @@ woad_seq_for(
     return woad_seq_for_stream(seq, stm);
 }
 
+/** File-descriptor overload of woad_seq_for_fd().
+ *
+ * \param seq The SGR sequence. May be NULL, which is treated as `""`;
+ * \param fd The file descriptor;
+ *
+ * \return Either \c seq or `""`. Never NULL.
+ */
 inline
 char const*
 woad_seq_for(
@@ -653,6 +772,12 @@ woad_seq_for(
     return woad_seq_for_fd(seq, fd);
 }
 
+/** `FILE*` overload of woad_stream_supports_colour().
+ *
+ * \param stm The stream. May be NULL;
+ *
+ * \return Non-zero if colour should be emitted; 0 otherwise.
+ */
 inline
 int
 woad_supports_colour(
@@ -662,6 +787,12 @@ woad_supports_colour(
     return woad_stream_supports_colour(stm);
 }
 
+/** File-descriptor overload of woad_fd_supports_colour().
+ *
+ * \param fd The file descriptor;
+ *
+ * \return Non-zero if colour should be emitted; 0 otherwise.
+ */
 inline
 int
 woad_supports_colour(
@@ -673,6 +804,14 @@ woad_supports_colour(
 
 # ifdef _WIN32
 
+/** [Windows-only] Console-handle overload of woad_seq_for_handle().
+ *
+ * \param seq The SGR sequence. May be NULL, which is treated as `""`;
+ * \param h The console handle. May be NULL. Declared as `void*` rather
+ *   than `HANDLE`;
+ *
+ * \return Either \c seq or `""`. Never NULL.
+ */
 inline
 char const*
 woad_seq_for(
@@ -683,6 +822,15 @@ woad_seq_for(
     return woad_seq_for_handle(seq, h);
 }
 
+/** [Windows-only] Standard-handle overload of
+ * woad_seq_for_std_handle().
+ *
+ * \param seq The SGR sequence. May be NULL, which is treated as `""`;
+ * \param id The standard-handle identifier, e.g. `STD_OUTPUT_HANDLE`.
+ *   Declared as `unsigned long` rather than `DWORD`;
+ *
+ * \return Either \c seq or `""`. Never NULL.
+ */
 inline
 char const*
 woad_seq_for(
@@ -693,6 +841,14 @@ woad_seq_for(
     return woad_seq_for_std_handle(seq, id);
 }
 
+/** [Windows-only] Console-handle overload of
+ * woad_console_handle_supports_colour().
+ *
+ * \param h The console handle. May be NULL. Declared as `void*` rather
+ *   than `HANDLE`;
+ *
+ * \return Non-zero if colour should be emitted; 0 otherwise.
+ */
 inline
 int
 woad_supports_colour(
@@ -702,6 +858,14 @@ woad_supports_colour(
     return woad_console_handle_supports_colour(h);
 }
 
+/** [Windows-only] Standard-handle overload of
+ * woad_std_handle_supports_colour().
+ *
+ * \param id The standard-handle identifier, e.g. `STD_OUTPUT_HANDLE`.
+ *   Declared as `unsigned long` rather than `DWORD`;
+ *
+ * \return Non-zero if colour should be emitted; 0 otherwise.
+ */
 inline
 int
 woad_supports_colour(
@@ -750,7 +914,30 @@ woad_supports_colour(
 # endif /* _WIN32 */
 #else /* ? dispatch */
 
+/** \def woad_seq_for(seq, stm)
+ * Yields \c seq when colour is warranted for \c stm, or `""`.
+ *
+ * Where the language can dispatch on the argument type, \c stm may be a
+ * `FILE*`, a file descriptor, or, on Windows, a console handle or a
+ * standard-handle identifier. In C90 and C99 it must be a `FILE*`.
+ *
+ * \param seq The SGR sequence. May be NULL, which is treated as `""`;
+ * \param stm The destination, in a currency the dialect accepts. May be
+ *   NULL;
+ *
+ * \return Either \c seq or `""`. Never NULL.
+ */
 # define woad_seq_for(seq, stm)                             woad_seq_for_stream((seq), (stm))
+
+/** \def woad_supports_colour(stm)
+ * Non-zero when colour should be emitted for \c stm.
+ *
+ * The currencies accepted for \c stm are the same as for \c woad_seq_for.
+ *
+ * \param stm The destination. May be NULL;
+ *
+ * \return Non-zero if colour should be emitted; 0 otherwise.
+ */
 # define woad_supports_colour(stm)                          woad_stream_supports_colour(stm)
 #endif /* dispatch */
 
@@ -769,25 +956,40 @@ woad_supports_colour(
  * Yields \c seq for \c stm, or `""`. The general form, of which all the
  * macros below are conveniences.
  *
+ * \param seq The SGR sequence, e.g. \c WOAD_FG_RED. May be NULL;
+ * \param stm The destination, as accepted by \c woad_seq_for;
+ *
  * \def WOAD_FG_FOR(clr, stm)
  * Yields the foreground sequence \c clr for \c stm, or `""`.
+ *
+ * \param clr The foreground sequence, e.g. \c WOAD_FG_RED;
+ * \param stm The destination, as accepted by \c woad_seq_for;
  *
  * \def WOAD_BG_FOR(clr, stm)
  * Yields the background sequence \c clr for \c stm, or `""`.
  *
+ * \param clr The background sequence, e.g. \c WOAD_BG_BLUE;
+ * \param stm The destination, as accepted by \c woad_seq_for;
+ *
  * \def WOAD_RESET_FOR(stm)
- * Yields WOAD_RESET for \c stm, or `""`.
+ * Yields \c WOAD_RESET for \c stm, or `""`.
+ *
+ * \param stm The destination, as accepted by \c woad_seq_for;
  *
  * \def WOAD_BOLD_FOR(stm)
- * Yields WOAD_BOLD for \c stm, or `""`.
+ * Yields \c WOAD_BOLD for \c stm, or `""`.
+ *
+ * \param stm The destination, as accepted by \c woad_seq_for;
  *
  * \def WOAD_BLINKING_FOR(stm)
- * Yields WOAD_BLINKING for \c stm, or `""`.
+ * Yields \c WOAD_BLINKING for \c stm, or `""`.
  *
- * \note WOAD_FG_FOR() and WOAD_BG_FOR() are synonyms of WOAD_SEQ_FOR():
- *   since the sequence passed already carries its own SGR parameter, the
- *   distinction is one of expressing intent at the call site, not of
- *   behaviour.
+ * \param stm The destination, as accepted by \c woad_seq_for;
+ *
+ * \note \c WOAD_FG_FOR() and \c WOAD_BG_FOR() are synonyms of
+ *   \c WOAD_SEQ_FOR(): since the sequence passed already carries its own
+ *   SGR parameter, the distinction is one of expressing intent at the
+ *   call site, not of behaviour.
  */
 
 #define WOAD_SEQ_FOR(seq, stm)                              woad_seq_for((seq), (stm))
@@ -936,6 +1138,8 @@ woad_supports_colour(
 #define WOAD_BG_BRIGHT_MAGENTA_FOR(stm)                     WOAD_SEQ_FOR(WOAD_BG_BRIGHT_MAGENTA, stm)
 #define WOAD_BG_BRIGHT_CYAN_FOR(stm)                        WOAD_SEQ_FOR(WOAD_BG_BRIGHT_CYAN, stm)
 #define WOAD_BG_BRIGHT_WHITE_FOR(stm)                       WOAD_SEQ_FOR(WOAD_BG_BRIGHT_WHITE, stm)
+
+/** @} */
 
 
 /* /////////////////////////////////////////////////////////////////////////

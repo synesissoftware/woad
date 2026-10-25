@@ -58,7 +58,7 @@
 
 ## Packaging improvements
 
-* \<none>
+* [x] ~~~Doxygen API reference (**Doxyfile**, **generate_doxygen.sh**, **doc/mainpage.md**)~~~ - ✅;
 
 
 <!-- ########################### end of file ########################### -->

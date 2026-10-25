@@ -40,7 +40,7 @@ Minimal ANSI terminal colour codes, for C
 
 ## Introduction
 
-**woad** provides the smallest useful set of ANSI SGR colour sequences for library authors: fixed sequences that always emit, and stream-conditional counterparts that emit only when the destination warrants it, with the decision overridable from the environment. It is not a console or TUI framework.
+**woad** provides the smallest useful set of ANSI SGR colour sequences for C and C++ library authors: fixed sequences that always emit, and stream-conditional counterparts that emit only when the destination warrants it, with the decision overridable from the environment. It is not a console or TUI framework.
 
 **woad** is the **C** implementation.
 
@@ -306,6 +306,14 @@ Once **woad** is installed, the whole interface - macros, functions, environment
 man 3 woad
 ```
 
+HTML API documentation is generated with Doxygen:
+
+```bash
+./generate_doxygen.sh
+```
+
+The pages are written to **_build/doxygen/html/index.html**. CI builds the same tree in the `documentation` job.
+
 
 ### Contribution guidelines
 
@@ -324,12 +332,16 @@ None, beyond the C runtime and the operating system's own console/terminal inter
 #### Development Dependencies
 
 * [**CMake**](https://cmake.org/) 3.16 or later;
+* [**Doxygen**](https://www.doxygen.nl/) (optional), to build the HTML API reference via **generate_doxygen.sh**;
 * a C11 toolchain (C90-capable MSVC is accepted on older Visual C++);
 
 
 #### Afferent (fan-in)
 
-None (currently).
+Projects that use woad:
+
+* [**Pantheios**](https://github.com/synesissoftware/Pantheios/);
+* [**woad-cli**](https://github.com/sistools/woad-cli/);
 
 
 ### Related projects
