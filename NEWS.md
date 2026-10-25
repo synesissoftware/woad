@@ -1,10 +1,10 @@
 # woad - News <!-- omit in toc -->
 
 
-| Date                | News Item                                                   | Details                       |
-| ------------------- | ----------------------------------------------------------- | ----------------------------- |
-| 23rd October 2026   | [**woad** 0.1.1](https://github.com/synesissoftware/woad/releases/tag/0.1.1) | Doxygen API reference         |
-| 14th October 2026  | [**woad** 0.1.0](https://github.com/synesissoftware/woad/releases/tag/0.1.0) | Tip helpers; RelSt promote; Phase **4c**; CI **install-sis-deps** |
+| Date                | News Item                                                   | Details |
+| ------------------- | ----------------------------------------------------------- | ------- |
+| 26th October 2026   | [**woad** 0.1.1](https://github.com/synesissoftware/woad/releases/tag/0.1.1) | Doxygen API reference |
+| 14th October 2026   | [**woad** 0.1.0](https://github.com/synesissoftware/woad/releases/tag/0.1.0) | Tip helpers; RelSt promote; Phase **4c**; CI **install-sis-deps** |
 | 14th October 2026   | [**woad** 0.1.0-beta3](https://github.com/synesissoftware/woad/releases/tag/0.1.0-beta3) | Colour-for performance timings |
 | 12th October 2026   | [**woad** 0.1.0-beta2](https://github.com/synesissoftware/woad/releases/tag/0.1.0-beta2) | Bold and blinking |
 | 9th October 2026    | [**woad** 0.1.0-beta1](https://github.com/synesissoftware/woad/releases/tag/0.1.0-beta1) | Stream-conditional colour API |

@@ -7,7 +7,7 @@
  *          version and colour-policy API.
  *
  * Created: 15th August 2026
- * Updated: 23rd October 2026
+ * Updated: 26th October 2026
  *
  * Home:    https://github.com/synesissoftware/woad/
  *
@@ -54,7 +54,7 @@
 # define WOAD_VER_WOAD_H_WOAD_MAJOR     0
 # define WOAD_VER_WOAD_H_WOAD_MINOR     0
 # define WOAD_VER_WOAD_H_WOAD_PATCH     4
-# define WOAD_VER_WOAD_H_WOAD_EDIT      10
+# define WOAD_VER_WOAD_H_WOAD_EDIT      11
 #endif /* !WOAD_DOCUMENTATION_SKIP_SECTION */
 
 
