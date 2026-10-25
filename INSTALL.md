@@ -67,9 +67,9 @@ You can obtain a **.zip** or **.tar.gz** at the [Releases page](https://github.c
 ```bash
 $ mkdir -p ~/open-source
 $ cd ~/open-source
-$ curl -L -O https://github.com/synesissoftware/woad/archive/refs/tags/0.1.2.tar.gz
-$ gunzip 0.1.2.tar.gz
-$ cd woad-0.1.2
+$ curl -L -O https://github.com/synesissoftware/woad/archive/refs/tags/0.2.0.tar.gz
+$ gunzip 0.2.0.tar.gz
+$ cd woad-0.2.0
 ```
 
 Or you may prefer to clone the project via git:

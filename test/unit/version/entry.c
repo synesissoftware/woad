@@ -73,22 +73,22 @@ int main(void)
 {
     unsigned long const expected_ver = (0ul
         | (0ul << 24)
-        | (1ul << 16)
-        | (2ul <<  8)
+        | (2ul << 16)
+        | (0ul <<  8)
         | (0xFFul << 0)
     );
 
     ASSERT_TRUE_(0 == WOAD_VER_MAJOR);
-    ASSERT_TRUE_(1 == WOAD_VER_MINOR);
-    ASSERT_TRUE_(2 == WOAD_VER_PATCH);
+    ASSERT_TRUE_(2 == WOAD_VER_MINOR);
+    ASSERT_TRUE_(0 == WOAD_VER_PATCH);
     ASSERT_TRUE_(0xFF == WOAD_VER_ALPHABETA);
     ASSERT_TRUE_(WOAD_VER_REVISION == WOAD_VER_PATCH);
     ASSERT_TRUE_((unsigned long)WOAD_VER == expected_ver);
-    ASSERT_TRUE_(0 == strcmp(WOAD_VER_STRING, "0.1.2"));
+    ASSERT_TRUE_(0 == strcmp(WOAD_VER_STRING, "0.2.0"));
 
     ASSERT_TRUE_(woad_version() == expected_ver);
     ASSERT_TRUE_(woad_version() == (unsigned long)WOAD_VER);
-    ASSERT_TRUE_(0 == strcmp(woad_version_string(), "0.1.2"));
+    ASSERT_TRUE_(0 == strcmp(woad_version_string(), "0.2.0"));
     ASSERT_TRUE_(0 == strcmp(woad_version_string(), WOAD_VER_STRING));
 
     return EXIT_SUCCESS;

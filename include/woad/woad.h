@@ -53,8 +53,8 @@
 #ifndef WOAD_DOCUMENTATION_SKIP_SECTION
 # define WOAD_VER_WOAD_H_WOAD_MAJOR     0
 # define WOAD_VER_WOAD_H_WOAD_MINOR     0
-# define WOAD_VER_WOAD_H_WOAD_PATCH     5
-# define WOAD_VER_WOAD_H_WOAD_EDIT      12
+# define WOAD_VER_WOAD_H_WOAD_PATCH     6
+# define WOAD_VER_WOAD_H_WOAD_EDIT      13
 #endif /* !WOAD_DOCUMENTATION_SKIP_SECTION */
 
 
@@ -134,8 +134,8 @@
  */
 
 #define WOAD_VER_MAJOR      0
-#define WOAD_VER_MINOR      1
-#define WOAD_VER_PATCH      2
+#define WOAD_VER_MINOR      2
+#define WOAD_VER_PATCH      0
 #define WOAD_VER_RELSTATUS  0xFF
 
 #define WOAD_VER \
