@@ -1,6 +1,10 @@
 # woad - Changes <!-- omit in toc -->
 
 
+## 0.1.2 - 26th October 2026
+
+
+
 ## 0.1.1 - 26th October 2026
 
 * Added Doxygen module groups on the public API in **woad.h**, a front page in **doc/mainpage.md**, a compact **Doxyfile**, and **generate_doxygen.sh** (version taken from `WOAD_VER_*`; exit status from `PIPESTATUS`);
