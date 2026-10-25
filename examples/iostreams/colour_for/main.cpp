@@ -16,7 +16,7 @@
  *            WOAD_COLOUR=never ./example.c++.colour_for
  *
  * Created: 23rd October 2026
- * Updated: 23rd October 2026
+ * Updated: 26th October 2026
  *
  * Home:    https://github.com/synesissoftware/woad/
  *
@@ -75,7 +75,10 @@ static char const* policy_name(int policy)
 
 int main(void)
 {
+    std::cout << "C++ IOStreams:" << std::endl;
+
     std::cout
+        << "\t"
         << "policy: " << policy_name(woad_colour_policy())
         << "; "
         << "std::cout is" << (woad::stream_is_tty(std::cout) ? "" : "not") << " a tty"
@@ -85,13 +88,15 @@ int main(void)
         << std::endl
         ;
 
-
     /* macros */
     {
-        std::cout << "\nmacros:\n";
+        std::cout
+            << "\n\t"
+            << "macros:\n"
+            ;
 
         std::cout
-            << "\t"
+            << "\t\t"
             << WOAD_FG_GREEN_FOR(std::cout)
             << "this line is green if, and only if, std::cout warrants colour"
             << WOAD_RESET_FOR(std::cout)
@@ -99,7 +104,7 @@ int main(void)
             ;
 
         std::cout
-            << "\t"
+            << "\t\t"
             << WOAD_BOLD_FOR(std::cout)
             << "this line is bold if, and only if, std::cout warrants colour"
             << WOAD_RESET_FOR(std::cout)
@@ -107,7 +112,7 @@ int main(void)
             ;
 
         std::cout
-            << "\t"
+            << "\t\t"
             << WOAD_BLINKING_FOR(std::cout)
             << "this line blinks if, and only if, std::cout warrants colour"
             << WOAD_RESET_FOR(std::cout)
@@ -115,7 +120,7 @@ int main(void)
             ;
 
         std::cerr
-            << "\t"
+            << "\t\t"
             << "'"
             << WOAD_BG_BRIGHT_BLACK_FOR(std::cerr)
             << WOAD_FG_BRIGHT_MAGENTA_FOR(std::cerr)
@@ -130,7 +135,7 @@ int main(void)
          */
 
         std::cout
-            << "\t"
+            << "\t\t"
             << WOAD_FG_FOR(WOAD_FG_YELLOW, std::cout)
             << "this line is yellow if, and only if, std::cout warrants colour"
             << WOAD_RESET_FOR(std::cout)
@@ -141,10 +146,13 @@ int main(void)
 
     /* manipulators */
     {
-        std::cout << "\nmanipulators:\n";
+        std::cout
+            << "\n\t"
+            << "manipulators:\n"
+            ;
 
         std::cout
-            << "\t"
+            << "\t\t"
             << woad::green
             << "this line is green if, and only if, std::cout warrants colour"
             << woad::reset
@@ -152,7 +160,7 @@ int main(void)
             ;
 
         std::cout
-            << "\t"
+            << "\t\t"
             << woad::bold
             << "this line is bold if, and only if, std::cout warrants colour"
             << woad::reset
@@ -160,7 +168,7 @@ int main(void)
             ;
 
         std::cout
-            << "\t"
+            << "\t\t"
             << woad::blinking
             << "this line blinks if, and only if, std::cout warrants colour"
             << woad::reset
@@ -168,7 +176,7 @@ int main(void)
             ;
 
         std::cerr
-            << "\t"
+            << "\t\t"
             << "'"
             << woad::bg_bright_black
             << woad::bright_magenta
@@ -182,22 +190,25 @@ int main(void)
 
     /* inserters */
     {
-        std::cout << "\ninserters:\n";
+        std::cout
+            << "\n\t"
+            << "inserters:\n"
+            ;
 
         std::cout
-            << "\t"
+            << "\t\t"
             << "this " << woad::green("word") << " is " << WOAD_FG_GREEN << "green" << WOAD_RESET << " if, and only if, std::cout warrants " << woad::cyan("colour")
             << std::endl
             ;
 
         std::cout
-            << "\t"
+            << "\t\t"
             << woad::bold("this line is bold if, and only if, std::cout warrants colour")
             << std::endl
             ;
 
         std::cout
-            << "\t"
+            << "\t\t"
             << woad::blinking
             << "this line blinks if, and only if, std::cout warrants colour"
             << woad::reset
@@ -205,7 +216,7 @@ int main(void)
             ;
 
         std::cerr
-            << "\t"
+            << "\t\t"
             << "'"
             << woad::bright_magenta(woad::bg_bright_black("this line is magenta-on-bright_black if, and only if, std::cerr warrants colour"))
             << "'"

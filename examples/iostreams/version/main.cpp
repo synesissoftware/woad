@@ -19,8 +19,7 @@
 
 int main(int /* argc */, char* /* argv */[])
 {
-    std::cout << "C++:" << std::endl;
-
+    std::cout << "C++ IOStreams:" << std::endl;
 
     std::cout
         <<  '\t'
