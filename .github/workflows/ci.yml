@@ -1,6 +1,6 @@
 #
 # Created: 15th August 2026
-# Updated: 14th October 2026
+# Updated: 23rd October 2026
 #
 
 name: CI
@@ -67,6 +67,25 @@ jobs:
       build-type: Release
       toolchain: ${{ matrix.toolchain }}
     secrets: inherit
+
+  documentation:
+    name: Build API documentation
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Doxygen
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y doxygen
+
+      - name: Build API documentation
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./generate_doxygen.sh
+          test -f _build/doxygen/html/index.html
 
   install-smoke:
     name: Install smoke (${{ matrix.os }}, ${{ matrix.toolchain || matrix.c_compiler }})
