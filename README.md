@@ -40,7 +40,7 @@ Minimal ANSI terminal colour codes, for C
 
 ## Introduction
 
-**woad** provides the smallest useful set of ANSI SGR colour sequences for library authors: fixed sequences that always emit, and stream-conditional counterparts that emit only when the destination warrants it, with the decision overridable from the environment. It is not a console or TUI framework.
+**woad** provides the smallest useful set of ANSI SGR colour sequences for C and C++ library authors: fixed sequences that always emit, and stream-conditional counterparts that emit only when the destination warrants it, with the decision overridable from the environment. It is not a console or TUI framework.
 
 **woad** is the **C** implementation.
 
@@ -338,7 +338,10 @@ None, beyond the C runtime and the operating system's own console/terminal inter
 
 #### Afferent (fan-in)
 
-None (currently).
+Projects that use woad:
+
+* [**Pantheios**](https://github.com/synesissoftware/Pantheios/);
+* [**woad-cli**](https://github.com/sistools/woad-cli/);
 
 
 ### Related projects
