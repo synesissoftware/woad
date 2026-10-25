@@ -2,7 +2,7 @@
 
 PROJECT_NAME           = "woad"
 PROJECT_BRIEF          = "Minimal ANSI terminal colour codes, for C (and C++)"
-PROJECT_NUMBER         = 0.1.1
+PROJECT_NUMBER         = 0.2.0
 
 # Prefer SIS_CMAKE_BUILD_DIR-aligned output (same convention as BDUT /
 # CLASP / cstring / Diagnosticism). ./dox/ remains gitignored for

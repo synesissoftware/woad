@@ -5,7 +5,7 @@
  *          the version macros and the version functions.
  *
  * Created: 15th August 2026
- * Updated: 7th October 2026
+ * Updated: 26th October 2026
  *
  * ////////////////////////////////////////////////////////////////////// */
 
@@ -21,8 +21,10 @@ int main(int argc, char* argv[])
     ((void)argc);
     ((void)argv);
 
+    puts("C:");
+
     printf(
-        "%swoad%s: v%s%s%s (%s%s%s = %s0x%08lx%s)\n"
+        "\t%swoad%s: v%s%s%s (%s%s%s = %s0x%08lx%s)\n"
     ,   WOAD_FG_BLUE_FOR(stdout)
     ,   WOAD_RESET_FOR(stdout)
     ,   WOAD_FG_GREEN_FOR(stdout)

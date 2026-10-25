@@ -20,16 +20,18 @@ int main(int argc, char* argv[])
     ((void)argc);
     ((void)argv);
 
-    puts("the colour is " WOAD_FG_GREEN "green" WOAD_RESET ".");
-    puts("the colour is " WOAD_FG_RED "red" WOAD_RESET ".");
-    puts("the colour is " WOAD_FG_YELLOW "yellow" WOAD_RESET ".");
-    puts("the colour is " WOAD_FG_BLUE "blue" WOAD_RESET ".");
-    puts("the colour is " WOAD_FG_MAGENTA "magenta" WOAD_RESET ".");
-    puts("the colour is " WOAD_FG_CYAN "cyan" WOAD_RESET ".");
-    puts("the colour is " WOAD_FG_WHITE "white" WOAD_RESET ".");
-    puts("the colour is " WOAD_FG_BRIGHT_BLACK "bright black" WOAD_RESET ".");
-    puts("the style is " WOAD_BOLD WOAD_FG_RED "bold red" WOAD_RESET ".");
-    puts("the style is " WOAD_BLINKING WOAD_FG_YELLOW "blinking yellow" WOAD_RESET ".");
+    puts("C:");
+
+    puts("\tthe colour is " WOAD_FG_GREEN "green" WOAD_RESET ".");
+    puts("\tthe colour is " WOAD_FG_RED "red" WOAD_RESET ".");
+    puts("\tthe colour is " WOAD_FG_YELLOW "yellow" WOAD_RESET ".");
+    puts("\tthe colour is " WOAD_FG_BLUE "blue" WOAD_RESET ".");
+    puts("\tthe colour is " WOAD_FG_MAGENTA "magenta" WOAD_RESET ".");
+    puts("\tthe colour is " WOAD_FG_CYAN "cyan" WOAD_RESET ".");
+    puts("\tthe colour is " WOAD_FG_WHITE "white" WOAD_RESET ".");
+    puts("\tthe colour is " WOAD_FG_BRIGHT_BLACK "bright black" WOAD_RESET ".");
+    puts("\tthe style is " WOAD_BOLD WOAD_FG_RED "bold red" WOAD_RESET ".");
+    puts("\tthe style is " WOAD_BLINKING WOAD_FG_YELLOW "blinking yellow" WOAD_RESET ".");
 
     return EXIT_SUCCESS;
 }

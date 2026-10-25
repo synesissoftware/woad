@@ -1,6 +1,15 @@
 # woad - Changes <!-- omit in toc -->
 
 
+## 0.2.0 - 26th October 2026
+
+* C++ API: a `woad` namespace in **woad.h** providing inline wrappers over the C API (e.g. `woad::version()`, `woad::version_string()`, `woad::colour_policy()`, `woad::refresh()`, and the tty / colour / sequence queries), overloaded across the stream currencies;
+* removed the redundant `extern "C"` start/end blocks from **woad.h**; C linkage is now supplied solely, and overridably, by `WOAD_CALL()`;
+* added C++ examples **examples/c++/colour** and **examples/c++/version**, and enabled the `CXX` language in **CMakeLists.txt**;
+* the **examples/c/version** example now emits a single coloured `woad: vM.N.P (WOAD_VER = 0x........)` line;
+* **README.md** describes **woad** as serving C and C++ library authors, and lists the afferent dependants;
+
+
 ## 0.1.1 - 26th October 2026
 
 * Added Doxygen module groups on the public API in **woad.h**, a front page in **doc/mainpage.md**, a compact **Doxyfile**, and **generate_doxygen.sh** (version taken from `WOAD_VER_*`; exit status from `PIPESTATUS`);
