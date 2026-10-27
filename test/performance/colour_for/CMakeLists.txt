@@ -34,6 +34,9 @@ if(DEFINED _woad_perf_stlsoft_inc)
 		PRIVATE
 			WOAD_PERF_HAS_PLATFORMSTL
 	)
+
+	add_compile_definitions(HAS_STLSOFT)
+	add_compile_definitions(HAS_STLSoft)
 elseif(TARGET STLSoft::STLSoft)
 
 	target_link_libraries(test.performance.colour_for
@@ -44,4 +47,7 @@ elseif(TARGET STLSoft::STLSoft)
 		PRIVATE
 			WOAD_PERF_HAS_PLATFORMSTL
 	)
+
+	add_compile_definitions(HAS_STLSOFT)
+	add_compile_definitions(HAS_STLSoft)
 endif()
