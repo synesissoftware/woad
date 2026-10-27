@@ -1,6 +1,11 @@
 # woad - Changes <!-- omit in toc -->
 
 
+## 0.2.1 - 27th October 2026
+
+* Defined `HAS_STLSoft`` and `HAS_STLSOFT` when **STLSoft** is detected;
+
+
 ## 0.2.0 - 26th October 2026
 
 * C++ API: a `woad` namespace in **woad.h** providing inline wrappers over the C API (e.g. `woad::version()`, `woad::version_string()`, `woad::colour_policy()`, `woad::refresh()`, and the tty / colour / sequence queries), overloaded across the stream currencies;
