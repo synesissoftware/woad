@@ -1,6 +1,11 @@
 # woad - Changes <!-- omit in toc -->
 
 
+## 0.2.2 - 3rd November 2026
+
+* Honoured `FORCE_COLOR` beside `CLICOLOR_FORCE`: a non-empty value other than `0` or `false` forces colour, below `WOAD_COLOUR` / `WOAD_COLOR` and a non-empty `NO_COLOR`;
+
+
 ## 0.2.1 - 27th October 2026
 
 * Defined `HAS_STLSoft`` and `HAS_STLSOFT` when **STLSoft** is detected;

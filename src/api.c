@@ -9,7 +9,7 @@
  *          the PROVENANCE note above woad_is_truey_(), below.
  *
  * Created: 27th August 2026
- * Updated: 27th August 2026
+ * Updated: 3rd November 2026
  *
  * Home:    https://github.com/synesissoftware/woad/
  *
@@ -279,7 +279,22 @@ woad_policy_from_environment_(void)
         }
     }
 
-    /* 4. CLICOLOR=0. */
+    /* 4. FORCE_COLOR, beside CLICOLOR_FORCE (the chalk / CLI convention).
+     * A non-empty value other than "0" or "false" (any capitalisation)
+     * forces colour. "0" and "false" decline to force and do not inhibit,
+     * so a later variable may still speak. An empty value is absent.
+     */
+
+    if (NULL != (value = woad_getenv_nonempty_("FORCE_COLOR")))
+    {
+        if (0 != strcmp(value, "0") &&
+            0 != woad_stricmp_(value, "false"))
+        {
+            return WOAD_COLOUR_POLICY_FORCE;
+        }
+    }
+
+    /* 5. CLICOLOR=0. */
 
     if (NULL != (value = woad_getenv_nonempty_("CLICOLOR")))
     {
