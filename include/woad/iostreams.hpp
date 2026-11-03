@@ -4,7 +4,7 @@
  * Purpose: IOStreams-interface for woad.
  *
  * Created: 23rd October 2026
- * Updated: 26th October 2026
+ * Updated: 4th November 2026
  *
  * Home:    https://github.com/synesissoftware/woad/
  *
@@ -48,10 +48,10 @@
 #define WOAD_INCL_WOAD_HPP_IOSTREAMS
 
 #ifndef WOAD_DOCUMENTATION_SKIP_SECTION
-# define WOAD_VER_WOAD_HPP_IOSTREAMS_MAJOR  0
+# define WOAD_VER_WOAD_HPP_IOSTREAMS_MAJOR  1
 # define WOAD_VER_WOAD_HPP_IOSTREAMS_MINOR  0
 # define WOAD_VER_WOAD_HPP_IOSTREAMS_PATCH  0
-# define WOAD_VER_WOAD_HPP_IOSTREAMS_EDIT   4
+# define WOAD_VER_WOAD_HPP_IOSTREAMS_EDIT   7
 #endif /* !WOAD_DOCUMENTATION_SKIP_SECTION */
 
 
@@ -226,6 +226,8 @@ apply_sequence(
     }
 }
 
+/** @} */
+
 
 /* /////////////////////////////////////////////////////////////////////////
  * namespace
@@ -239,6 +241,7 @@ apply_sequence(
  */
 
 /** \brief IOStreams overload of woad_seq_for_stream().
+ * \ingroup group__woad__iostreams
  *
  * Global, so that WOAD_SEQ_FOR's call to woad_seq_for() selects this
  * overload for an iostream argument. The decision, including colour
@@ -612,7 +615,6 @@ WOAD_DEFINE_MANIPULATOR_0_(bg_bright_cyan, WOAD_BG_BRIGHT_CYAN)
  * \return A reference to \c stm.
  */
 WOAD_DEFINE_MANIPULATOR_0_(bg_bright_white, WOAD_BG_BRIGHT_WHITE)
-
 
 /** @} */
 
@@ -1111,14 +1113,12 @@ WOAD_DEFINE_INSERTER_1_(bg_bright_cyan, WOAD_BG_BRIGHT_CYAN)
  */
 WOAD_DEFINE_INSERTER_1_(bg_bright_white, WOAD_BG_BRIGHT_WHITE)
 
+/** @} */
+
 
 /* /////////////////////////////////////////////////////////////////////////
  * namespace
  */
-
-/** @} */
-
-/** @} */
 
 } // namespace woad
 

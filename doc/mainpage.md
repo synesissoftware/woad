@@ -38,7 +38,7 @@ int main(void)
 }
 ```
 
-The stream-conditional API is a compiled library. Link `woad::woad` and
+The **C Streams**-conditional API is a compiled library. Link `woad::woad` and
 pass the destination:
 
 ```c
@@ -52,6 +52,36 @@ int main(void)
     printf("%sok%s\n", WOAD_FG_GREEN_FOR(stdout), WOAD_RESET_FOR(stdout));
 
     return EXIT_SUCCESS;
+}
+```
+
+The **C++ IOStreams**-conditional manipulators colour subsequent output until `woad::reset`:
+
+```cpp
+#include <woad/iostreams.hpp>
+
+#include <iostream>
+
+int main()
+{
+    std::cout << woad::green << "ok" << woad::reset << std::endl;
+
+    return 0;
+}
+```
+
+The **C++ IOStreams**-conditional inserters colour one message, then reset. They nest:
+
+```cpp
+#include <woad/iostreams.hpp>
+
+#include <iostream>
+
+int main()
+{
+    std::cout << woad::bold(woad::green("ok")) << std::endl;
+
+    return 0;
 }
 ```
 
