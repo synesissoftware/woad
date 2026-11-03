@@ -13,7 +13,7 @@ environment.
 | @ref group__woad | `<woad/woad.h>` | Fixed sequences and stream-conditional colour |
 | @ref group__woad__version | `<woad/woad.h>` | `WOAD_VER`, `woad_version()`, `woad_version_string()` |
 | @ref group__woad__sgr | `<woad/woad.h>` | Compile-time `WOAD_FG_*`, `WOAD_BG_*`, bold, and blinking literals |
-| @ref group__woad__policy | `<woad/woad.h>` | `WOAD_COLOUR`, `NO_COLOR`, `CLICOLOR`, and console capability |
+| @ref group__woad__policy | `<woad/woad.h>` | `WOAD_COLOUR`, `NO_COLOR`, `FORCE_COLOR`, `CLICOLOR`, and console capability |
 | @ref group__woad__inspection | `<woad/woad.h>` | Terminal attachment and per-destination colour support |
 | @ref group__woad__sequences | `<woad/woad.h>` | `WOAD_*_FOR()` and `woad_seq_for()` |
 | @ref group__woad__iostreams | `<woad/iostreams.hpp>` | [C++ only] Stream queries, manipulators, and inserters for IOStreams |

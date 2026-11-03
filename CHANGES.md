@@ -1,7 +1,7 @@
 # woad - Changes <!-- omit in toc -->
 
 
-## 0.3.0 - 28th October 2026
+## 0.3.0-alpha1 - 5th November 2026
 
 * added the IOStreams interface **woad/iostreams.hpp**, providing stream inserters so that colour sequences may be written to `std::ostream` instances, gated on the stream's colour policy;
 * added IOStreams examples **examples/iostreams/colour_for** and **examples/iostreams/version**;
@@ -10,6 +10,16 @@
 * corrected the **examples/iostreams/colour_for** target name to `example.iostreams.colour_for`;
 * **examples/c/colour_for** now labels its output and demonstrates bright-colour backgrounds / foregrounds;
 * corrected **test/unit/version** so that the minor-version assertion actually compares against `WOAD_VER_MINOR`;
+
+
+## 0.2.2 - 3rd November 2026
+
+* Honoured `FORCE_COLOR` beside `CLICOLOR_FORCE`: a non-empty value other than `0` or `false` forces colour, below `WOAD_COLOUR` / `WOAD_COLOR` and a non-empty `NO_COLOR`;
+
+
+## 0.2.1 - 27th October 2026
+
+* Defined `HAS_STLSoft`` and `HAS_STLSOFT` when **STLSoft** is detected;
 
 
 ## 0.2.0 - 26th October 2026

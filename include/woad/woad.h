@@ -7,7 +7,7 @@
  *          version and colour-policy API.
  *
  * Created: 15th August 2026
- * Updated: 26th October 2026
+ * Updated: 3rd November 2026
  *
  * Home:    https://github.com/synesissoftware/woad/
  *
@@ -136,7 +136,7 @@
 #define WOAD_VER_MAJOR      0
 #define WOAD_VER_MINOR      3
 #define WOAD_VER_PATCH      0
-#define WOAD_VER_RELSTATUS  0xFF
+#define WOAD_VER_RELSTATUS  0x41
 
 #define WOAD_VER \
     (0\
@@ -470,7 +470,10 @@ woad_version_string(void);
  * 2. `NO_COLOR` - set and non-empty inhibits colour (see
  *    https://no-color.org/);
  * 3. `CLICOLOR_FORCE` - set, non-empty, and not `"0"` forces colour;
- * 4. `CLICOLOR` - set to `"0"` inhibits colour;
+ * 4. `FORCE_COLOR` - set, non-empty, and not `"0"` or `"false"` (any
+ *    capitalisation) forces colour. `"0"` and `"false"` decline to force;
+ *    they do not inhibit. An empty value is absent;
+ * 5. `CLICOLOR` - set to `"0"` inhibits colour;
  *
  * \return One of WOAD_COLOUR_POLICY_AUTO, WOAD_COLOUR_POLICY_FORCE, or
  *   WOAD_COLOUR_POLICY_INHIBIT.

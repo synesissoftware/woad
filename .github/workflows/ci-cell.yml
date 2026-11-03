@@ -321,7 +321,7 @@ jobs:
             fi
           }
 
-          unset CLICOLOR CLICOLOR_FORCE NO_COLOR TERM WOAD_COLOR WOAD_COLOUR
+          unset CLICOLOR CLICOLOR_FORCE FORCE_COLOR NO_COLOR TERM WOAD_COLOR WOAD_COLOUR
 
           assert_colour "auto, not a tty"                        plain  "$colour_for"
           assert_colour "WOAD_COLOUR=always"                     colour env WOAD_COLOUR=always "$colour_for"
@@ -330,6 +330,11 @@ jobs:
           assert_colour "CLICOLOR_FORCE=1"                       colour env CLICOLOR_FORCE=1 "$colour_for"
           assert_colour "WOAD_COLOUR=never beats CLICOLOR_FORCE" plain  env WOAD_COLOUR=never CLICOLOR_FORCE=1 "$colour_for"
           assert_colour "NO_COLOR beats CLICOLOR_FORCE"          plain  env NO_COLOR=1 CLICOLOR_FORCE=1 "$colour_for"
+          assert_colour "FORCE_COLOR=1"                          colour env FORCE_COLOR=1 "$colour_for"
+          assert_colour "FORCE_COLOR=false does not force"       plain  env FORCE_COLOR=false "$colour_for"
+          assert_colour "FORCE_COLOR=0 does not force"           plain  env FORCE_COLOR=0 "$colour_for"
+          assert_colour "NO_COLOR beats FORCE_COLOR"             plain  env NO_COLOR=1 FORCE_COLOR=1 "$colour_for"
+          assert_colour "WOAD_COLOUR=never beats FORCE_COLOR"    plain  env WOAD_COLOUR=never FORCE_COLOR=1 "$colour_for"
           assert_colour "WOAD_COLOUR=always beats NO_COLOR"      colour env WOAD_COLOUR=always NO_COLOR=1 "$colour_for"
           assert_colour "unbound macros ignore policy"           colour env NO_COLOR=1 "$colour"
 
