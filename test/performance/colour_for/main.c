@@ -28,7 +28,7 @@
  *          line between groups.
  *
  * Created: 7th October 2026
- * Updated: 14th October 2026
+ * Updated: 3rd November 2026
  *
  * ////////////////////////////////////////////////////////////////////// */
 
@@ -354,6 +354,7 @@ clear_policy_env_(void)
 {
     unset_env_("CLICOLOR");
     unset_env_("CLICOLOR_FORCE");
+    unset_env_("FORCE_COLOR");
     unset_env_("NO_COLOR");
     unset_env_("WOAD_COLOR");
     unset_env_("WOAD_COLOUR");

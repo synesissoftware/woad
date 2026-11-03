@@ -9,7 +9,7 @@
  *          driving the policy from the environment.
  *
  * Created: 27th August 2026
- * Updated: 14th October 2026
+ * Updated: 3rd November 2026
  *
  * Home:    https://github.com/synesissoftware/woad/
  *
@@ -132,6 +132,7 @@ clear_all_env_(void)
 {
     unset_env_("CLICOLOR");
     unset_env_("CLICOLOR_FORCE");
+    unset_env_("FORCE_COLOR");
     unset_env_("NO_COLOR");
     unset_env_("WOAD_COLOR");
     unset_env_("WOAD_COLOUR");
@@ -253,6 +254,59 @@ int main(void)
     /* ... and both are outranked by woad's own variable */
 
     set_env_("WOAD_COLOUR", "force");
+
+    ASSERT_TRUE_(WOAD_COLOUR_POLICY_FORCE == woad_colour_policy());
+
+
+    /* FORCE_COLOR forces colour, at the same rank as CLICOLOR_FORCE.
+     *
+     * A non-empty value other than "0" or "false" forces, and "false" is
+     * matched case-insensitively. "0" and "false" decline to force; they do
+     * not inhibit. An empty value is absent. NO_COLOR and WOAD_COLOUR
+     * outrank it.
+     */
+
+    clear_all_env_();
+    set_env_("FORCE_COLOR", "1");
+
+    ASSERT_TRUE_(WOAD_COLOUR_POLICY_FORCE == woad_colour_policy());
+    ASSERT_TRUE_(0 != woad_stream_supports_colour(not_a_tty));
+    ASSERT_SEQ_(WOAD_FG_RED, woad_seq_for_stream(WOAD_FG_RED, not_a_tty));
+
+    set_env_("FORCE_COLOR", "2");
+
+    ASSERT_TRUE_(WOAD_COLOUR_POLICY_FORCE == woad_colour_policy());
+
+    set_env_("FORCE_COLOR", "FALSE");
+
+    ASSERT_TRUE_(WOAD_COLOUR_POLICY_AUTO == woad_colour_policy());
+    ASSERT_TRUE_(0 == woad_stream_supports_colour(not_a_tty));
+
+    set_env_("FORCE_COLOR", "0");
+
+    ASSERT_TRUE_(WOAD_COLOUR_POLICY_AUTO == woad_colour_policy());
+
+    set_env_("FORCE_COLOR", "");
+
+    ASSERT_TRUE_(WOAD_COLOUR_POLICY_AUTO == woad_colour_policy());
+
+    /* "0" does not inhibit, so CLICOLOR_FORCE may still force */
+
+    set_env_("FORCE_COLOR", "0");
+    set_env_("CLICOLOR_FORCE", "1");
+
+    ASSERT_TRUE_(WOAD_COLOUR_POLICY_FORCE == woad_colour_policy());
+
+    /* NO_COLOR outranks FORCE_COLOR, and WOAD_COLOUR outranks both */
+
+    clear_all_env_();
+    set_env_("FORCE_COLOR", "true");
+    set_env_("NO_COLOR", "1");
+
+    ASSERT_TRUE_(WOAD_COLOUR_POLICY_INHIBIT == woad_colour_policy());
+    ASSERT_TRUE_(0 == woad_stream_supports_colour(not_a_tty));
+
+    set_env_("WOAD_COLOUR", "always");
 
     ASSERT_TRUE_(WOAD_COLOUR_POLICY_FORCE == woad_colour_policy());
 

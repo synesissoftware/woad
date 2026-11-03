@@ -168,6 +168,7 @@ Terminal attachment is the default answer, not the only one; the user may overri
 | `WOAD_COLOUR`, or `WOAD_COLOR` | `auto`, or anything unrecognised            | Defer to the stream |
 | `NO_COLOR`                     | set and non-empty                           | Inhibit colour      |
 | `CLICOLOR_FORCE`               | set, non-empty, and not `0`                 | Force colour        |
+| `FORCE_COLOR`                  | set, non-empty, and not `0` or `false`      | Force colour        |
 | `CLICOLOR`                     | `0`                                         | Inhibit colour      |
 
 Values are matched case-insensitively. In the deferring case, a `TERM` of `dumb` also suppresses colour.
@@ -183,7 +184,9 @@ void woad_refresh(void);        /* discard cached determinations */
 
 **woad** implements it exactly as written - presence and non-emptiness are what count, and the value is not inspected - so any program that emits colour through **woad** inherits `NO_COLOR` support without doing anything.
 
-The precedence above also follows that standard rather than departing from it: **no-color.org** states that "user-level configuration files and per-instance command-line arguments should override the `NO_COLOR` environment variable", so honouring the more specific `WOAD_COLOUR` ahead of `NO_COLOR` is conformant, not a violation. `NO_COLOR` in turn outranks `CLICOLOR_FORCE` on the same principle read the other way: a user's standing refusal should beat a tool's blanket insistence.
+The precedence above also follows that standard rather than departing from it: **no-color.org** states that "user-level configuration files and per-instance command-line arguments should override the `NO_COLOR` environment variable", so honouring the more specific `WOAD_COLOUR` ahead of `NO_COLOR` is conformant, not a violation. `NO_COLOR` in turn outranks `CLICOLOR_FORCE` and `FORCE_COLOR` on the same principle read the other way: a user's standing refusal should beat a tool's blanket insistence.
+
+Colour for a captured CI log, an IDE output panel, or a pager such as `less -R` is requested with `FORCE_COLOR`, `CLICOLOR_FORCE`, or `WOAD_COLOUR=always`. Those consumers sit on the far side of a pipe, and **woad** does not infer them from `CI`, `TERM`, or `TERM_PROGRAM`. `FORCE_COLOR` of `0` or `false` (any capitalisation) declines to force and does not inhibit; an empty value is absent.
 
 Full credit for the truey/falsey classification of these values - the terminology as much as the token sets - belongs to [**2be**](https://github.com/synesissoftware/2be), the **C** implementation of the **to-be** family. **2be** deems a string "truthy" when it is recognised as a boolean-like token at all, and then "truey" or "falsey" according to the sense it carries, over the core sets `1`/`on`/`true`/`yes` and `0`/`false`/`no`/`off`; **woad** adopts that vocabulary and those sets, adding only the policy-specific `always`/`force` and `never`/`none`.
 

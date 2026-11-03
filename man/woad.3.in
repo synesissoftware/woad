@@ -4,7 +4,7 @@
 .\" Purpose: Manual page (section 3) for the woad C library.
 .\"
 .\" Created: 27th August 2026
-.\" Updated: 14th October 2026
+.\" Updated: 3rd November 2026
 .\"
 .\" Home:    https://github.com/synesissoftware/woad/
 .\"
@@ -17,7 +17,7 @@
 .\"
 .\" ////////////////////////////////////////////////////////////////////// */
 .\"
-.TH WOAD 3 "October 14, 2026" "woad @PROJECT_VERSION@" "woad Library Functions"
+.TH WOAD 3 "November 3, 2026" "woad @PROJECT_VERSION@" "woad Library Functions"
 .
 .
 .SH NAME
@@ -314,6 +314,19 @@ If set, non-empty, and not
 .BR 0 ,
 colour is forced.
 .TP
+.B FORCE_COLOR
+If set, non-empty, and not
+.B 0
+or
+.B false
+(any capitalisation), colour is forced. This is the same rank as
+.BR CLICOLOR_FORCE :
+.B 0
+and
+.B false
+decline to force and do not inhibit, so a later variable may still speak.
+An empty value is absent.
+.TP
 .B CLICOLOR
 If set to
 .BR 0 ,
@@ -327,12 +340,29 @@ after the above: an explicit force overrides it.
 .PP
 .B NO_COLOR
 is placed above
-.BR CLICOLOR_FORCE
+.B CLICOLOR_FORCE
+and
+.B FORCE_COLOR
 because the former standard requires that colour be suppressed when the
 variable is present, whereas the application's own variable
 .RB ( WOAD_COLOUR )
-is placed above both, that standard explicitly reserving to the application
+is placed above them, that standard explicitly reserving to the application
 a means of overriding it.
+.PP
+Colour for a captured CI log, an IDE output panel, or a pager such as
+.B less \-R
+is requested with
+.BR FORCE_COLOR ,
+.BR CLICOLOR_FORCE ,
+or
+.BR WOAD_COLOUR = always .
+Those consumers sit on the far side of a pipe.
+.B woad
+does not infer them from
+.BR CI ,
+.BR TERM ,
+or
+.BR TERM_PROGRAM .
 .PP
 Separately from the policy:
 .TP
