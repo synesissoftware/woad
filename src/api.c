@@ -9,7 +9,7 @@
  *          the PROVENANCE note above woad_is_truey_(), below.
  *
  * Created: 27th August 2026
- * Updated: 4th November 2026
+ * Updated: 5th November 2026
  *
  * Home:    https://github.com/synesissoftware/woad/
  *
@@ -52,22 +52,20 @@
  */
 
 #include <woad/woad.h>
+#ifdef _WIN32
+# include "woad.windows_constructs.h"
+#endif
 
 #include <ctype.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #ifdef _WIN32
 
-# ifndef WIN32_LEAN_AND_MEAN
-#  define WIN32_LEAN_AND_MEAN
-# endif
-# include <io.h>
-# include <windows.h>
-
-# ifndef ENABLE_VIRTUAL_TERMINAL_PROCESSING
-#  define ENABLE_VIRTUAL_TERMINAL_PROCESSING                (0x0004)
+# ifdef WOAD_PROBE_MINTTY_
+#  include "woad.internal.mintty_pty.h"
 # endif
 #else
 
@@ -532,6 +530,79 @@ woad_ensure_console_(void)
  * helper functions - terminal attachment
  */
 
+#ifdef WOAD_PROBE_MINTTY_
+
+/* A mintty PTY is a named pipe, so _isatty() and GetConsoleMode() both say
+ * no. The pipe's name is the signal. Only pipes are inspected, and there
+ * is no console mode to set.
+ */
+
+static
+int
+woad_handle_is_mintty_pty_(
+    HANDLE          h
+)
+{
+    if (NULL == h ||
+        INVALID_HANDLE_VALUE == h)
+    {
+        return 0;
+    }
+    else{
+
+        DWORD       file_type;
+        struct
+        {
+            DWORD   FileNameLength;
+            WCHAR   FileName[256];
+
+        }           info;
+        DWORD       nchars;
+
+        file_type = GetFileType(h);
+
+        if (FILE_TYPE_PIPE != (file_type & ~FILE_TYPE_REMOTE))
+        {
+            return 0;
+        }
+
+        if (!GetFileInformationByHandleEx(h, FileNameInfo, &info, sizeof(info)))
+        {
+            return 0;
+        }
+
+        nchars = info.FileNameLength / (DWORD)sizeof(WCHAR);
+
+        if (nchars >= 256)
+        {
+            return 0;
+        }
+
+        info.FileName[nchars] = L'\0';
+
+        return woad_mintty_pty_name_is_terminal_(info.FileName);
+    }
+}
+
+static
+int
+woad_fd_is_mintty_pty_(
+    int             fd
+)
+{
+    intptr_t const osf = _get_osfhandle(fd);
+
+    if ((intptr_t)-1 == osf)
+    {
+        return 0;
+    }
+    else
+    {
+        return woad_handle_is_mintty_pty_((HANDLE)osf);
+    }
+}
+#endif /* WOAD_PROBE_MINTTY_ */
+
 static
 int
 woad_isatty_fd_(
@@ -544,6 +615,14 @@ woad_isatty_fd_(
     {
         return 1;
     }
+
+# ifdef WOAD_PROBE_MINTTY_
+
+    if (woad_fd_is_mintty_pty_(fd))
+    {
+        return 1;
+    }
+# endif
 #else
 
     if (isatty(fd))
@@ -617,11 +696,18 @@ woad_isatty_stream_(
 #endif
 }
 
-/* Applies the policy to a terminal-attachment determination. */
+/* Applies the policy to a terminal-attachment determination.
+ *
+ * `native_ansi` is 1 when the endpoint speaks ANSI without being a Windows
+ * console (a mintty PTY pipe). Colour is then reported without consulting
+ * woad_console_supports_ansi(), which would call GetConsoleMode() /
+ * SetConsoleMode() on a pipe and fail.
+ */
 static
 int
 woad_supports_colour_(
     int             is_tty
+,   int             native_ansi
 )
 {
     woad_ensure_environment_();
@@ -639,7 +725,8 @@ woad_supports_colour_(
         break;
     }
 
-    if (!is_tty)
+    if (!is_tty &&
+        !native_ansi)
     {
         return 0;
     }
@@ -647,6 +734,11 @@ woad_supports_colour_(
     if (s_term_is_dumb)
     {
         return 0;
+    }
+
+    if (native_ansi)
+    {
+        return 1;
     }
 
     return woad_console_supports_ansi();
@@ -731,7 +823,23 @@ woad_stream_supports_colour(
     FILE*           stm
 )
 {
-    return woad_supports_colour_(woad_isatty_stream_(stm));
+    int const is_tty = woad_isatty_stream_(stm);
+
+#ifdef WOAD_PROBE_MINTTY_
+
+    int native_ansi = 0;
+
+    if (NULL != stm &&
+        woad_fd_is_mintty_pty_(_fileno(stm)))
+    {
+        native_ansi = 1;
+    }
+
+    return woad_supports_colour_(is_tty, native_ansi);
+#else
+
+    return woad_supports_colour_(is_tty, 0);
+#endif
 }
 
 int
@@ -739,7 +847,15 @@ woad_fd_supports_colour(
     int             fd
 )
 {
-    return woad_supports_colour_(woad_isatty_fd_(fd));
+    int const is_tty = woad_isatty_fd_(fd);
+
+#ifdef WOAD_PROBE_MINTTY_
+
+    return woad_supports_colour_(is_tty, woad_fd_is_mintty_pty_(fd));
+#else
+
+    return woad_supports_colour_(is_tty, 0);
+#endif
 }
 
 #ifdef _WIN32
@@ -775,7 +891,23 @@ woad_console_handle_supports_colour(
     void*           h
 )
 {
-    return woad_supports_colour_(woad_console_handle_is_tty(h));
+    int const is_console = woad_console_handle_is_tty(h);
+
+#ifdef WOAD_PROBE_MINTTY_
+
+    int native_ansi = 0;
+
+    if (!is_console &&
+        woad_handle_is_mintty_pty_((HANDLE)h))
+    {
+        native_ansi = 1;
+    }
+
+    return woad_supports_colour_(is_console || native_ansi, native_ansi);
+#else
+
+    return woad_supports_colour_(is_console, 0);
+#endif
 }
 
 int
@@ -783,7 +915,7 @@ woad_std_handle_supports_colour(
     unsigned long   id
 )
 {
-    return woad_supports_colour_(woad_std_handle_is_tty(id));
+    return woad_console_handle_supports_colour((void*)GetStdHandle((DWORD)id));
 }
 #endif /* _WIN32 */
 

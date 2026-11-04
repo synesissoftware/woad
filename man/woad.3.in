@@ -4,7 +4,7 @@
 .\" Purpose: Manual page (section 3) for the woad C library.
 .\"
 .\" Created: 27th August 2026
-.\" Updated: 3rd November 2026
+.\" Updated: 5th November 2026
 .\"
 .\" Home:    https://github.com/synesissoftware/woad/
 .\"
@@ -17,7 +17,7 @@
 .\"
 .\" ////////////////////////////////////////////////////////////////////// */
 .\"
-.TH WOAD 3 "November 3, 2026" "woad @PROJECT_VERSION@" "woad Library Functions"
+.TH WOAD 3 "November 5, 2026" "woad @PROJECT_VERSION@" "woad Library Functions"
 .
 .
 .SH NAME
@@ -229,7 +229,36 @@ between
 .BR isatty (3),
 .BR _isatty() ,
 .BR fileno (3),
-and the feature-test macros governing which of them are visible.
+and the feature-test macros governing which of them are visible. On
+Windows, a Win32 binary hosted by mintty (Git Bash, MSYS2, or Cygwin) sees
+the PTY as a named pipe;
+.B woad_fd_is_tty()
+and
+.B woad_stream_is_tty()
+still report it as a terminal when the pipe name is
+.BR msys\- / cygwin\- ,
+then a hash, then
+.BR pty <digits>,
+then
+.B from\-master
+or
+.BR to\-master ,
+with optional further
+.B \-<suffix>
+segments.
+.B woad_console_handle_is_tty()
+stays 0: that predicate means a Windows console. Colour for the pipe is
+reported by the colour predicates without
+.BR SetConsoleMode() ,
+so
+.B WOAD_SET_CONSOLE_MODE
+does not apply. A native Cygwin or MSYS-linked build is unchanged, because
+its
+.BR isatty (3)
+is already correct. Automatic colour is still withheld when
+.B TERM
+is
+.BR dumb .
 .TP
 .BR woad_stream_supports_colour() ", " woad_fd_supports_colour()
 Return non-zero if colour should be emitted, combining the prevailing
@@ -447,6 +476,8 @@ attempt may be withheld; see
 .B WOAD_SET_CONSOLE_MODE
 under
 .BR ENVIRONMENT .
+A mintty PTY pipe is not that console; see the description of
+.BR woad_fd_is_tty() .
 .
 .
 .SH EXAMPLES

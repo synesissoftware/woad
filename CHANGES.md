@@ -1,6 +1,11 @@
 # woad - Changes <!-- omit in toc -->
 
 
+## 0.2.3 - 5th November 2026
+
+* Recognised a Win32 mintty PTY pipe (`msys-`/`cygwin-`, hash, `pty` and digits, `from-master`/`to-master`) as a terminal for `woad_fd_is_tty()` / `woad_stream_is_tty()` and as ANSI-capable for colour, without `SetConsoleMode()`; `woad_console_handle_is_tty()` stays console-only;
+
+
 ## 0.2.2 - 3rd November 2026
 
 * Honoured `FORCE_COLOR` beside `CLICOLOR_FORCE`: a non-empty value other than `0` or `false` forces colour, below `WOAD_COLOUR` / `WOAD_COLOR` and a non-empty `NO_COLOR`;
