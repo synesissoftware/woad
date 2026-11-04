@@ -132,6 +132,25 @@ clear_policy_env_(void)
     unset_env_("WOAD_SET_CONSOLE_MODE");
 }
 
+static FILE*
+open_temp_file_(void)
+{
+#ifdef _MSC_VER
+
+    FILE* fp = NULL;
+
+    if (0 != tmpfile_s(&fp))
+    {
+        return NULL;
+    }
+
+    return fp;
+#else
+
+    return tmpfile();
+#endif
+}
+
 static int
 test_plain_file_(void)
 {
@@ -139,7 +158,7 @@ test_plain_file_(void)
 
     clear_policy_env_();
 
-    disk = tmpfile();
+    disk = open_temp_file_();
 
     if (NULL == disk)
     {
@@ -511,7 +530,7 @@ test_windows_pipes_(void)
     CloseHandle(anon_read);
     CloseHandle(anon_write);
 
-    disk = tmpfile();
+    disk = open_temp_file_();
 
     if (NULL == disk)
     {
