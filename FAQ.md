@@ -64,14 +64,14 @@ Yes. Automated tests live under:
 
 * **./test/unit** — unit tests (`test.unit.codes`, `test.unit.gating`,
   `test.unit.version`);
+* **./test/component** — component tests (`test.component.mintty_pty`);
 * **./test/performance** — performance programs (**test.performance.colour_for**);
 * **./test/scratch** — scratch / exploratory programs (**test.scratch.versions**);
 
-**woad** does not yet ship component programs. That runner exits successfully
-when it finds none.
+The mintty component test checks public fd, stream, and handle predicates. On Win32 it creates named pipes, including names that must stay plain. A native Cygwin or MSYS-linked build skips pipe creation, because `isatty()` is already correct there. On every other build it checks that a disk file is not a terminal and is not coloured.
 
 When testing is enabled, build them via **prepare_cmake.sh** / **build_cmake.sh**
-and run with **run_all_unit_tests.sh** (and **CTest** where configured). The
+and run with **run_all_automated_tests.sh** (and **CTest** where configured). The
 tests need only the C toolchain used to build the project.
 
 
