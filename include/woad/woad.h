@@ -7,7 +7,7 @@
  *          version and colour-policy API.
  *
  * Created: 15th August 2026
- * Updated: 3rd November 2026
+ * Updated: 4th November 2026
  *
  * Home:    https://github.com/synesissoftware/woad/
  *
@@ -54,7 +54,7 @@
 # define WOAD_VER_WOAD_H_WOAD_MAJOR     0
 # define WOAD_VER_WOAD_H_WOAD_MINOR     0
 # define WOAD_VER_WOAD_H_WOAD_PATCH     7
-# define WOAD_VER_WOAD_H_WOAD_EDIT      14
+# define WOAD_VER_WOAD_H_WOAD_EDIT      15
 #endif /* !WOAD_DOCUMENTATION_SKIP_SECTION */
 
 
@@ -370,10 +370,10 @@
  * `FILE*` only, and the other stream currencies must be addressed by naming
  * the specific function.
  */
-# if 1 && \
-     !defined(__cplusplus) && \
-     defined(__STDC_VERSION__) && \
-     __STDC_VERSION__ >= 201112L && \
+# if 1 &&\
+     !defined(__cplusplus) &&\
+     defined(__STDC_VERSION__) &&\
+     __STDC_VERSION__ >= 201112L &&\
      1
 
 #  define WOAD_HAS_C_GENERIC_
@@ -584,7 +584,7 @@ woad_fd_supports_colour(
     int             fd
 );
 
-#if defined(_WIN32) || \
+#if defined(_WIN32) ||\
     defined(WOAD_DOCUMENTATION_SKIP_SECTION)
 
 /** [Windows-only] Determines whether the given console handle is attached
@@ -687,7 +687,7 @@ woad_seq_for_fd(
 ,   int             fd
 );
 
-#if defined(_WIN32) || \
+#if defined(_WIN32) ||\
     defined(WOAD_DOCUMENTATION_SKIP_SECTION)
 
 /** [Windows-only] Handle-based equivalent of woad_seq_for_stream().
@@ -1034,7 +1034,7 @@ fd_supports_colour(
     return woad_fd_supports_colour(fd);
 }
 
-# if defined(_WIN32) || \
+# if defined(_WIN32) ||\
      defined(WOAD_DOCUMENTATION_SKIP_SECTION)
 
 /** \see woad_console_handle_is_tty */
@@ -1100,7 +1100,7 @@ seq_for_fd(
     return woad_seq_for_fd(seq, fd);
 }
 
-# if defined(_WIN32) || \
+# if defined(_WIN32) ||\
      defined(WOAD_DOCUMENTATION_SKIP_SECTION)
 
 /** \see woad_seq_for_handle */

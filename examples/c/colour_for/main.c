@@ -94,8 +94,8 @@ int main(void)
      * and later, and in C++, by type-dispatch.
      */
 
-#if defined(__cplusplus) || \
-    (   defined(__STDC_VERSION__) && \
+#if defined(__cplusplus) ||\
+    (   defined(__STDC_VERSION__) &&\
         __STDC_VERSION__ >= 201112L)
 
     printf(

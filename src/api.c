@@ -9,7 +9,7 @@
  *          the PROVENANCE note above woad_is_truey_(), below.
  *
  * Created: 27th August 2026
- * Updated: 3rd November 2026
+ * Updated: 4th November 2026
  *
  * Home:    https://github.com/synesissoftware/woad/
  *
@@ -566,17 +566,17 @@ woad_isatty_stream_(
         return 0;
     }
 
-#if 0 || \
-    defined(_WIN32) || \
-    (   1 && \
-        defined(_POSIX_C_SOURCE) && \
-        (_POSIX_C_SOURCE >= 1) && \
-        1) || \
-    defined(_BSD_SOURCE) || \
-    defined(_DEFAULT_SOURCE) || \
-    defined(_GNU_SOURCE) || \
-    defined(_XOPEN_SOURCE) || \
-    !defined(__STRICT_ANSI__) || \
+#if 0 ||\
+    defined(_WIN32) ||\
+    (   1 &&\
+        defined(_POSIX_C_SOURCE) &&\
+        (_POSIX_C_SOURCE >= 1) &&\
+        1) ||\
+    defined(_BSD_SOURCE) ||\
+    defined(_DEFAULT_SOURCE) ||\
+    defined(_GNU_SOURCE) ||\
+    defined(_XOPEN_SOURCE) ||\
+    !defined(__STRICT_ANSI__) ||\
     0
 
     /* `fileno()` is POSIX (and `_fileno()` its Windows spelling). Prefer it
