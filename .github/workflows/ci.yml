@@ -211,10 +211,10 @@ jobs:
           test -f "${INSTALL_PREFIX}/share/man/man3/woad.3"
           # generated page must carry the real version, not the @...@ token
           grep -q '^\.TH WOAD 3 .* "woad [0-9]' "${INSTALL_PREFIX}/share/man/man3/woad.3"
-          test -f "${INSTALL_PREFIX}/lib/cmake/woad/woad-config.cmake" || \
+          test -f "${INSTALL_PREFIX}/lib/cmake/woad/woad-config.cmake" ||\
             test -f "${INSTALL_PREFIX}/lib64/cmake/woad/woad-config.cmake"
           if [ "${{ runner.os }}" != "Windows" ]; then
-            test -f "${INSTALL_PREFIX}/lib/pkgconfig/woad.pc" || \
+            test -f "${INSTALL_PREFIX}/lib/pkgconfig/woad.pc" ||\
               test -f "${INSTALL_PREFIX}/lib64/pkgconfig/woad.pc"
           fi
           # the compiled component, whose name varies by toolchain

@@ -47,7 +47,7 @@
 /* `setenv()` / `unsetenv()` are POSIX, and are not declared by glibc under
  * a strict ISO dialect, which is what this project's tests are compiled as.
  */
-#if !defined(_WIN32) && \
+#if !defined(_WIN32) &&\
     !defined(_POSIX_C_SOURCE)
 # define _POSIX_C_SOURCE                                    200809L
 #endif
@@ -321,8 +321,8 @@ int main(void)
 
     /* the type-dispatched forms agree with the specific forms */
 
-#if defined(__cplusplus) || \
-    (   defined(__STDC_VERSION__) && \
+#if defined(__cplusplus) ||\
+    (   defined(__STDC_VERSION__) &&\
         __STDC_VERSION__ >= 201112L)
 
     clear_all_env_();

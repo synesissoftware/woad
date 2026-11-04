@@ -4,6 +4,7 @@
 | Date                | News Item                                                   | Details |
 | ------------------- | ----------------------------------------------------------- | ------- |
 | 5th November 2026   | [**woad** 0.3.0-alpha1](https://github.com/synesissoftware/woad/releases/tag/0.3.0-alpha1) | IOStreams interface (**woad/iostreams.hpp**) and examples |
+| 5th November 2026   | [**woad** 0.2.3](https://github.com/synesissoftware/woad/releases/tag/0.2.3) | Win32 mintty PTY pipe recognised for fd/stream colour |
 | 3rd November 2026   | [**woad** 0.2.2](https://github.com/synesissoftware/woad/releases/tag/0.2.2) | Honoured `FORCE_COLOR` beside `CLICOLOR_FORCE` |
 | 27th October 2026   | [**woad** 0.2.1](https://github.com/synesissoftware/woad/releases/tag/0.2.1) | Defined `HAS_STLSoft`` and `HAS_STLSOFT` when **STLSoft** is detected |
 | 26th October 2026   | [**woad** 0.2.0](https://github.com/synesissoftware/woad/releases/tag/0.2.0) | C++ API (`woad` namespace) and examples; `WOAD_CALL()` sole source of C linkage |

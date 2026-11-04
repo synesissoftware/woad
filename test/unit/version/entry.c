@@ -4,7 +4,7 @@
  * Purpose: Unit tests for woad version macros and functions.
  *
  * Created: 15th August 2026
- * Updated: 3rd November 2026
+ * Updated: 5th November 2026
  *
  * Home:    https://github.com/synesissoftware/woad/
  *

@@ -45,7 +45,7 @@
 * [x] ~~~Windows virtual-terminal gating (OS build + `GetConsoleMode`)~~~ - ✅;
 * [x] ~~~environment override of colour policy (force / inhibit)~~~ - ✅;
 * [ ] `COLORTERM` / `TERM` capability inspection beyond the `dumb` special case;
-* [ ] Cygwin, MSYS2, and Git-Bash (mintty) terminals: work out how to be compatible with them. Built against the MSVC runtime, these present as pipes rather than as consoles, so `_isatty()` answers 0 and `GetConsoleMode()` fails, and **woad** therefore suppresses colour even though mintty interprets ANSI perfectly well. Probing the pipe's name for the `msys-`/`cygwin-`…`-pty`…`-to-master` form via `GetFileInformationByHandleEx(FileNameInfo)` is the usual remedy; native Cygwin builds (`__CYGWIN__`) need none of it, since their `isatty()` is already correct. Decide also whether such a terminal should be reported by `woad_stream_is_tty()`, by `woad_console_supports_ansi()`, or by both, and how that interacts with `WOAD_SET_CONSOLE_MODE`, there being no console mode to set;
+* [x] ~~~Cygwin, MSYS2, and Git-Bash (mintty) terminals~~~ - ✅;
 * [ ] 256-colour and 24-bit (truecolour) sequences;
 
 

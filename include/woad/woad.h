@@ -7,7 +7,7 @@
  *          version and colour-policy API.
  *
  * Created: 15th August 2026
- * Updated: 3rd November 2026
+ * Updated: 5th November 2026
  *
  * Home:    https://github.com/synesissoftware/woad/
  *
@@ -54,7 +54,7 @@
 # define WOAD_VER_WOAD_H_WOAD_MAJOR     0
 # define WOAD_VER_WOAD_H_WOAD_MINOR     0
 # define WOAD_VER_WOAD_H_WOAD_PATCH     7
-# define WOAD_VER_WOAD_H_WOAD_EDIT      14
+# define WOAD_VER_WOAD_H_WOAD_EDIT      15
 #endif /* !WOAD_DOCUMENTATION_SKIP_SECTION */
 
 
@@ -370,10 +370,10 @@
  * `FILE*` only, and the other stream currencies must be addressed by naming
  * the specific function.
  */
-# if 1 && \
-     !defined(__cplusplus) && \
-     defined(__STDC_VERSION__) && \
-     __STDC_VERSION__ >= 201112L && \
+# if 1 &&\
+     !defined(__cplusplus) &&\
+     defined(__STDC_VERSION__) &&\
+     __STDC_VERSION__ >= 201112L &&\
      1
 
 #  define WOAD_HAS_C_GENERIC_
@@ -512,7 +512,9 @@ woad_refresh(void);
  * not is reported as incapable rather than being modified. Absence of the
  * variable grants permission, as does any value that is not falsey. The
  * variable is consulted only on Windows, and only on those builds for
- * which the modification would otherwise be attempted.
+ * which the modification would otherwise be attempted. A mintty PTY pipe
+ * is not a console: this function does not report it, and the variable
+ * does not apply to it. See woad_fd_supports_colour().
  *
  * \return Non-zero if ANSI SGR sequences may be emitted; 0 otherwise.
  */
@@ -539,7 +541,8 @@ woad_console_supports_ansi(void);
  *
  * \note This exists so that client code need never choose between
  *   `isatty()`, `_isatty()`, `fileno()`, and the various feature-test
- *   macros that determine which of them are visible.
+ *   macros that determine which of them are visible. On Windows a mintty
+ *   PTY pipe is included; see woad_fd_is_tty().
  */
 WOAD_CALL(int)
 woad_stream_is_tty(
@@ -553,6 +556,14 @@ woad_stream_is_tty(
  *
  * \return Non-zero if the descriptor is attached to a terminal; 0
  *   otherwise.
+ *
+ * \note On Windows, a Win32 binary hosted by mintty (Git Bash, MSYS2, or
+ *   Cygwin) sees the PTY as a named pipe, so `_isatty()` is 0. A pipe
+ *   whose name is `(msys|cygwin)-<hash>-pty<digits>-(from|to)-master`,
+ *   with optional `-<suffix>` segments, is reported as a terminal.
+ *   `woad_console_handle_is_tty()` stays 0 for that pipe: it means a
+ *   Windows console. A native Cygwin or MSYS-linked build is unchanged,
+ *   because its `isatty()` is already correct.
  */
 WOAD_CALL(int)
 woad_fd_is_tty(
@@ -584,7 +595,7 @@ woad_fd_supports_colour(
     int             fd
 );
 
-#if defined(_WIN32) || \
+#if defined(_WIN32) ||\
     defined(WOAD_DOCUMENTATION_SKIP_SECTION)
 
 /** [Windows-only] Determines whether the given console handle is attached
@@ -594,7 +605,8 @@ woad_fd_supports_colour(
  *   `GetStdHandle()`. Declared as `void*` rather than `HANDLE` so that
  *   this header need not include <windows.h>;
  *
- * \return Non-zero if the handle refers to a console; 0 otherwise.
+ * \return Non-zero if the handle refers to a console; 0 otherwise. A
+ *   mintty PTY pipe is not a console, so this returns 0 for it.
  */
 WOAD_CALL(int)
 woad_console_handle_is_tty(
@@ -622,7 +634,12 @@ woad_std_handle_is_tty(
  *   `GetStdHandle()`. Declared as `void*` rather than `HANDLE` so that
  *   this header need not include <windows.h>;
  *
- * \return Non-zero if colour should be emitted; 0 otherwise.
+ * \return Non-zero if colour should be emitted; 0 otherwise. A mintty PTY
+ *   pipe is not a console, so woad_console_handle_is_tty() is 0, but
+ *   colour is still reported under automatic policy unless `TERM` is
+ *   `dumb`. ANSI is native there: `SetConsoleMode()` is not called, and
+ *   `WOAD_SET_CONSOLE_MODE` does not apply.
+ *   woad_std_handle_supports_colour() follows the same rule.
  */
 WOAD_CALL(int)
 woad_console_handle_supports_colour(
@@ -687,7 +704,7 @@ woad_seq_for_fd(
 ,   int             fd
 );
 
-#if defined(_WIN32) || \
+#if defined(_WIN32) ||\
     defined(WOAD_DOCUMENTATION_SKIP_SECTION)
 
 /** [Windows-only] Handle-based equivalent of woad_seq_for_stream().
@@ -1034,7 +1051,7 @@ fd_supports_colour(
     return woad_fd_supports_colour(fd);
 }
 
-# if defined(_WIN32) || \
+# if defined(_WIN32) ||\
      defined(WOAD_DOCUMENTATION_SKIP_SECTION)
 
 /** \see woad_console_handle_is_tty */
@@ -1100,7 +1117,7 @@ seq_for_fd(
     return woad_seq_for_fd(seq, fd);
 }
 
-# if defined(_WIN32) || \
+# if defined(_WIN32) ||\
      defined(WOAD_DOCUMENTATION_SKIP_SECTION)
 
 /** \see woad_seq_for_handle */

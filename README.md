@@ -229,6 +229,8 @@ int woad_console_supports_ansi(void);
 
 Note that the Windows currencies are declared as `void*` and `unsigned long` rather than `HANDLE` and `DWORD`. That is deliberate: it means **woad.h** never includes `<windows.h>`, and so no client translation unit inherits it, or its macro pollution, merely by using **woad**.
 
+On Windows, a Win32 binary hosted by mintty (Git Bash, MSYS2, or Cygwin) sees the PTY as a named pipe. `woad_fd_is_tty()` and `woad_stream_is_tty()` report that pipe as a terminal when its name is `msys-` or `cygwin-`, a hash, `pty` and digits, then `from-master` or `to-master`. `woad_console_handle_is_tty()` stays 0. Colour is still reported for the pipe, and `WOAD_SET_CONSOLE_MODE` does not apply, because there is no console mode to set. `TERM=dumb` still withholds automatic colour.
+
 
 ### C++ API
 
