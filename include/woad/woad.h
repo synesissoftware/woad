@@ -134,9 +134,9 @@
  */
 
 #define WOAD_VER_MAJOR      0
-#define WOAD_VER_MINOR      2
-#define WOAD_VER_PATCH      3
-#define WOAD_VER_RELSTATUS  0xFF
+#define WOAD_VER_MINOR      3
+#define WOAD_VER_PATCH      0
+#define WOAD_VER_RELSTATUS  0x41
 
 #define WOAD_VER \
     (0\

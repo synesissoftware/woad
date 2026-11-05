@@ -1,6 +1,17 @@
 # woad - Changes <!-- omit in toc -->
 
 
+## 0.3.0-alpha1 - 5th November 2026
+
+* added the IOStreams interface **woad/iostreams.hpp**, providing stream inserters so that colour sequences may be written to `std::ostream` instances, gated on the stream's colour policy;
+* added IOStreams examples **examples/iostreams/colour_for** and **examples/iostreams/version**;
+* Doxygen markup for every function of **woad/iostreams.hpp** (including those defined by macros), a `group__woad__iostreams` module group, and removal of its exclusion from the **Doxyfile**;
+* **README.md** documents the C++ API and IOStreams interface, and lists the C++ and IOStreams examples;
+* corrected the **examples/iostreams/colour_for** target name to `example.iostreams.colour_for`;
+* **examples/c/colour_for** now labels its output and demonstrates bright-colour backgrounds / foregrounds;
+* corrected **test/unit/version** so that the minor-version assertion actually compares against `WOAD_VER_MINOR`;
+
+
 ## 0.2.3 - 5th November 2026
 
 * Recognised a Win32 mintty PTY pipe (`msys-`/`cygwin-`, hash, `pty` and digits, `from-master`/`to-master`) as a terminal for `woad_fd_is_tty()` / `woad_stream_is_tty()` and as ANSI-capable for colour, without `SetConsoleMode()`; `woad_console_handle_is_tty()` stays console-only;
