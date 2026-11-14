@@ -3,6 +3,7 @@
 
 | Date                | News Item                                                   | Details |
 | ------------------- | ----------------------------------------------------------- | ------- |
+| 15th November 2026  | [**woad** 0.3.0](https://github.com/synesissoftware/woad/releases/tag/0.3.0) | Promoted from **0.3.0-alpha1** to release status `0xFF` |
 | 5th November 2026   | [**woad** 0.3.0-alpha1](https://github.com/synesissoftware/woad/releases/tag/0.3.0-alpha1) | IOStreams interface (**woad/iostreams.hpp**) and examples |
 | 5th November 2026   | [**woad** 0.2.3](https://github.com/synesissoftware/woad/releases/tag/0.2.3) | Win32 mintty PTY pipe recognised for fd/stream colour |
 | 3rd November 2026   | [**woad** 0.2.2](https://github.com/synesissoftware/woad/releases/tag/0.2.2) | Honoured `FORCE_COLOR` beside `CLICOLOR_FORCE` |

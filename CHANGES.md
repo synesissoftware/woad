@@ -1,6 +1,11 @@
 # woad - Changes <!-- omit in toc -->
 
 
+## 0.3.0 - 15th November 2026
+
+* Promoted from **0.3.0-alpha1** to release status `0xFF`;
+
+
 ## 0.3.0-alpha1 - 5th November 2026
 
 * added the IOStreams interface **woad/iostreams.hpp**, providing stream inserters so that colour sequences may be written to `std::ostream` instances, gated on the stream's colour policy;
